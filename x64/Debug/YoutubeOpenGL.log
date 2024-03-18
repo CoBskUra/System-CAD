@@ -1,0 +1,60 @@
+﻿  AfirmationTransformationImGui.cpp
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(12,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(14,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(16,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(36,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(38,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(40,1): warning C4305: 'argument': truncation from 'double' to 'float'
+  AfirmatricTransformation.cpp
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmatricTransformation.cpp(163,26): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+  Camera.cpp
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.h(47,15): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.h(48,25): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.cpp(66,21): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.cpp(206,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.cpp(213,7): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.cpp(218,7): warning C4305: 'argument': truncation from 'double' to 'float'
+  Figure.cpp
+  imgui.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_impl_win32.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  Main.cpp
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\VAO.h(18,65): warning C4244: 'argument': conversion from 'GLsizeiptr' to 'GLsizei', possible loss of data
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.h(47,15): warning C4305: 'initializing': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Camera.h(48,25): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(12,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(14,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(16,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(36,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(38,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\AfirmationTransformationImGui.h(40,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Torus.h(51,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Torus.h(52,1): warning C4305: 'argument': truncation from 'double' to 'float'
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Torus.h(69,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\Torus.h(72,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Mesh.cpp
+  shaderClass.cpp
+  stb.cpp
+  trojkat.cpp
+  Generating Code...
+  glad.c
+glfw3.lib(window.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(window.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(input.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(input.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(init.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(monitor.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(monitor.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_window.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_window.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(context.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_thread.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_thread.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_joystick.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_joystick.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_time.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_time.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_init.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_init.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(win32_monitor.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(win32_monitor.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(vulkan.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(vulkan.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(wgl_context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(wgl_context.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(egl_context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(egl_context.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+glfw3.lib(osmesa_context.obj) : warning LNK4099: PDB 'glfw.pdb' was not found with 'glfw3.lib(osmesa_context.obj)' or at 'D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\glfw.pdb'; linking object as if no debug info
+  YoutubeOpenGL.vcxproj -> D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\YoutubeOpenGL.exe
