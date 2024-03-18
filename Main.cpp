@@ -41,7 +41,7 @@ int main()
 
 	torus.color = glm::vec4(1, 1, 1, 1);
 	bool showTorus = true;
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+	Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
