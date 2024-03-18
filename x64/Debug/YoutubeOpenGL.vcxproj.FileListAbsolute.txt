@@ -1,2 +1,0 @@
-C:\Users\user\Pulpit\opengl-tutorials-main\opengl-tutorials-main\YoutubeOpenGL 8 - Camera\x64\Debug\YoutubeOpenGL.exe
-D:\fast_acess\Studia\MINI CAD-CAM\Modelowanie Geometryczne I\projekt\YoutubeOpenGL 8 - Camera\x64\Debug\YoutubeOpenGL.exe
