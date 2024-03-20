@@ -201,6 +201,8 @@ void Camera::ActiveInterferes()
 				ImGui::DragFloat("y", &Orientation.y, 0.1f) ||
 				ImGui::DragFloat("z", &Orientation.z, 0.1f)) 
 			{
+				if (abs(Orientation.x) + abs(Orientation.y) + abs(Orientation.z) < M_ESP)
+					Orientation.x = Orientation.y = Orientation.z = 1;
 				Orientation = glm::normalize(Orientation);
 				updateMatrixes();
 			}
