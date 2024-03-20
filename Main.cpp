@@ -19,9 +19,8 @@ namespace fs = std::filesystem;
 #include"VBO.h"
 #include"EBO.h"
 #include"Camera.h"
-#include "Mesh.h"
-#include "kwadrat.h"
 #include "Torus.h"
+#include "Manager.h"
 
 const unsigned int width = 1024;
 const unsigned int height = 1024;
@@ -36,13 +35,13 @@ int main()
 		return -1;
 
 	Shader shaderProgram("simple_vert.glsl", "simple_frag.glsl");
-	Torus torus(shaderProgram);
-	kwadrat kwadrat(shaderProgram, 1, 1);
+	Torus torus(&shaderProgram, glm::vec4(1, 1, 1, 1) );
 
-	torus.color = glm::vec4(1, 1, 1, 1);
 	bool showTorus = true;
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
+	Figure *figura = &torus;
 
+	Manager manader(&camera);
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -61,16 +60,15 @@ int main()
 		camera.Inputs(window);
 		camera.ActiveInterferes();
 
-		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "CAM_MATRIX"), 1, GL_FALSE, glm::value_ptr(glm::mat4(camera.GetCameraMatrix())));
-
-		torus.Draw(showTorus);
+		//glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "CAM_MATRIX"), 1, GL_FALSE, glm::value_ptr(glm::mat4(camera.GetCameraMatrix())));
+		manader.MenuInterferes();
+		manader.Draw();
+		//figura->Draw(showTorus);
 		//kwadrat.Draw();
 
-		// Rendering
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 	}
 
@@ -81,6 +79,7 @@ int main()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
+	
 
 	// Delete window before ending the program
 	glfwDestroyWindow(window);

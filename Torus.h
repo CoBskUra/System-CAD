@@ -6,42 +6,43 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Constants.h"
 #include "AfirmationTransformationImGui.h"
+#include "Figure.h"
 
-class Torus
+class Torus: public Figure
 {
 public:
-	Shader shader;
-	AfirmationTransformation_ImGui afirmationTransformation;
-	VAO vao;
-	glm::vec4 color;
-	const char* name = "Torus_Test";
-
-	Torus(Shader shader)
+	Torus(Shader* shader, glm::vec4 color, const char* name) : Figure(shader, color)
 	{
-		this->shader = shader;
 		CreateTorus();
-		
+		SetName(name);
 	}
 
-	void Draw(bool& showInterferes) {
+	Torus(Shader* shader, glm::vec4 color): Figure(shader, color)
+	{
+		CreateTorus();
+		SetName("Torus");
+	}
+
+	void virtual Draw(bool& showInterferes) {
 		ActiveImGui(showInterferes);
 
-		shader.Activate();
+		//shader->Activate();
 		vao.Bind();
 
-		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "MODEL_MATRIX"),
+		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(afirmationTransformation.GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(shader.ID, "COLOR"), color.x, color.y, color.z, color.w);
+		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
 
 		glDrawElements(GL_LINE_STRIP, 2*segment1*segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
 		vao.Unbind();
 	}
 
-	void ActiveImGui(bool& show) {
+	void virtual ActiveImGui(bool& show) {
 		if (!show)
 			return;
-		ImGui::Begin(name, &show);
+		ImGui::BeginGroup();
 		{
+			ImGui::Text(name);
 			afirmationTransformation.ActiveInterferes();
 			ImGui::BeginGroup();
 			{
@@ -54,8 +55,10 @@ public:
 			}
 			ImGui::EndGroup();
 		}
-		ImGui::End();
+		ImGui::EndGroup();
 	}
+
+
 
 private:
 	int segment1 = 10;

@@ -4,8 +4,6 @@
 
 Camera::Camera(int width, int height, glm::vec3 position)
 {
-	/*Camera::width = width;
-	Camera::height = height;*/
 	Position = position;
 	updateMatrixes();
 }
@@ -16,6 +14,7 @@ void Camera::updateMatrixes()
 	updateProjectionMatrix();
 
 	cameraMatrix = projection * view;
+	hasBeenUpdated = true;
 }
 
 
@@ -123,7 +122,7 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 		mouseDelta *= sensitivity;
 
 		// Calculates upcoming vertical change in the Orientation
-		glm::vec3 newOrientation = glm::rotate(Orientation, glm::radians((float)-mouseDelta.y), glm::normalize(glm::cross(Orientation, Up)));
+		glm::vec3 newOrientation = RotationAlongAxis(Orientation, glm::radians((float)-mouseDelta.y), glm::normalize(glm::cross(Orientation, Up)));
 
 		// Decides whether or not the next vertical Orientation is legal or not
 		if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
@@ -144,19 +143,51 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 	return false;
 }
 
-
-void Camera::Inputs(GLFWwindow* window)
+glm::vec3 Camera::RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
 {
+	float s = sinf(rad);
+	float c = cosf(rad);
+
+	return (1 - c) * glm::dot(v, axis) * axis + c * v + s * glm::cross(axis, v);
+
+	glm::mat3x3 I(1.0f);
 	
-	if (handelKeyboardInput(window)) 
+	glm::mat3x3 A(0.0f);
+
+	A[1][0] = -axis.z;
+	A[2][0] = +axis.y;
+	A[2][1] = -axis.x;
+
+	A[0][1] = +axis.z;
+	A[0][2] = -axis.y;
+	A[1][2] = +axis.x;
+
+
+
+}
+
+
+bool Camera::HasBeenUpdated()
+{
+	return hasBeenUpdated;
+}
+
+void Camera::SaveMatrixToShader(const Shader& shader)
+{
+	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "CAM_MATRIX"),
+		1, GL_FALSE, glm::value_ptr(GetCameraMatrix()));
+}
+
+bool Camera::Inputs(GLFWwindow* window)
+{
+	bool getKeyboardInput	= handelKeyboardInput(window);
+	bool getMouseInput		= handelMouseInput(window);
+	if (getKeyboardInput || getMouseInput)
 	{
 		updateMatrixes();
 	}
 
-	if (handelMouseInput(window))
-	{
-		updateMatrixes();
-	}
+	return getMouseInput || getKeyboardInput;
 }
 
 void Camera::ActiveInterferes()

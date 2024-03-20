@@ -17,16 +17,15 @@
 class Camera
 {
 public:
-	
-	// Camera constructor to set up initial values
 	Camera(int width, int height, glm::vec3 position);
-
 	glm::mat4 GetCameraMatrix() const;
-
-	void Inputs(GLFWwindow* window);
+	bool Inputs(GLFWwindow* window);
 	void ActiveInterferes();
+	bool HasBeenUpdated();
+	void SaveMatrixToShader(const Shader& shader);
 
 private:
+	bool hasBeenUpdated = true;
 	glm::vec3 Position;
 	glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -60,6 +59,8 @@ private:
 
 	bool handelKeyboardInput(GLFWwindow* window);
 	bool handelMouseInput(GLFWwindow* window);
+
+	glm::vec3 RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis);
 
 };
 #endif

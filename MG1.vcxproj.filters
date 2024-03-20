@@ -16,9 +16,6 @@
     <Filter Include="Resource Files\Shaders">
       <UniqueIdentifier>{a7ffa985-40f1-492c-85aa-5c3f1e35fbf0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Textures">
-      <UniqueIdentifier>{05d3c78a-efa4-4af3-af3a-205814263558}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\ImGui">
       <UniqueIdentifier>{c10de800-4601-4796-b2ce-113330df8bab}</UniqueIdentifier>
     </Filter>
@@ -43,15 +40,18 @@
     <Filter Include="Source Files\Transformations">
       <UniqueIdentifier>{4803fbd3-4cae-43c7-9b55-aa619b8e519f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Figures">
+      <UniqueIdentifier>{7c8d0979-0a74-4c02-a278-cdc5f261f512}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Figures">
+      <UniqueIdentifier>{2d036a32-5397-422f-8703-0b79b2dbba2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stb.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -78,23 +78,20 @@
     <ClCompile Include="Libraries\include\ImGui\imgui_widgets.cpp">
       <Filter>Source Files\ImGui</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Figure.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="shaderClass.cpp">
       <Filter>Source Files\ShaderManadement</Filter>
-    </ClCompile>
-    <ClCompile Include="trojkat.cpp">
-      <Filter>Source Files\test</Filter>
     </ClCompile>
     <ClCompile Include="AfirmationTransformationImGui.cpp">
       <Filter>Source Files\Transformations</Filter>
     </ClCompile>
     <ClCompile Include="AfirmatricTransformation.cpp">
       <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="Figure.cpp">
+      <Filter>Source Files\Figures</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
+      <Filter>Source Files\test</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,12 +128,6 @@
     <ClInclude Include="Libraries\include\ImGui\imstb_truetype.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Figure.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shaderClass.h">
       <Filter>Header Files\ShaderManadement</Filter>
     </ClInclude>
@@ -149,12 +140,6 @@
     <ClInclude Include="EBO.h">
       <Filter>Header Files\ShaderManadement</Filter>
     </ClInclude>
-    <ClInclude Include="kwadrat.h">
-      <Filter>Header Files\Test</Filter>
-    </ClInclude>
-    <ClInclude Include="Torus.h">
-      <Filter>Header Files\Test</Filter>
-    </ClInclude>
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -163,6 +148,15 @@
     </ClInclude>
     <ClInclude Include="AfirmationTransformationImGui.h">
       <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="Torus.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="Figure.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Header Files\Test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
