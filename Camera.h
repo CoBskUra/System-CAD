@@ -37,8 +37,8 @@ private:
 	bool firstClick = true;
 	glm::dvec2 lastMousePosition;
 
-	float speed = 0.1f;
-	float sensitivity = 50.0f;
+	float keyboardSpeed = 5.0f;
+	float mouseSensitivity = 200.0f;
 
 	float deltaTime = 0.0f;	
 	float lastFrame = 0.0f; 

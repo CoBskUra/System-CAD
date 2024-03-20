@@ -68,32 +68,32 @@ bool Camera::handelKeyboardInput(GLFWwindow* window)
 	// Handles key inputs
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		Position += deltaTime * speed * -Orientation;
+		Position += deltaTime * keyboardSpeed * -Orientation;
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		Position += deltaTime * speed * -glm::normalize(glm::cross(Orientation, Up));
+		Position += deltaTime * keyboardSpeed * -glm::normalize(glm::cross(Orientation, Up));
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Position += deltaTime * speed * +Orientation;
+		Position += deltaTime * keyboardSpeed * +Orientation;
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		Position += deltaTime * speed * glm::normalize(glm::cross(Orientation, Up));
+		Position += deltaTime * keyboardSpeed * glm::normalize(glm::cross(Orientation, Up));
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		Position += deltaTime * speed * Up;
+		Position += deltaTime * keyboardSpeed * Up;
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
-		Position += deltaTime * speed * -Up;
+		Position += deltaTime * keyboardSpeed * -Up;
 		updatePosition = true;
 	}
 
@@ -119,7 +119,7 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 		glfwGetWindowSize(window, &width, &height);
 		mouseDelta.y /= height;
 		mouseDelta.x /= width;
-		mouseDelta *= sensitivity;
+		mouseDelta *= mouseSensitivity;
 
 		// Calculates upcoming vertical change in the Orientation
 		glm::vec3 newOrientation = RotationAlongAxis(Orientation, glm::radians((float)-mouseDelta.y), glm::normalize(glm::cross(Orientation, Up)));
@@ -224,8 +224,8 @@ void Camera::ActiveInterferes()
 		ImGui::BeginGroup();
 		{
 			ImGui::Text("Properties");
-			if (ImGui::DragFloat("Keyboard speed", &speed, 0.2f) ||
-				ImGui::DragFloat("Mouse sensitivity", &sensitivity, 10.0f) )
+			if (ImGui::DragFloat("Keyboard speed", &keyboardSpeed, 0.2f) ||
+				ImGui::DragFloat("Mouse sensitivity", &mouseSensitivity, 10.0f) )
 			{
 				updateMatrixes();
 			}
