@@ -1,8 +1,3 @@
-//------- Ignore this ----------
-#include<filesystem>
-namespace fs = std::filesystem;
-//------------------------------
-
 #include<iostream>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
@@ -22,7 +17,7 @@ namespace fs = std::filesystem;
 #include "Torus.h"
 #include "Manager.h"
 
-const unsigned int width = 1024;
+const unsigned int width = 1600;
 const unsigned int height = 1024;
 
 GLFWwindow* Init();
@@ -35,7 +30,7 @@ int main()
 		return -1;
 
 	Shader shaderProgram("simple_vert.glsl", "simple_frag.glsl");
-	Torus torus(&shaderProgram, glm::vec4(1, 1, 1, 1) );
+	Torus torus(&shaderProgram);
 
 	bool showTorus = true;
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
@@ -106,7 +101,7 @@ GLFWwindow* Init() {
 	glfwMakeContextCurrent(window);
 
 	gladLoadGL();
-	glViewport(0, 0, width, height);
+	glViewport(0, 0, width, width);
 
 
 	// Setup Dear ImGui context

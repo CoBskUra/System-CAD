@@ -17,10 +17,16 @@ public:
 			names.push_back(figure->name);
 		}
 
+
+		~FiguresVector() {
+			Delete();
+		}
+
 		void Delete() {
 			for (int i = 0; i < figures.size(); i++)
 				delete figures[i];
 		}
+
 	};
 	FiguresVector figuresVector;
 	Camera* currentCamera;
@@ -28,7 +34,6 @@ public:
 	Shader TorusShader;
 
 	Manager(Camera* camera);
-	~Manager();
 	void MenuInterferes();
 	void Draw();
 private:

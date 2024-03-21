@@ -15,9 +15,9 @@ public:
 	glm::vec4 color;
 	Shader* shader;
 
-	Figure(Shader* shader, glm::vec4 color) {
+	Figure(Shader* shader) {
 		this->shader = shader;
-		this->color = color;
+		UnMark();
 	}
 
 	~Figure()
@@ -35,6 +35,13 @@ public:
 		name = newName;
 	}
 
+	void UnMark() {
+		this->color = glm::vec4(1, 1, 1, 1);
+	}
+
+	void Mark() {
+		this->color = glm::vec4(1, 0.8f, 0, 1);
+	}
 
 	void virtual Delete() {
 		vao.Delete();

@@ -11,13 +11,13 @@
 class Torus: public Figure
 {
 public:
-	Torus(Shader* shader, glm::vec4 color, const char* name) : Figure(shader, color)
+	Torus(Shader* shader,  const char* name) : Figure(shader)
 	{
 		CreateTorus();
 		SetName(name);
 	}
 
-	Torus(Shader* shader, glm::vec4 color): Figure(shader, color)
+	Torus(Shader* shader): Figure(shader)
 	{
 		CreateTorus();
 		SetName("Torus");
