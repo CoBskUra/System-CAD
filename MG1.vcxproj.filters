@@ -81,9 +81,6 @@
     <ClCompile Include="shaderClass.cpp">
       <Filter>Source Files\ShaderManadement</Filter>
     </ClCompile>
-    <ClCompile Include="AfirmationTransformationImGui.cpp">
-      <Filter>Source Files\Transformations</Filter>
-    </ClCompile>
     <ClCompile Include="AfirmatricTransformation.cpp">
       <Filter>Source Files\Transformations</Filter>
     </ClCompile>
@@ -92,6 +89,18 @@
     </ClCompile>
     <ClCompile Include="Manager.cpp">
       <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="Transpose.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="Scale.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="Rotation.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="Figure3D.cpp">
+      <Filter>Source Files\Figures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -128,7 +137,7 @@
     <ClInclude Include="Libraries\include\ImGui\imstb_truetype.h">
       <Filter>Header Files\ImGui</Filter>
     </ClInclude>
-    <ClInclude Include="shaderClass.h">
+    <ClInclude Include="Shader.h">
       <Filter>Header Files\ShaderManadement</Filter>
     </ClInclude>
     <ClInclude Include="VAO.h">
@@ -158,6 +167,33 @@
     <ClInclude Include="Manager.h">
       <Filter>Header Files\Test</Filter>
     </ClInclude>
+    <ClInclude Include="Transpose.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="Rotation.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="Scale.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="RotationImGui.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="ScaleImGui.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="TransposeImGui.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="Figure3D.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="Point.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -172,5 +208,16 @@
     <None Include="simple_frag.glsl">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="point_frag.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="point_vert.glsl">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MG1.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

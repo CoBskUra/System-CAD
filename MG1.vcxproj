@@ -155,10 +155,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AfirmationTransformationImGui.cpp" />
     <ClCompile Include="AfirmatricTransformation.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Figure.cpp" />
+    <ClCompile Include="Figure3D.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Libraries\include\ImGui\imgui.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui_draw.cpp" />
@@ -169,7 +169,10 @@
     <ClCompile Include="Libraries\include\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Rotation.cpp" />
+    <ClCompile Include="Scale.cpp" />
     <ClCompile Include="shaderClass.cpp" />
+    <ClCompile Include="Transpose.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AfirmationTransformationImGui.h" />
@@ -178,6 +181,7 @@
     <ClInclude Include="Constants.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="Figure.h" />
+    <ClInclude Include="Figure3D.h" />
     <ClInclude Include="Libraries\include\ImGui\imconfig.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui_impl_glfw.h" />
@@ -189,16 +193,29 @@
     <ClInclude Include="Libraries\include\ImGui\imstb_textedit.h" />
     <ClInclude Include="Libraries\include\ImGui\imstb_truetype.h" />
     <ClInclude Include="Manager.h" />
-    <ClInclude Include="shaderClass.h" />
+    <ClInclude Include="Point.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="Rotation.h" />
+    <ClInclude Include="RotationImGui.h" />
+    <ClInclude Include="Scale.h" />
+    <ClInclude Include="ScaleImGui.h" />
+    <ClInclude Include="Shader.h" />
     <ClInclude Include="Torus.h" />
+    <ClInclude Include="TransposeImGui.h" />
+    <ClInclude Include="Transpose.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="point_vert.glsl" />
     <None Include="simple_frag.glsl" />
     <None Include="default.frag" />
     <None Include="default.vert" />
     <None Include="simple_vert.glsl" />
+    <None Include="point_frag.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="MG1.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

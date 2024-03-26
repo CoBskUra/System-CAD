@@ -11,7 +11,7 @@
 
 #include <ImGui/imgui.h>
 
-#include"shaderClass.h"
+#include"Shader.h"
 #include "AfirmatricTransformation.h"
 
 class Camera
@@ -23,6 +23,10 @@ public:
 	void ActiveInterferes();
 	bool HasBeenUpdated();
 	void SaveMatrixToShader(const Shader& shader);
+
+	glm::vec3 GetPosition();
+	glm::vec3 GetOrientation();
+	glm::vec3 GetUp();
 
 private:
 	bool hasBeenUpdated = true;
@@ -53,9 +57,16 @@ private:
 	float aspect = 1;
 	float aspect_invers = 1;
 
+	glm::vec3 ScaleVec = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::mat4 Scale = glm::mat4(1.0f);
+	glm::mat4 Scale_invers = glm::mat4(1.0f);
+
 	void updateMatrixes();
 	void UpdateViewMatrix();
 	void updateProjectionMatrix();
+
+	void SetScale(glm::vec3 vec);
+	void SetScale(float x, float y, float z);
 
 	bool handelKeyboardInput(GLFWwindow* window);
 	bool handelMouseInput(GLFWwindow* window);

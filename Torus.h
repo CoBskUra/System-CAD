@@ -1,56 +1,52 @@
-#pragma once
-#include "shaderClass.h"
+#ifndef Torus_CLASS_H
+#define Torus_CLASS_H
+
+#include"Shader.h"
 #include "VAO.h"
 #include "VBO.h"
 #include "EBO.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "Constants.h"
 #include "AfirmationTransformationImGui.h"
-#include "Figure.h"
+#include "Figure3D.h"
 
-class Torus: public Figure
+class Torus: public Figure3D
 {
 public:
-	Torus(Shader* shader,  const char* name) : Figure(shader)
+	Torus(Shader* shader,  const char* name) : Figure3D(shader, "##Torus", "Torus")
 	{
 		CreateTorus();
 		SetName(name);
 	}
 
-	Torus(Shader* shader): Figure(shader)
+	Torus(Shader* shader): Figure3D(shader, "##Torus", "Torus")
 	{
 		CreateTorus();
 		SetName("Torus");
 	}
 
-	void virtual Draw(bool& showInterferes) {
-		ActiveImGui(showInterferes);
-
-		//shader->Activate();
+	void virtual Draw() {
 		vao.Bind();
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
-			1, GL_FALSE, glm::value_ptr(afirmationTransformation.GetModelMatrix()));
+			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
 		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
 
 		glDrawElements(GL_LINE_STRIP, 2*segment1*segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
 		vao.Unbind();
 	}
 
-	void virtual ActiveImGui(bool& show) {
-		if (!show)
-			return;
+	void virtual ActiveImGui() {
 		ImGui::BeginGroup();
 		{
-			ImGui::Text(name);
-			afirmationTransformation.ActiveInterferes();
+			Figure3D::ActiveImGui();
 			ImGui::BeginGroup();
 			{
-				ImGui::Text("Torus parameters");
-				if (ImGui::InputInt("segment 1", &segment1) ||
-					ImGui::InputInt("segment 2", &segment2) ||
-					ImGui::DragFloat("R", &R, 0.1f, M_ESP) ||
-					ImGui::DragFloat("r", &r, 0.1f, M_ESP))
+				ImGui::Text( "Torus parameters" );
+				if (ImGui::InputInt(("segment 1" + GetUniqueName()).c_str(), &segment1) ||
+					ImGui::InputInt(("segment 2" + GetUniqueName()).c_str(), &segment2) ||
+					ImGui::DragFloat(("R" + GetUniqueName()).c_str(), &R, 0.1f, M_ESP) ||
+					ImGui::DragFloat(("r" + GetUniqueName()).c_str(), &r, 0.1f, M_ESP))
 					CreateTorus();
 			}
 			ImGui::EndGroup();
@@ -119,3 +115,5 @@ private:
 	}
 };
 
+
+#endif

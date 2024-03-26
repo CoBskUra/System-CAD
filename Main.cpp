@@ -9,13 +9,14 @@
 #include "Libraries/include/ImGui/imgui_impl_glfw.h"
 #include "Libraries/include/ImGui/imgui_impl_opengl3.h"
 
-#include"shaderClass.h"
+#include"Shader.h"
 #include"VAO.h"
 #include"VBO.h"
 #include"EBO.h"
 #include"Camera.h"
 #include "Torus.h"
 #include "Manager.h"
+#include "Point.h"
 
 const unsigned int width = 1600;
 const unsigned int height = 1024;
@@ -29,14 +30,12 @@ int main()
 	if (window == NULL)
 		return -1;
 
-	Shader shaderProgram("simple_vert.glsl", "simple_frag.glsl");
-	Torus torus(&shaderProgram);
-
+	auto shader = Shader("simple_vert.glsl", "simple_frag.glsl");
 	bool showTorus = true;
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
-	Figure *figura = &torus;
+	//Point p(&shader);
 
-	Manager manader(&camera);
+	Manager manader(&camera, window);
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -51,13 +50,15 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		//glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "CAM_MATRIX"), 1, GL_FALSE, glm::value_ptr(glm::mat4(camera.GetCameraMatrix())));
+		manader.MenuInterferes();
+		manader.Draw();
+		manader.ProcesInput();
+		//p.Draw();
 
 		camera.Inputs(window);
 		camera.ActiveInterferes();
 
-		//glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "CAM_MATRIX"), 1, GL_FALSE, glm::value_ptr(glm::mat4(camera.GetCameraMatrix())));
-		manader.MenuInterferes();
-		manader.Draw();
 		//figura->Draw(showTorus);
 		//kwadrat.Draw();
 
@@ -68,7 +69,6 @@ int main()
 	}
 
 	// Delete all the objects we've created
-	shaderProgram.Delete();
 
 	// Cleanup
 	ImGui_ImplOpenGL3_Shutdown();
@@ -101,7 +101,7 @@ GLFWwindow* Init() {
 	glfwMakeContextCurrent(window);
 
 	gladLoadGL();
-	glViewport(0, 0, width, width);
+	glViewport(0, 0, width, height);
 
 
 	// Setup Dear ImGui context
@@ -119,6 +119,7 @@ GLFWwindow* Init() {
 	ImGui_ImplOpenGL3_Init("#version 330");
 
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	return window;
 }

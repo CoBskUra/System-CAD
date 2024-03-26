@@ -12,8 +12,9 @@ void Camera::updateMatrixes()
 {
 	UpdateViewMatrix();
 	updateProjectionMatrix();
+	SetScale(ScaleVec);
 
-	cameraMatrix = projection * view;
+	cameraMatrix = projection * view * Scale;
 	hasBeenUpdated = true;
 }
 
@@ -61,6 +62,11 @@ void Camera::updateProjectionMatrix() {
 // return true if any value has been changed
 bool Camera::handelKeyboardInput(GLFWwindow* window)
 {
+	ImGuiIO& io = ImGui::GetIO();
+
+	if (io.WantCaptureKeyboard)
+		return false;
+
 	bool updatePosition = false;
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
@@ -100,10 +106,32 @@ bool Camera::handelKeyboardInput(GLFWwindow* window)
 	return updatePosition;
 }
 
+void Camera::SetScale(glm::vec3 vec)
+{
+	SetScale(vec.x, vec.y, vec.z);
+}
+
+void Camera::SetScale(float x, float y, float z)
+{
+
+	ScaleVec.x = x;
+	ScaleVec.y = y;
+	ScaleVec.z = z;
+
+	Scale[0][0] = x;
+	Scale[1][1] = y;
+	Scale[2][2] = z;
+
+	Scale_invers[0][0] = 1 / x;
+	Scale_invers[1][1] = 1 / y;
+	Scale_invers[2][2] = 1 / z;
+}
+
+
 // return true if any value has been changed
 bool Camera::handelMouseInput(GLFWwindow* window)
 {
-	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+	if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS )
 	{
 		if (firstClick)
 		{
@@ -131,7 +159,7 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 		}
 
 		// Rotates the Orientation left and right
-		Orientation = glm::rotate(Orientation, glm::radians((float)-mouseDelta.x), Up);
+		Orientation = RotationAlongAxis(Orientation, glm::radians((float)-mouseDelta.x), Up);
 
 		glfwGetCursorPos(window, &lastMousePosition.x, &lastMousePosition.y);
 		return true;
@@ -149,21 +177,6 @@ glm::vec3 Camera::RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
 	float c = cosf(rad);
 
 	return (1 - c) * glm::dot(v, axis) * axis + c * v + s * glm::cross(axis, v);
-
-	glm::mat3x3 I(1.0f);
-	
-	glm::mat3x3 A(0.0f);
-
-	A[1][0] = -axis.z;
-	A[2][0] = +axis.y;
-	A[2][1] = -axis.x;
-
-	A[0][1] = +axis.z;
-	A[0][2] = -axis.y;
-	A[1][2] = +axis.x;
-
-
-
 }
 
 
@@ -174,6 +187,7 @@ bool Camera::HasBeenUpdated()
 
 void Camera::SaveMatrixToShader(const Shader& shader)
 {
+	hasBeenUpdated = false;
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "CAM_MATRIX"),
 		1, GL_FALSE, glm::value_ptr(GetCameraMatrix()));
 }
@@ -223,6 +237,18 @@ void Camera::ActiveInterferes()
 
 		ImGui::BeginGroup();
 		{
+			ImGui::Text("Scale");
+			if (ImGui::DragFloat("Scale x", &ScaleVec.x, 0.1f) ||
+				ImGui::DragFloat("Scale y", &ScaleVec.y, 0.1f) ||
+				ImGui::DragFloat("Scale z", &ScaleVec.z, 0.1f))
+			{
+				updateMatrixes();
+			}
+		}
+		ImGui::EndGroup();
+
+		ImGui::BeginGroup();
+		{
 			ImGui::Text("Properties");
 			if (ImGui::DragFloat("Keyboard speed", &keyboardSpeed, 0.2f) ||
 				ImGui::DragFloat("Mouse sensitivity", &mouseSensitivity, 10.0f) )
@@ -257,6 +283,21 @@ void Camera::ActiveInterferes()
 		ImGui::EndGroup();
 	}
 	ImGui::End();
+}
+
+glm::vec3 Camera::GetPosition()
+{
+	return Position;
+}
+
+glm::vec3 Camera::GetOrientation()
+{
+	return Orientation;
+}
+
+glm::vec3 Camera::GetUp()
+{
+	return Up;
 }
 
 glm::mat4 Camera::GetCameraMatrix() const
