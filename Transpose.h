@@ -7,9 +7,9 @@ class Transpose
 {public:
 	Transpose();
 
-	glm::mat4 Get();
-	glm::mat4 GetInvers();
-	glm::vec3 GetPosition();
+	glm::mat4 Get() const;
+	glm::mat4 GetInvers() const;
+	glm::vec3 GetPosition() const;
 
 	void SetObjectPosition(glm::vec3 vec);
 	void SetObjectPosition(float x, float y, float z);

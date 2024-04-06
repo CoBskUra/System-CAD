@@ -18,6 +18,7 @@ public:
 	char name[100] = "Figura";
 	glm::vec4 color;
 	Shader* shader;
+	TransposeImGui transpose;
 
 	Figure(Shader* shader);
 
@@ -31,9 +32,11 @@ public:
 	void virtual Draw();
 
 	void virtual ActiveImGui();
-	void virtual RotationAlong(const Figure& center, const Camera& camera, float angle);
-	void virtual ScaleAlong(const Figure& center, const Camera& camera, glm::vec3 scaleVec);
-	void virtual MoveAlong(const Figure& center, const Camera& camera, glm::vec3 direction);
+
+	void virtual RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle);
+	void virtual ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec);
+	void virtual MoveAlong(const Camera& camera, glm::vec3 direction);
+
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
 	glm::vec4 PositionOnScreen(const Camera& camera);
 
@@ -43,9 +46,9 @@ public:
 	void virtual Delete();
 
 protected:
+	bool editAbleName = true;
 	Figure(Shader* shader, const char* uniqueName, const char* type);
 
-	TransposeImGui transposeImGui;
 	const char* Type = "Figura";
 	//AfirmationTransformation_ImGui afirmationTransformation;
 	VAO vao;

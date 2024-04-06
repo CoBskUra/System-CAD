@@ -2,14 +2,17 @@
 #include "Figure.h"
 #include "Camera.h"
 #include "Torus.h"
+#include "Point.h"
+#include "Cursor.h"
 #include "Libraries/include/ImGui/imgui.h"
 #include "Shader.h"
-
+#include "OpenGLHelper.h"
 
 class Manager {
 	class FiguresVector {
 	public:
 		std::vector<Figure*> figures;
+
 		std::vector< const char*> names;
 		std::vector<bool> active;
 
@@ -61,19 +64,35 @@ class Manager {
 	FiguresVector figuresVector;
 	Camera* currentCamera;
 	Shader* currentShader;
-	Shader TorusShader;
+	Shader TorusShader; // fajnie jakbym nie musia³ definiowaæ za ka¿dym razem tych shaderów, mo¿e statyczny shader w clasie
 	Shader PointShader;
+	Shader CursorShader;
 
+	Point centerPoint;
+	glm::vec3 angel{ 0.0f };
+	glm::vec3 lastAngel{ 0.0f };
+
+	glm::vec3 scaleVec{ 1.0f };
+	glm::vec3 LastScaleVec{ 1.0f };
+
+	Cursor cursor;
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
 
 	float minLengthFromMouse = 0.0004f;
 	int TheClosetFigureToMouse(const char* figureType);
+	void UpdateCenterPoint(); 
+	
+	void CreateFiguresInterfers();
+	void SelectableList();
+	void DeleteSelected();
+
 public:
 	Manager(Camera* camera, GLFWwindow* window);
 	void MenuInterferes();
 	void Draw();
 	void ProcesInput();
+	
 
 	~Manager();
 };

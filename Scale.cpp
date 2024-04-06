@@ -7,6 +7,11 @@ Scale::Scale()
     Matrix_invers = glm::mat4(1.0f);
 }
 
+glm::vec3 Scale::GetScaleVec()
+{
+    return ScaleVec;
+}
+
 glm::mat4x4 Scale::Get()
 {
     return Matrix;
@@ -35,5 +40,4 @@ void Scale::SetScale(float x, float y, float z)
     Matrix_invers[0][0] = 1 / x;
     Matrix_invers[1][1] = 1 / y;
     Matrix_invers[2][2] = 1 / z;
-
 }

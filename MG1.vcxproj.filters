@@ -46,6 +46,12 @@
     <Filter Include="Source Files\Figures">
       <UniqueIdentifier>{2d036a32-5397-422f-8703-0b79b2dbba2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\cursorShader">
+      <UniqueIdentifier>{4b285b4c-7ae3-48d9-b6ff-493105683b41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper">
+      <UniqueIdentifier>{15f5f248-189b-4629-a1fd-691d9dff42fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -194,6 +200,15 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MathOperations.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Cursor.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLHelper.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -213,6 +228,12 @@
     </None>
     <None Include="point_vert.glsl">
       <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="cursor_vert.glsl">
+      <Filter>Resource Files\Shaders\cursorShader</Filter>
+    </None>
+    <None Include="cursor_geometry.glsl">
+      <Filter>Resource Files\Shaders\cursorShader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -24,12 +24,12 @@ std::string Figure::GetUniqueName() {
 
 glm::mat4x4 Figure::GetModelMatrix()
 {
-	return transposeImGui.Get();
+	return transpose.Get();
 }
 
 glm::mat4x4 Figure::GetModelMatrixInvers()
 {
-	return transposeImGui.GetInvers();
+	return transpose.GetInvers();
 }
 
 const char* Figure::GetType() const
@@ -47,20 +47,25 @@ void  Figure::Draw() {
 
 void  Figure::ActiveImGui() {
 	ImGui::Text(name);
-	ImGui::InputText("Name", name, sizeof(name));
-	transposeImGui.ActiveInterferes();
+	if(editAbleName)
+		ImGui::InputText("Name", name, sizeof(name));
+	transpose.ActiveInterferes();
 }
 
-void Figure::RotationAlong(const Figure& center, const Camera& camera, float angle)
+void Figure::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
 {
-
+	glm::vec3 cameraToFigureVec = transpose.GetPosition() - rotationCenter;
+	glm::vec3 newPos = MathOperations::RotationAlongAxis(cameraToFigureVec, angle, axis);
+	transpose.SetObjectPosition(newPos + rotationCenter);
 }
 
-void Figure::ScaleAlong(const Figure& center, const Camera& camera, glm::vec3 scaleVec)
+void Figure::ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec)
 {
+	auto scaleCenterPos = transpose.GetPosition() - scaleCenter;
+	transpose.SetObjectPosition(scaleCenter + scaleVec * scaleCenterPos);
 }
 
-void Figure::MoveAlong(const Figure& center, const Camera& camera, glm::vec3 direction)
+void Figure::MoveAlong(const Camera& camera, glm::vec3 direction)
 {
 }
 

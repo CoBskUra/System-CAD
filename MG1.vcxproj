@@ -179,6 +179,7 @@
     <ClInclude Include="AfirmatricTransformation.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Constants.h" />
+    <ClInclude Include="Cursor.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="Figure.h" />
     <ClInclude Include="Figure3D.h" />
@@ -193,6 +194,8 @@
     <ClInclude Include="Libraries\include\ImGui\imstb_textedit.h" />
     <ClInclude Include="Libraries\include\ImGui\imstb_truetype.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="MathOperations.h" />
+    <ClInclude Include="OpenGLHelper.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Rotation.h" />
@@ -207,6 +210,8 @@
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="cursor_geometry.glsl" />
+    <None Include="cursor_vert.glsl" />
     <None Include="point_vert.glsl" />
     <None Include="simple_frag.glsl" />
     <None Include="default.frag" />

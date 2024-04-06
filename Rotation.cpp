@@ -74,6 +74,11 @@ glm::mat4x4 Rotation::Get_Rz()
     return Rz;
 }
 
+glm::mat4x4 Rotation::Get_R()
+{
+    return Rx*Ry*Rz;
+}
+
 glm::mat4x4 Rotation::Get_RxInvers()
 {
     return glm::transpose(Rx);
@@ -87,6 +92,11 @@ glm::mat4x4 Rotation::Get_RyInvers()
 glm::mat4x4 Rotation::Get_RzInvers()
 {
     return glm::transpose(Rz);
+}
+
+glm::mat4x4 Rotation::Get_RInvers()
+{
+    return Get_RzInvers() * Get_RyInvers() * Get_RxInvers();
 }
 
 

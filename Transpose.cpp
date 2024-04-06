@@ -6,12 +6,12 @@ Transpose::Transpose()
     Transform = glm::mat4(1.0f);
 }
 
-glm::mat4 Transpose::Get()
+glm::mat4 Transpose::Get() const
 {
     return Transform;
 }
 
-glm::mat4 Transpose::GetInvers()
+glm::mat4 Transpose::GetInvers() const
 {
     glm::mat4x4 invers = Transform;
 
@@ -22,7 +22,7 @@ glm::mat4 Transpose::GetInvers()
     return invers;
 }
 
-glm::vec3 Transpose::GetPosition()
+glm::vec3 Transpose::GetPosition() const
 {
     return ObjectPosition;
 }

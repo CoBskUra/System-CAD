@@ -2,11 +2,13 @@
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<glm/glm.hpp>
+#include "Constants.h"
 class Scale
 {
 public:
 	Scale();
 
+	glm::vec3 GetScaleVec();
 	glm::mat4x4 Get();
 	glm::mat4x4 GetInvers();
 

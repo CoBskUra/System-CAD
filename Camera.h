@@ -13,20 +13,24 @@
 
 #include"Shader.h"
 #include "AfirmatricTransformation.h"
+#include "MathOperations.h"
 
 class Camera
 {
 public:
 	Camera(int width, int height, glm::vec3 position);
 	glm::mat4 GetCameraMatrix() const;
+	glm::mat4 GetCameraMatrixInvers() const;
+
 	bool Inputs(GLFWwindow* window);
 	void ActiveInterferes();
 	bool HasBeenUpdated();
 	void SaveMatrixToShader(const Shader& shader);
 
-	glm::vec3 GetPosition();
-	glm::vec3 GetOrientation();
-	glm::vec3 GetUp();
+	glm::vec3 GetPosition() const;
+	glm::vec3 GetOrientation() const;
+	glm::vec3 GetUp() const;
+	float GetNearPlane() const;
 
 private:
 	bool hasBeenUpdated = true;
@@ -65,13 +69,20 @@ private:
 	void UpdateViewMatrix();
 	void updateProjectionMatrix();
 
+	glm::mat4 RotationMatrix() const;
+	glm::mat4 TransformMatrix() const;
+	glm::mat4 TransformMatrixInvers() const;
+	glm::mat4 ProjectionMatrix() const;
+	glm::mat4 ProjectionMatrixInvers() const;
+
+
+
 	void SetScale(glm::vec3 vec);
 	void SetScale(float x, float y, float z);
 
 	bool handelKeyboardInput(GLFWwindow* window);
 	bool handelMouseInput(GLFWwindow* window);
 
-	glm::vec3 RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis);
 
 };
 #endif

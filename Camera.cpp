@@ -1,7 +1,6 @@
 #include"Camera.h"
 
 
-
 Camera::Camera(int width, int height, glm::vec3 position)
 {
 	Position = position;
@@ -20,44 +19,52 @@ void Camera::updateMatrixes()
 
 
 void Camera::UpdateViewMatrix() {
-	glm::vec3 target = Position + Orientation;
-	glm::vec3 cameraDirection = glm::normalize(Position - target);
-	glm::vec3 cameraRight = glm::normalize(glm::cross(Up, cameraDirection));
-
-	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
-
-	glm::mat4 transform_invers = glm::mat4(1.0f);
-	transform_invers[3][0] = -Position.x;
-	transform_invers[3][1] = -Position.y;
-	transform_invers[3][2] = -Position.z;
-
-	glm::mat4 rotation_invers = glm::mat4(1.0f);
-	rotation_invers[0][0] = cameraRight.x;
-	rotation_invers[1][0] = cameraRight.y;
-	rotation_invers[2][0] = cameraRight.z;
-
-	rotation_invers[0][1] = cameraUp.x;
-	rotation_invers[1][1] = cameraUp.y;
-	rotation_invers[2][1] = cameraUp.z;
-
-	rotation_invers[0][2] = cameraDirection.x;
-	rotation_invers[1][2] = cameraDirection.y;
-	rotation_invers[2][2] = cameraDirection.z;
+	glm::mat4 transform_invers = TransformMatrixInvers();
+	glm::mat4 rotation_invers = glm::transpose(RotationMatrix());
 
 	view = rotation_invers * transform_invers;
 }
 
 void Camera::updateProjectionMatrix() {
 
-	projection[0][0] = ctg_FOVRad_0dot5 * aspect_invers;
-	projection[1][1] = ctg_FOVRad_0dot5;
-	projection[2][2] = (farPlane + nearPlane) * farPlane_minus_nearPlane_Invers;
-
-	projection[2][3] = 1;
-
-	projection[3][2] = (-2 * farPlane * nearPlane) * farPlane_minus_nearPlane_Invers;
+	projection = ProjectionMatrix();
 }
 
+glm::mat4 Camera::GetCameraMatrixInvers() const {
+	glm::mat4 transform = TransformMatrix();
+	glm::mat4 rotation = RotationMatrix();
+	glm::mat4 projectionInvers = ProjectionMatrixInvers();
+
+
+	return Scale_invers * transform * rotation * projectionInvers;
+}
+
+glm::mat4 Camera::ProjectionMatrix() const {
+	glm::mat4 proj{ 0.0f };
+	proj[0][0] = ctg_FOVRad_0dot5 * aspect_invers;
+	proj[1][1] = ctg_FOVRad_0dot5;
+	proj[2][2] = (farPlane + nearPlane) * farPlane_minus_nearPlane_Invers;
+
+	proj[2][3] = 1;
+
+	proj[3][2] = (-2 * farPlane * nearPlane) * farPlane_minus_nearPlane_Invers;
+	return proj;
+}
+
+glm::mat4 Camera::ProjectionMatrixInvers() const {
+	glm::mat4 projectionInvers{ 0.0f };
+
+	projectionInvers[0][0] = aspect / ctg_FOVRad_0dot5;
+
+	projectionInvers[1][1] = 1 / ctg_FOVRad_0dot5;
+
+	projectionInvers[2][2] = 0;
+	projectionInvers[3][2] = 1;
+
+	projectionInvers[2][3] = (farPlane - nearPlane) / (-2 * farPlane * nearPlane);
+	projectionInvers[3][3] = (farPlane + nearPlane) / (2 * farPlane * nearPlane);
+	return projectionInvers;
+}
 
 // return true if any value has been changed
 bool Camera::handelKeyboardInput(GLFWwindow* window)
@@ -127,6 +134,49 @@ void Camera::SetScale(float x, float y, float z)
 	Scale_invers[2][2] = 1 / z;
 }
 
+glm::mat4 Camera::RotationMatrix() const
+{
+	//glm::vec3 target = Position + Orientation;
+	glm::vec3 cameraDirection = glm::normalize(-Orientation);
+	glm::vec3 cameraRight = glm::normalize(glm::cross(Up, cameraDirection));
+	glm::vec3 cameraUp = glm::normalize(glm::cross(cameraDirection, cameraRight));
+
+
+	glm::mat4 rotation = glm::mat4(1.0f);
+	rotation[0][0] = cameraRight.x;
+	rotation[0][1] = cameraRight.y;
+	rotation[0][2] = cameraRight.z;
+
+	rotation[1][0] = cameraUp.x;
+	rotation[1][1] = cameraUp.y;
+	rotation[1][2] = cameraUp.z;
+
+	rotation[2][0] = cameraDirection.x;
+	rotation[2][1] = cameraDirection.y;
+	rotation[2][2] = cameraDirection.z;
+
+	return rotation;
+}
+
+glm::mat4 Camera::TransformMatrixInvers() const
+{
+	glm::mat4 transform_invers = glm::mat4(1.0f);
+	transform_invers[3][0] = -Position.x;
+	transform_invers[3][1] = -Position.y;
+	transform_invers[3][2] = -Position.z;
+
+	return transform_invers;
+}
+
+glm::mat4 Camera::TransformMatrix() const
+{
+	glm::mat4 transform = glm::mat4(1.0f);
+	transform[3][0] = Position.x;
+	transform[3][1] = Position.y;
+	transform[3][2] = Position.z;
+
+	return transform;
+}
 
 // return true if any value has been changed
 bool Camera::handelMouseInput(GLFWwindow* window)
@@ -150,7 +200,8 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 		mouseDelta *= mouseSensitivity;
 
 		// Calculates upcoming vertical change in the Orientation
-		glm::vec3 newOrientation = RotationAlongAxis(Orientation, glm::radians((float)-mouseDelta.y), glm::normalize(glm::cross(Orientation, Up)));
+		glm::vec3 newOrientation = MathOperations::RotationAlongAxis(Orientation,
+			glm::radians((float)-mouseDelta.y), glm::normalize(glm::cross(Orientation, Up)));
 
 		// Decides whether or not the next vertical Orientation is legal or not
 		if (abs(glm::angle(newOrientation, Up) - glm::radians(90.0f)) <= glm::radians(85.0f))
@@ -159,7 +210,7 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 		}
 
 		// Rotates the Orientation left and right
-		Orientation = RotationAlongAxis(Orientation, glm::radians((float)-mouseDelta.x), Up);
+		Orientation = MathOperations::RotationAlongAxis(Orientation, glm::radians((float)-mouseDelta.x), Up);
 
 		glfwGetCursorPos(window, &lastMousePosition.x, &lastMousePosition.y);
 		return true;
@@ -169,14 +220,6 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 	}
 
 	return false;
-}
-
-glm::vec3 Camera::RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
-{
-	float s = sinf(rad);
-	float c = cosf(rad);
-
-	return (1 - c) * glm::dot(v, axis) * axis + c * v + s * glm::cross(axis, v);
 }
 
 
@@ -285,17 +328,17 @@ void Camera::ActiveInterferes()
 	ImGui::End();
 }
 
-glm::vec3 Camera::GetPosition()
+glm::vec3 Camera::GetPosition() const
 {
 	return Position;
 }
 
-glm::vec3 Camera::GetOrientation()
+glm::vec3 Camera::GetOrientation() const
 {
 	return Orientation;
 }
 
-glm::vec3 Camera::GetUp()
+glm::vec3 Camera::GetUp() const
 {
 	return Up;
 }
@@ -303,4 +346,8 @@ glm::vec3 Camera::GetUp()
 glm::mat4 Camera::GetCameraMatrix() const
 {
 	return cameraMatrix;
+}
+
+float Camera::GetNearPlane() const {
+	return nearPlane;
 }

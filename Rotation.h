@@ -16,10 +16,14 @@ public:
 	glm::mat4x4 Get_Rx();
 	glm::mat4x4 Get_Ry();
 	glm::mat4x4 Get_Rz();
+	glm::mat4x4 Get_R();
+
 
 	glm::mat4x4 Get_RxInvers();
 	glm::mat4x4 Get_RyInvers();
 	glm::mat4x4 Get_RzInvers();
+	glm::mat4x4 Get_RInvers();
+
 
 protected:
 	glm::mat4 Rx;

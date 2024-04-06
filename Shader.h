@@ -16,13 +16,17 @@ public:
 	Shader();
 
 	Shader(const char* vertexFile, const char* fragmentFile);
+	Shader(const char* vertexFile, const char* fragmentFile, const char* geometryFile);
+
 	void Activate();
 	void Delete();
 
 private:
 	void compileErrors(unsigned int shader, const char* type);
 	GLuint CreateFragmentShader(const char* fragmentShaderPath);
-	GLuint CreateVertexShader(const char* fragmentShaderPath);
+	GLuint CreateVertexShader(const char* vertexShaderPath);
+	GLuint CreateGeometryShader(const char* geometryShaderPath);
+
 
 };
 
