@@ -7,7 +7,10 @@ Figure3D::Figure3D(Shader* shader, const char* uniqueName, const char* type) : F
 void Figure3D::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
 {
     Figure::RotationAlong(axis, rotationCenter, angle);
-    globalRotation = MathOperations::RotationMatrixAlongAxis(angle, axis) * globalRotation;
+    Quaternion q(angle, axis);
+    quaternion.SaveRotation();
+    quaternion.SetMainQuaternion(q * quaternion);
+    //globalRotation = MathOperations::RotationMatrixAlongAxis(angle, axis) * globalRotation;
     //// pierwsza próba
     //Figure::RotationAlong(axis, rotationCenter, angle);
     //glm::vec4 axis_x(1, 0, 0, 1), axis_y(0, 1, 0, 1), axis_z(0, 0, 1, 1);
@@ -45,6 +48,13 @@ void Figure3D::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float ang
     alfa_z = glm::dot(centerToFigure, glm::vec3(axis_z));*/
 }
 
+void Figure3D::RotationAlong(Quaternion q, glm::vec3 rotationCenter)
+{
+    Figure::RotationAlong(q, rotationCenter);
+    quaternion.SaveRotation();
+    quaternion.SetMainQuaternion(q * quaternion );
+}
+
 void Figure3D::ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec)
 {
     Figure::ScaleAlong(scaleCenter, scaleVec);
@@ -59,15 +69,16 @@ void Figure3D::ActiveImGui()
 {
     Figure::ActiveImGui();
     rotation.ActiveInterferes();
+    quaternion.ActiveInterferes();
     scale.ActiveInterferes();
 }
 
 glm::mat4x4 Figure3D::GetModelMatrix()
 {
-    return  transpose.Get() * globalRotation * rotation.Get_R() * scale.Get();
+    return  transpose.Get() *  quaternion.GetEulerRotation() * rotation.Get_R() *  scale.Get(); // do zmiany
 }
 
 glm::mat4x4 Figure3D::GetModelMatrixInvers()
 {
-    return  scale.GetInvers() * rotation.Get_RInvers() * glm::transpose(globalRotation) * transpose.GetInvers();
+    return  scale.GetInvers() * rotation.Get_RInvers() * quaternion.Invers().GetEulerRotation() * transpose.GetInvers();
 }

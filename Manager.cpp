@@ -16,54 +16,8 @@ void Manager::MenuInterferes()
 	{
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
-
-		if (figuresVector.NumberOfActive() > 0) {
-			ImGui::Text("Control selected");
-			ImGui::Text("Rotation");
-			if (ImGui::DragFloat("Rotate x", &angel.x, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				//auto axis = glm::normalize(centerPoint.transpose.GetPosition() - currentCamera->GetPosition());
-				for (int i = 0; i < figuresVector.Size(); i++) {
-					if (figuresVector.active[i])
-						figuresVector.figures[i]->RotationAlong(glm::vec3(1, 0, 0), centerPoint.transpose.GetPosition(), angel.x - lastAngel.x);
-				}
-				lastAngel.x = angel.x;
-			}
-
-			if (ImGui::DragFloat("Rotate y", &angel.y, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				//auto axis = glm::normalize(centerPoint.transpose.GetPosition() - currentCamera->GetPosition());
-				for (int i = 0; i < figuresVector.Size(); i++) {
-					if (figuresVector.active[i])
-						figuresVector.figures[i]->RotationAlong(glm::vec3(0, 1, 0), centerPoint.transpose.GetPosition(), angel.y - lastAngel.y);
-				}
-				lastAngel.y = angel.y;
-			}
-
-			if (ImGui::DragFloat("Rotate z", &angel.z, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				//auto axis = glm::normalize(centerPoint.transpose.GetPosition() - currentCamera->GetPosition());
-				for (int i = 0; i < figuresVector.Size(); i++) {
-					if (figuresVector.active[i])
-						figuresVector.figures[i]->RotationAlong(glm::vec3(0, 0, 1), centerPoint.transpose.GetPosition(), angel.z - lastAngel.z);
-				}
-				lastAngel.z = angel.z;
-			}
-
-			ImGui::Text("Scale");
-
-			if (ImGui::DragFloat("scale x##centerPoint", &scaleVec.x, 0.1f, M_ESP, M_FLOAT_MAX,"%.3f", ImGuiSliderFlags_AlwaysClamp) ||
-				ImGui::DragFloat("scale y##centerPoint", &scaleVec.y, 0.1f, M_ESP, M_FLOAT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp) ||
-				ImGui::DragFloat("scale z##centerPoint", &scaleVec.z, 0.1f, M_ESP, M_FLOAT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				for (int i = 0; i < figuresVector.Size(); i++) {
-					if (figuresVector.active[i])
-						figuresVector.figures[i]->ScaleAlong(centerPoint.transpose.GetPosition(), scaleVec / LastScaleVec);
-				}
-				LastScaleVec = scaleVec;
-
-				if (LastScaleVec.x == 0) { LastScaleVec.x = 1; }
-				if (LastScaleVec.y == 0) { LastScaleVec.y = 1; }
-				if (LastScaleVec.z == 0) { LastScaleVec.z = 1; }
-
-			}
-		}
+		centerPoint.ActiveImGui();
+		
 		SelectableList();
 		DeleteSelected();
 		
@@ -82,50 +36,41 @@ void Manager::Draw()
 			currentCamera->SaveMatrixToShader(*currentShader);
 		}
 
-		if(currentCamera->HasBeenUpdated())
+		if (currentCamera->HasBeenUpdated())
 			currentCamera->SaveMatrixToShader(*currentShader);
 
 		if (figuresVector.active[i])
 		{
-			figuresVector.figures[i]->Mark();
-			if(figuresVector.NumberOfActive() < 2)
-				figuresVector.figures[i]->ActiveImGui(); // prze¿uæ do interfersu ale najpierw lepsze baza na figury
+			ImGui::PushID(i);
+			figuresVector.figures[i]->ActiveImGui(); // prze¿uæ do interfersu ale najpierw lepsze baza na figury
 														// taka bym mia³ dostêp do aktywnych w czasie O(1) 
+			ImGui::PopID();
+
+			ImGui::Separator();
+			ImGui::NewLine();
+			ImGui::Separator();
 		}
+
 		figuresVector.figures[i]->Draw();
-
-		if (figuresVector.active[i])
-		{
-			figuresVector.figures[i]->UnMark();
-		}
 	}
 
-	if (figuresVector.NumberOfActive() > 0) {
-		if (currentShader != &PointShader) { PointShader.Activate(); }
-
-		currentCamera->SaveMatrixToShader(PointShader);
-		centerPoint.Draw();
-		UpdateCenterPoint();
-
-		if (currentShader != &PointShader) { currentShader->Activate(); }
-	}
-
-	CursorShader.Activate();
-	currentCamera->SaveMatrixToShader(PointShader);
-	cursor.Draw();
-	if(currentShader != nullptr)
-		currentShader->Activate();
-
+	DrawSpecialFigure(centerPoint);
+	DrawSpecialFigure(cursor);
 }
 
 Manager::~Manager()
 {
 }
 
+void Manager::DrawSpecialFigure(Figure& figure) {
+	if( currentShader != figure.shader) figure.shader->Activate();
+	currentCamera->SaveMatrixToShader(*figure.shader);
+	figure.Draw();
+	if (currentShader != nullptr) currentShader->Activate();
+}
+
 int Manager::TheClosetFigureToMouse(const char* figureType)
 {
-
-	
 	auto castMousePos = OpenGLHelper::MousePositionOnScreen(window);
 	float minLength = M_FLOAT_MAX;
 	int id = -1;
@@ -156,7 +101,7 @@ void Manager::CreateFiguresInterfers()
 		torus->transpose.SetObjectPosition(cursor.transpose.GetPosition());
 		figuresVector.AddFigure(torus);
 	}
-
+	ImGui::SameLine();
 	if (ImGui::Button("Create Point", ImVec2(100, 20))) {
 
 		Point* point = new Point(&PointShader, "Point");
@@ -167,13 +112,24 @@ void Manager::CreateFiguresInterfers()
 
 void Manager::SelectableList()
 {
+	ImVec2 size(150, 20);
 	for (int i = 0; i < figuresVector.Size(); i++)
 	{
-		char buf[100];
-		sprintf_s(buf, "%d. %s", i, figuresVector.names[i]);
-		if (ImGui::Selectable(buf, figuresVector.active[i])) {
+		ImGui::PushID(i);
+		if (ImGui::RadioButton("", figuresVector.active[i])) {
 			figuresVector.ChangeActiveState(i);
 		}
+
+		ImGui::SameLine();
+
+		char buf[100];
+		sprintf_s(buf, "%d. %s", i, figuresVector.names[i]);
+
+		if (ImGui::Selectable(buf, centerPoint.Contain(figuresVector.figures[i]))) {
+			Select(i);
+		}
+
+		ImGui::PopID();
 	}
 }
 
@@ -183,22 +139,23 @@ void Manager::DeleteSelected()
 	{
 		if (ImGui::Button("Delete", ImVec2(50, 20))) {
 			for (int i = figuresVector.Size() - 1; i >= 0; i--)
-				if (figuresVector.active[i])
+				if (figuresVector.active[i]) {
+					centerPoint.Erase(figuresVector.figures[i]);
 					figuresVector.DeleteFigure(i);
+				}
 		}
 	}
 }
 
-void Manager::UpdateCenterPoint()
+
+void Manager::Select(int i)
 {
-	glm::vec3 position(0);
-	for (int i = 0; i < figuresVector.Size(); i++)
-	{
-		if (figuresVector.active[i])
-			position += figuresVector.figures[i]->transpose.GetPosition();
+	if (!centerPoint.Contain(figuresVector.figures[i])) {
+		centerPoint.Add(figuresVector.figures[i]);
 	}
-	int activeCount = figuresVector.NumberOfActive();
-	centerPoint.transpose.SetObjectPosition(position.x/ activeCount, position.y/ activeCount, position.z/ activeCount);
+	else {
+		centerPoint.Erase(figuresVector.figures[i]);
+	}
 }
 
 void Manager::ProcesInput()
@@ -212,7 +169,7 @@ void Manager::ProcesInput()
 
 		int id = TheClosetFigureToMouse("Point");
 		if (id >= 0) {
-			figuresVector.ChangeActiveState(id);
+			Select(id);
 		}
 		
 		mouseLeftFirstClick = false;

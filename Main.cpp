@@ -21,7 +21,10 @@
 const unsigned int width = 1600;
 const unsigned int height = 1024;
 
+Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
+
 GLFWwindow* Init();
+void ResizeCallBack(GLFWwindow* window, int w, int h);
 
 int main()
 {
@@ -32,7 +35,6 @@ int main()
 
 	auto shader = Shader("simple_vert.glsl", "simple_frag.glsl");
 	bool showTorus = true;
-	Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
 	//Point p(&shader);
 
 	Manager manader(&camera, window);
@@ -99,6 +101,7 @@ GLFWwindow* Init() {
 		return NULL;
 	}
 	glfwMakeContextCurrent(window);
+	//glfwSetWindowSizeCallback(window, ResizeCallBack);
 
 	gladLoadGL();
 	glViewport(0, 0, width, height);
@@ -123,3 +126,11 @@ GLFWwindow* Init() {
 
 	return window;
 }
+
+//void ResizeCallBack(GLFWwindow* window, int w, int h)
+//{
+//	width = w;
+//	height = h;
+//	glViewport(0, 0, width, height);
+//	camera.SetAspect(width / (float)height);
+//}

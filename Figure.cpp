@@ -4,7 +4,7 @@
 
 int Figure::count = 0;
 
-Figure::Figure(Shader* shader, const char* uniqueName, const char* type) : Figure(shader) {
+Figure::Figure(Shader* shader, const char* uniqueName, const char* type) :  Figure(shader) {
 	UniqueName = uniqueName + std::to_string(id);
 	Type = type;
 }
@@ -13,7 +13,7 @@ Figure::Figure(Shader* shader) : id(count) {
 	this->shader = shader;
 	UnMark();
 
-	count = 0;
+	//count = 0;
 	count++;
 	UniqueName += std::to_string(id);
 }
@@ -52,21 +52,33 @@ void  Figure::ActiveImGui() {
 	transpose.ActiveInterferes();
 }
 
+void Figure::FigureSpecificImGui()
+{
+}
+
 void Figure::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
 {
-	glm::vec3 cameraToFigureVec = transpose.GetPosition() - rotationCenter;
-	glm::vec3 newPos = MathOperations::RotationAlongAxis(cameraToFigureVec, angle, axis);
-	transpose.SetObjectPosition(newPos + rotationCenter);
+	glm::vec3 rotationCenterToFigureVec = transpose.GetPosition() - rotationCenter;
+	glm::vec3 newPos = MathOperations::RotationAlongAxis(rotationCenterToFigureVec, angle, axis);
+	if(newPos != glm::vec3{0.0f})
+		transpose.SetObjectPosition(newPos + rotationCenter);
+}
+
+void Figure::RotationAlong(Quaternion q, glm::vec3 rotationCenter)
+{
+	transpose.SetObjectPosition(rotationCenter + q.RotatePoint(transpose.GetPosition() - rotationCenter));
 }
 
 void Figure::ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec)
 {
 	auto scaleCenterPos = transpose.GetPosition() - scaleCenter;
-	transpose.SetObjectPosition(scaleCenter + scaleVec * scaleCenterPos);
+	if (scaleCenterPos != glm::vec3{ 0.0f })
+		transpose.SetObjectPosition(scaleCenter + scaleVec * scaleCenterPos);
 }
 
 void Figure::MoveAlong(const Camera& camera, glm::vec3 direction)
 {
+	transpose.MoveObjectPosition(direction);
 }
 
 bool  Figure::Inputs(GLFWwindow* window, const Camera& camera)

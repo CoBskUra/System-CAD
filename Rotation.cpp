@@ -1,10 +1,45 @@
-#include "Rotation.h"
+﻿#include "Rotation.h"
 
 Rotation::Rotation()
 {
     Rx = glm::mat4(1.0f);
     Ry = glm::mat4(1.0f);
     Rz = glm::mat4(1.0f);
+}
+
+Rotation::Rotation(Quaternion q): Rotation(q.GetEulerRotation()){}
+
+Rotation::Rotation(glm::mat4 rotationMatrix): Rotation(glm::mat3(rotationMatrix)){}
+
+Rotation::Rotation(glm::mat3 rotationMatrix)
+{
+    if (rotationMatrix[2][0] < +1)
+    {
+        if (rotationMatrix[2][0] > -1)
+        {
+            alfa_y = asin(rotationMatrix[2][0]);
+            alfa_x = atan2(-rotationMatrix[2][1], rotationMatrix[2][2]);
+            alfa_z = atan2(-rotationMatrix[1][0], rotationMatrix[0][0]);
+        }
+        else//r02=−1
+        {
+            //Notauniquesolution:thetaZ−thetaX=atan2(r10,r11)
+            alfa_y = -M_PI * 0.5f;
+            alfa_x = -atan2(rotationMatrix[0][1], rotationMatrix[1][1]);
+            alfa_z = -0;
+        }
+    }
+    else//r02=+1
+    {
+        //Notauniquesolution:thetaZ+thetaX=atan2(r10,r11)
+        alfa_y = +M_PI * 0.5f;
+        alfa_x = +atan2(rotationMatrix[0][1], rotationMatrix[1][1]);
+        alfa_z = +0;
+    }
+    SetRotation_X(alfa_x);
+    SetRotation_Y(alfa_y);
+    SetRotation_Z(alfa_z);
+
 }
 
 void Rotation::SetRotation_X(float angle)

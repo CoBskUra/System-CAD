@@ -52,6 +52,15 @@
     <Filter Include="Header Files\Helper">
       <UniqueIdentifier>{15f5f248-189b-4629-a1fd-691d9dff42fe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\default">
+      <UniqueIdentifier>{bdbc9f83-4981-4803-af0f-a2ff9660d806}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\point">
+      <UniqueIdentifier>{107a1e21-d72b-416f-9730-25c777d14ef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\simple">
+      <UniqueIdentifier>{e0979ee6-bfcc-4e93-b258-0848e608263d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -87,9 +96,6 @@
     <ClCompile Include="shaderClass.cpp">
       <Filter>Source Files\ShaderManadement</Filter>
     </ClCompile>
-    <ClCompile Include="AfirmatricTransformation.cpp">
-      <Filter>Source Files\Transformations</Filter>
-    </ClCompile>
     <ClCompile Include="Figure.cpp">
       <Filter>Source Files\Figures</Filter>
     </ClCompile>
@@ -107,6 +113,12 @@
     </ClCompile>
     <ClCompile Include="Figure3D.cpp">
       <Filter>Source Files\Figures</Filter>
+    </ClCompile>
+    <ClCompile Include="Quaternion.cpp">
+      <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="QuaternionRotationImGui.cpp">
+      <Filter>Source Files\Transformations</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,12 +170,6 @@
     <ClInclude Include="Constants.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AfirmatricTransformation.h">
-      <Filter>Header Files\Transformations</Filter>
-    </ClInclude>
-    <ClInclude Include="AfirmationTransformationImGui.h">
-      <Filter>Header Files\Transformations</Filter>
-    </ClInclude>
     <ClInclude Include="Torus.h">
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
@@ -209,31 +215,40 @@
     <ClInclude Include="OpenGLHelper.h">
       <Filter>Header Files\Helper</Filter>
     </ClInclude>
+    <ClInclude Include="CanterPoint.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
+    <ClInclude Include="QuaternionRotationImGui.h">
+      <Filter>Header Files\Transformations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="default.vert">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="default.frag">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="simple_vert.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="simple_frag.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="point_frag.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
-    <None Include="point_vert.glsl">
-      <Filter>Resource Files\Shaders</Filter>
-    </None>
     <None Include="cursor_vert.glsl">
       <Filter>Resource Files\Shaders\cursorShader</Filter>
     </None>
     <None Include="cursor_geometry.glsl">
       <Filter>Resource Files\Shaders\cursorShader</Filter>
+    </None>
+    <None Include="default.vert">
+      <Filter>Resource Files\Shaders\default</Filter>
+    </None>
+    <None Include="default.frag">
+      <Filter>Resource Files\Shaders\default</Filter>
+    </None>
+    <None Include="point_vert.glsl">
+      <Filter>Resource Files\Shaders\point</Filter>
+    </None>
+    <None Include="point_frag.glsl">
+      <Filter>Resource Files\Shaders\point</Filter>
+    </None>
+    <None Include="simple_vert.glsl">
+      <Filter>Resource Files\Shaders\simple</Filter>
+    </None>
+    <None Include="simple_frag.glsl">
+      <Filter>Resource Files\Shaders\simple</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

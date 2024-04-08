@@ -3,13 +3,13 @@
 
 class Point : public Figure {
 public:
-	Point(Shader* shader, const char* name) : Figure(shader, "##Point", "Point")
+	Point(Shader* shader, const char* name) : Point(shader, "##Point", "Point")
 	{
 		CreatePoint();
 		SetName(name);
 	}
 
-	Point(Shader* shader) : Figure(shader, "##Point", "Point")
+	Point(Shader* shader) : Point(shader, "##Point", "Point")
 	{
 		CreatePoint();
 		SetName("Point");
@@ -29,7 +29,10 @@ public:
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera) {
 		return false;
 	}
+protected:
+	Point(Shader* shader, const char* uniqueName, const char* type) : Figure(shader, uniqueName, type){
 
+	}
 
 private:
 	void CreatePoint() {

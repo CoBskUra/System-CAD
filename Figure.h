@@ -7,10 +7,10 @@
 #include "EBO.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "Constants.h"
-#include "AfirmationTransformationImGui.h"
 #include "Figure.h"
 #include "TransposeImGui.h"
 #include "Camera.h"
+#include "Quaternion.h"
 
 class Figure
 {
@@ -32,8 +32,10 @@ public:
 	void virtual Draw();
 
 	void virtual ActiveImGui();
+	void virtual FigureSpecificImGui();
 
 	void virtual RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle);
+	void virtual RotationAlong(Quaternion q, glm::vec3 rotationCenter);
 	void virtual ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec);
 	void virtual MoveAlong(const Camera& camera, glm::vec3 direction);
 

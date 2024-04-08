@@ -7,6 +7,7 @@
 #include "Libraries/include/ImGui/imgui.h"
 #include "Shader.h"
 #include "OpenGLHelper.h"
+#include "CanterPoint.h"
 
 class Manager {
 	class FiguresVector {
@@ -36,13 +37,14 @@ class Manager {
 			active.erase(std::next(active.begin(), id));
 		}
 
-		void ChangeActiveState(int i) {
+		bool ChangeActiveState(int i) {
 			active[i] = !active[i];
 
 			if (active[i])
 				activeCount++;
 			else
 				activeCount--;
+			return active[i];
 		}
 
 		int Size() {
@@ -68,12 +70,7 @@ class Manager {
 	Shader PointShader;
 	Shader CursorShader;
 
-	Point centerPoint;
-	glm::vec3 angel{ 0.0f };
-	glm::vec3 lastAngel{ 0.0f };
-
-	glm::vec3 scaleVec{ 1.0f };
-	glm::vec3 LastScaleVec{ 1.0f };
+	CenterPoint centerPoint;
 
 	Cursor cursor;
 	GLFWwindow* window;
@@ -81,11 +78,13 @@ class Manager {
 
 	float minLengthFromMouse = 0.0004f;
 	int TheClosetFigureToMouse(const char* figureType);
-	void UpdateCenterPoint(); 
 	
 	void CreateFiguresInterfers();
 	void SelectableList();
 	void DeleteSelected();
+
+	void Select(int i);
+	void DrawSpecialFigure(Figure& figure);
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);

@@ -1,10 +1,16 @@
-#pragma once
+#ifndef ROTATION_CLASS_H
+#define ROTATION_CLASS_H
 #include <glm/ext/matrix_float4x4.hpp>
 #include "Constants.h"
+#include "Quaternion.h"
 class Rotation
 {
 public:
 	Rotation();
+	Rotation(Quaternion q);
+	Rotation(glm::mat4 rotationMatrix);
+	Rotation(glm::mat3 rotationMatrix);
+
 	void SetRotation_X(float angle);
 	void SetRotation_Y(float angle);
 	void SetRotation_Z(float angle);
@@ -39,3 +45,4 @@ private:
 
 };
 
+#endif

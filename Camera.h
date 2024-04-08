@@ -12,8 +12,8 @@
 #include <ImGui/imgui.h>
 
 #include"Shader.h"
-#include "AfirmatricTransformation.h"
 #include "MathOperations.h"
+#include "Constants.h"
 
 class Camera
 {
@@ -31,6 +31,7 @@ public:
 	glm::vec3 GetOrientation() const;
 	glm::vec3 GetUp() const;
 	float GetNearPlane() const;
+	void SetAspect(float newAspect);
 
 private:
 	bool hasBeenUpdated = true;

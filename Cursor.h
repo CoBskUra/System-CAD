@@ -41,7 +41,9 @@ public:
 			auto castCursorToScreen = camera.GetCameraMatrix() * glm::vec4(transpose.GetPosition(), 1);
 			castCursorToScreen /= castCursorToScreen.w;
 
-			if (castCursorToScreen.z < 0.1f || castCursorToScreen.z > 1)
+			if (castCursorToScreen.z < 0.2f )
+				castCursorToScreen.z = 0.2f;
+			if(castCursorToScreen.z > 1)
 				castCursorToScreen.z = 0.8f;
 
 			glm::vec4 mousePos{ 

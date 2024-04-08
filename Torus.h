@@ -7,7 +7,6 @@
 #include "EBO.h"
 #include <glm/gtc/type_ptr.hpp>
 #include "Constants.h"
-#include "AfirmationTransformationImGui.h"
 #include "Figure3D.h"
 
 class Torus: public Figure3D
@@ -40,16 +39,20 @@ public:
 		ImGui::BeginGroup();
 		{
 			Figure3D::ActiveImGui();
-			ImGui::BeginGroup();
-			{
-				ImGui::Text( "Torus parameters" );
-				if (ImGui::InputInt(("segment 1" + GetUniqueName()).c_str(), &segment1) ||
-					ImGui::InputInt(("segment 2" + GetUniqueName()).c_str(), &segment2) ||
-					ImGui::DragFloat(("R" + GetUniqueName()).c_str(), &R, 0.1f, M_ESP) ||
-					ImGui::DragFloat(("r" + GetUniqueName()).c_str(), &r, 0.1f, M_ESP))
-					CreateTorus();
-			}
-			ImGui::EndGroup();
+			FigureSpecificImGui();
+		}
+		ImGui::EndGroup();
+	}
+
+	void virtual FigureSpecificImGui() {
+		ImGui::BeginGroup();
+		{
+			ImGui::Text("Torus parameters");
+			if (ImGui::InputInt(("segment 1" + GetUniqueName()).c_str(), &segment1) ||
+				ImGui::InputInt(("segment 2" + GetUniqueName()).c_str(), &segment2) ||
+				ImGui::DragFloat(("R" + GetUniqueName()).c_str(), &R, 0.1f, M_ESP) ||
+				ImGui::DragFloat(("r" + GetUniqueName()).c_str(), &r, 0.1f, M_ESP))
+				CreateTorus();
 		}
 		ImGui::EndGroup();
 	}

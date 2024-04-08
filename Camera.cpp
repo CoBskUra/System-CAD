@@ -4,6 +4,7 @@
 Camera::Camera(int width, int height, glm::vec3 position)
 {
 	Position = position;
+	SetAspect(width / (float)height);
 	updateMatrixes();
 }
 
@@ -350,4 +351,11 @@ glm::mat4 Camera::GetCameraMatrix() const
 
 float Camera::GetNearPlane() const {
 	return nearPlane;
+}
+
+void Camera::SetAspect(float newAspect)
+{
+	hasBeenUpdated = true;
+	aspect = newAspect;
+	aspect_invers = 1/newAspect;
 }
