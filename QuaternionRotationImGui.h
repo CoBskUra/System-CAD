@@ -30,6 +30,8 @@ public:
 			ImGui::EndGroup();
 			if (ImGui::DragFloat("Alfa##QuaternionRotationImGui", &alfa, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp))
 			{
+				if (glm::dot(axis, axis) < M_ESP)
+					return false;
 				axis = glm::normalize(axis);
 				setAbleQuaternion.SetRotationAlong(alfa, axis);
 				valueHasBeenUpdated = true;
@@ -84,6 +86,11 @@ public:
 		if(setAbleQuaternion != Quaternion(0, 0, 0, 0))
 			SetMainQuaternion(setAbleQuaternion * (*baseQuaternion));
 		setAbleQuaternion = glm::vec4(1, 0, 0, 0);
+	}
+
+	void Reset() {
+		setAbleQuaternion = Quaternion();
+		SetMainQuaternion(Quaternion());
 	}
 
 	QuaternionRotationImGui(Quaternion q): Quaternion(q) {

@@ -42,38 +42,25 @@ public:
 	void virtual ActiveImGui() {
 		if (selectedFigures.size() < 1)
 			return;
-
+		ImGui::PushID("centerPoint");
 		ImGui::BeginGroup(); {
 			ImGui::Text("Control selected");
-			ImGui::Checkbox("Local change", &localReference);
+			// translation
+			transpose.ActiveInterferes();
+			if (transpose_last.GetPosition() != transpose.GetPosition()) {
+				std::map<std::string, Figure* >::iterator iter;
+				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+				{
+					(*iter).second->transpose.
+						MoveObjectPosition(transpose.GetPosition() - transpose_last.GetPosition());
+				}
+				transpose_last = transpose;
+			}
+
+
+			if (ImGui::Checkbox("Local change", &localReference))
+				ResetValues();
 			RotationInterfers();
-			/*ImGui::Text("Rotation");
-			if (ImGui::DragFloat("Rotate x", &angel.x, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				std::map<std::string, Figure* >::iterator iter;
-				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
-				{
-					(*iter).second->RotationAlong(glm::vec3(1, 0, 0), ReferencePoint(*(*iter).second), angel.x - lastAngel.x);
-				}
-				lastAngel.x = angel.x;
-			}
-
-			if (ImGui::DragFloat("Rotate y", &angel.y, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				std::map<std::string, Figure* >::iterator iter;
-				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
-				{
-					(*iter).second->RotationAlong(glm::vec3(0, 1, 0), ReferencePoint(*(*iter).second), angel.y - lastAngel.y);
-				}
-				lastAngel.y = angel.y;
-			}
-
-			if (ImGui::DragFloat("Rotate z", &angel.z, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				std::map<std::string, Figure* >::iterator iter;
-				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
-				{
-					(*iter).second->RotationAlong(glm::vec3(0, 0, 1), ReferencePoint(*(*iter).second), angel.z - lastAngel.z);
-				}
-				lastAngel.z = angel.z;
-			}*/
 
 			ImGui::Text("Scale");
 
@@ -93,6 +80,7 @@ public:
 			}
 		}
 		ImGui::EndGroup();
+		ImGui::PopID();
 	}
 
 private:
@@ -104,8 +92,7 @@ private:
 	QuaternionRotationImGui globalQuaternion_last;
 	bool localReference = false;
 
-	glm::vec3 angel{ 0.0f };
-	glm::vec3 lastAngel{ 0.0f };
+	Transpose transpose_last;
 
 	glm::vec3 scaleVec{ 1.0f };
 	glm::vec3 LastScaleVec{ 1.0f };
@@ -127,6 +114,8 @@ private:
 		}
 		float number = selectedFigures.size();
 		transpose.SetObjectPosition(position / number);
+
+		ResetValues();
 	}
 
 	void RotationInterfers() {
@@ -152,6 +141,17 @@ private:
 			if (globalQuaternion_last != globalQuaternion)
 				globalQuaternion_last = globalQuaternion;
 		}
+	}
+
+	void ResetValues() {
+		localQuaternion.Reset();
+		localQuaternion_last.Reset();
+
+		globalQuaternion.Reset();
+		globalQuaternion_last.Reset();
+
+		LastScaleVec = scaleVec = glm::vec3(1, 1, 1);
+		transpose_last = transpose;
 	}
 };
 
