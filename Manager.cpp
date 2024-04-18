@@ -5,7 +5,18 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 	CursorShader("point_vert.glsl", "point_frag.glsl"),
 	centerPoint(&PointShader), cursor(&CursorShader)
 {
-	TorusShader = Shader("simple_vert.glsl", "simple_frag.glsl");
+	TorusShader = Shader({
+		{"simple_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"simple_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		/*{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}*/
+		});//("simple_vert.glsl", "simple_frag.glsl");
+	BezierShader = Shader({
+		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		/*{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}*/
+		});
 	currentCamera = camera;
 	centerPoint.color = glm::vec4(1, 0, 0, 1);
 }
@@ -97,16 +108,22 @@ void Manager::CreateFiguresInterfers()
 {
 	if (ImGui::Button("Create Torus", ImVec2(100, 20))) {
 
-		Torus* torus = new Torus(&TorusShader, "Torus");
+		Torus* torus = new Torus(&TorusShader);
 		torus->transpose.SetObjectPosition(cursor.transpose.GetPosition());
 		figuresVector.AddFigure(torus);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Create Point", ImVec2(100, 20))) {
 
-		Point* point = new Point(&PointShader, "Point");
+		Point* point = new Point(&PointShader);
 		point->transpose.SetObjectPosition(cursor.transpose.GetPosition());
 		figuresVector.AddFigure(point);
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Create Bezier Curve", ImVec2(100, 20))) {
+		BezierCurve* bezierCurve = new BezierCurve(&BezierShader);
+		bezierCurve->transpose.SetObjectPosition(cursor.transpose.GetPosition());
+		figuresVector.AddFigure(bezierCurve);
 	}
 }
 

@@ -8,6 +8,8 @@
 #include "Shader.h"
 #include "OpenGLHelper.h"
 #include "CanterPoint.h"
+#include "BazierCurve.h"
+//#include <GLFW/glcorearb.h>
 
 class Manager {
 	class FiguresVector {
@@ -69,6 +71,7 @@ class Manager {
 	Shader TorusShader; // fajnie jakbym nie musia³ definiowaæ za ka¿dym razem tych shaderów, mo¿e statyczny shader w clasie
 	Shader PointShader;
 	Shader CursorShader;
+	Shader BezierShader;
 
 	CenterPoint centerPoint;
 

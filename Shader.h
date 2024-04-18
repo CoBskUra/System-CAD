@@ -7,7 +7,18 @@
 #include<sstream>
 #include<iostream>
 #include<cerrno>
+#include <vector>
 
+
+struct shaderInput {
+	shaderInput(const char* shaderPath, const char* shaderName,	GLenum shaderType)
+		:shaderName{ shaderName }, shaderPath{ shaderPath }, shaderType{ shaderType } 
+	{	}
+
+	const char* shaderName;
+	const char* shaderPath;
+	GLenum shaderType;
+};
 
 class Shader
 {
@@ -16,18 +27,14 @@ public:
 	Shader();
 
 	Shader(const char* vertexFile, const char* fragmentFile);
-	Shader(const char* vertexFile, const char* fragmentFile, const char* geometryFile);
+	Shader(std::vector<shaderInput> shadersTypes);
 
 	void Activate();
 	void Delete();
 
 private:
 	void compileErrors(unsigned int shader, const char* type);
-	GLuint CreateFragmentShader(const char* fragmentShaderPath);
-	GLuint CreateVertexShader(const char* vertexShaderPath);
-	GLuint CreateGeometryShader(const char* geometryShaderPath);
-
-
+	GLuint CreateShader(const char* ShaderPath, const char* shaderName, GLenum ShaderType);
 };
 
 std::string get_file_contents(const char* filename);

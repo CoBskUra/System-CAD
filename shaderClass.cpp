@@ -1,16 +1,12 @@
 #include"Shader.h"
-
-
 Shader::Shader()
 {
 }
 
 Shader::Shader(const char* vertexFile, const char* fragmentFile)
 {
-
-	GLuint vertexShader = CreateVertexShader(vertexFile);
-
-	GLuint fragmentShader = CreateFragmentShader(fragmentFile);
+	GLuint vertexShader = CreateShader(vertexFile, "VERTEX", GL_VERTEX_SHADER);
+	GLuint fragmentShader = CreateShader(fragmentFile, "FRAGMENT", GL_FRAGMENT_SHADER);
 
 	ID = glCreateProgram();
 	{
@@ -25,63 +21,40 @@ Shader::Shader(const char* vertexFile, const char* fragmentFile)
 
 }
 
-Shader::Shader(const char* vertexFile, const char* fragmentFile, const char* geometryFile)
+// vector version of Shader(const char* vertexFile, const char* fragmentFile)
+Shader::Shader(std::vector<shaderInput> shadersTypes)
 {
-
-	GLuint vertexShader = CreateVertexShader(vertexFile);
-
-	GLuint fragmentShader = CreateFragmentShader(fragmentFile);
-	GLuint geometryShader = CreateGeometryShader(geometryFile);
+	std::vector<GLuint> shaders;
 
 	ID = glCreateProgram();
+	for (int i = 0; i < shadersTypes.size(); i++)
 	{
-		glAttachShader(ID, vertexShader);
-		glAttachShader(ID, fragmentShader);
-		glAttachShader(ID, geometryShader);
-		glLinkProgram(ID);
-		compileErrors(ID, "PROGRAM");
+		auto currentShaderInfo = shadersTypes.at(i);
+
+		auto shader = CreateShader(currentShaderInfo.shaderPath, currentShaderInfo.shaderName, currentShaderInfo.shaderType);
+		
+		shaders.push_back(shader);
+		glAttachShader(ID, shader);
 	}
+	glLinkProgram(ID);
+	compileErrors(ID, "PROGRAM");
 
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragmentShader);
-
+	for (int i = 0; i < shaders.size(); i++)
+	{
+		glDeleteShader(shaders.at(i));
+	}
 }
 
-GLuint Shader::CreateFragmentShader(const char* fragmentShaderPath)
+
+GLuint Shader::CreateShader(const char* ShaderPath, const char* shaderName, GLenum ShaderType)
 {
-	std::string fragmentCode = get_file_contents(fragmentShaderPath);
-	const char* fragmentSource = fragmentCode.c_str();
-
-	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-	glCompileShader(fragmentShader);
-	compileErrors(fragmentShader, "FRAGMENT");
-
-	return fragmentShader;
-}
-
-GLuint Shader::CreateVertexShader(const char* vertexShaderPath)
-{
-	std::string vertexCode = get_file_contents(vertexShaderPath);
-	const char* vertexSource = vertexCode.c_str();
-
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexSource, NULL);
-	glCompileShader(vertexShader);
-	compileErrors(vertexShader, "VERTEX");
-
-	return vertexShader;
-}
-
-GLuint Shader::CreateGeometryShader(const char* geometryShaderPath)
-{
-	std::string code = get_file_contents(geometryShaderPath);
+	std::string code = get_file_contents(ShaderPath);
 	const char* source = code.c_str();
 
-	GLuint geometryShader = glCreateShader(GL_GEOMETRY_SHADER);
+	GLuint geometryShader = glCreateShader(ShaderType);
 	glShaderSource(geometryShader, 1, &source, NULL);
 	glCompileShader(geometryShader);
-	compileErrors(geometryShader, "GEOMETRY");
+	compileErrors(geometryShader, shaderName);
 
 	return geometryShader;
 }

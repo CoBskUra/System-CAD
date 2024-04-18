@@ -2,8 +2,9 @@
 #include "Point.h"
 #include <map>
 #include <string>
+#include "FigureContainer.h"
 
-class CenterPoint: public Point {
+class CenterPoint: public Point, public FigureContainer {
 public:
 	CenterPoint(Shader* shader, const char* name) : Point(shader, "##CenterPoint", "CenterPoint"){
 		color = glm::vec4(1, 0, 0, 1);
@@ -13,34 +14,13 @@ public:
 		color = glm::vec4(1, 0, 0, 1);
 	}
 
-	bool Add(Figure* figure) {
-		auto pair = selectedFigures.insert({ figure->GetUniqueName() , figure });
-		figure->Mark();
-		if (pair.second)
-			UpdatePosition();
-		return pair.second;
-	}
-
-	bool Erase(Figure* figure) {
-		bool erased = selectedFigures.erase(figure->GetUniqueName());
-		figure->UnMark();
-		if (erased)
-			UpdatePosition();
-		return erased;
-	}
-
-	bool Contain(Figure* figure) {
-		return selectedFigures.find(figure->GetUniqueName()) != selectedFigures.end();
-	}
-
 	void virtual Draw() {
-		if (selectedFigures.size() > 0)
+		if (ContainerSize() > 0)
 			Point::Draw();
 	}
 
-
 	void virtual ActiveImGui() {
-		if (selectedFigures.size() < 1)
+		if (ContainerSize() < 1)
 			return;
 		ImGui::PushID("centerPoint");
 		ImGui::BeginGroup(); {
@@ -84,7 +64,6 @@ public:
 	}
 
 private:
-	std::map<std::string , Figure* > selectedFigures;
 	QuaternionRotationImGui localQuaternion;
 	QuaternionRotationImGui localQuaternion_last;
 
@@ -104,7 +83,7 @@ private:
 			return transpose.GetPosition();
 	}
 
-	void UpdatePosition()
+	void Update() override
 	{
 		glm::vec3 position(0);
 		std::map<std::string, Figure* >::iterator iter;
@@ -154,4 +133,3 @@ private:
 		transpose_last = transpose;
 	}
 };
-
