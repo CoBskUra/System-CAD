@@ -15,13 +15,14 @@ public:
 		SetName("Point");
 	}
 
-	void virtual Draw() {
+	void virtual Draw(const Camera& camera) {
+		shader->Activate();
 		vao.Bind();
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
 		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
-
+		camera.SaveMatrixToShader(shader->ID);
 		glDrawArrays(GL_POINTS, 0, 1);
 		vao.Unbind();
 	}

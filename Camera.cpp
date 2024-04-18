@@ -229,10 +229,10 @@ bool Camera::HasBeenUpdated()
 	return hasBeenUpdated;
 }
 
-void Camera::SaveMatrixToShader(const Shader& shader)
+void Camera::SaveMatrixToShader(const GLuint& ShaderID) const
 {
-	hasBeenUpdated = false;
-	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "CAM_MATRIX"),
+	//hasBeenUpdated = false;
+	glUniformMatrix4fv(glGetUniformLocation(ShaderID, "CAM_MATRIX"),
 		1, GL_FALSE, glm::value_ptr(GetCameraMatrix()));
 }
 

@@ -20,13 +20,14 @@ public:
 		color = glm::vec4(0, 1, 0, 1);
 	}
 
-	void virtual Draw() {
+	void virtual Draw(const Camera& camera) {
+		shader->Activate();
 		vao.Bind();
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
 		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
-
+		camera.SaveMatrixToShader(shader->ID);
 		glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, 0);
 		vao.Unbind();
 	}
@@ -38,7 +39,7 @@ public:
 			return false;
 
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-			auto castCursorToScreen = camera.GetCameraMatrix() * glm::vec4(transpose.GetPosition(), 1);
+			auto castCursorToScreen = camera.GetCameraMatrix() * glm::vec4(transpose->GetPosition(), 1);
 			castCursorToScreen /= castCursorToScreen.w;
 
 			if (castCursorToScreen.z < 0.2f )
@@ -54,7 +55,7 @@ public:
 
 			mousePos = camera.GetCameraMatrixInvers() * mousePos;
 			mousePos /= mousePos.w;
-			transpose.SetObjectPosition(mousePos);
+			transpose->SetObjectPosition(mousePos);
 			return true;
 		}
 		return false;

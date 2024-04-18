@@ -25,7 +25,7 @@ public:
 	bool Inputs(GLFWwindow* window);
 	void ActiveInterferes();
 	bool HasBeenUpdated();
-	void SaveMatrixToShader(const Shader& shader);
+	void SaveMatrixToShader(const GLuint& ShaderID) const;
 
 	glm::vec3 GetPosition() const;
 	glm::vec3 GetOrientation() const;

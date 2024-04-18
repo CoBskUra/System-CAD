@@ -9,7 +9,7 @@ Figure::Figure(Shader* shader, const char* uniqueName, const char* type) :  Figu
 	Type = type;
 }
 
-Figure::Figure(Shader* shader) : id(count) {
+Figure::Figure(Shader* shader) : id(count), transpose(this) {
 	this->shader = shader;
 	UnMark();
 
@@ -24,12 +24,12 @@ std::string Figure::GetUniqueName() {
 
 glm::mat4x4 Figure::GetModelMatrix()
 {
-	return transpose.Get();
+	return transpose->Get();
 }
 
 glm::mat4x4 Figure::GetModelMatrixInvers()
 {
-	return transpose.GetInvers();
+	return transpose->GetInvers();
 }
 
 const char* Figure::GetType() const
@@ -42,14 +42,14 @@ Figure::~Figure()
 	Delete();
 }
 
-void  Figure::Draw() {
+void  Figure::Draw(const Camera& camera) {
 }
 
 void  Figure::ActiveImGui() {
 	ImGui::Text(name);
 	if(editAbleName)
 		ImGui::InputText("Name", name, sizeof(name));
-	transpose.ActiveInterferes();
+	transpose->ActiveInterferes();
 }
 
 void Figure::FigureSpecificImGui()
@@ -58,27 +58,27 @@ void Figure::FigureSpecificImGui()
 
 void Figure::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
 {
-	glm::vec3 rotationCenterToFigureVec = transpose.GetPosition() - rotationCenter;
+	glm::vec3 rotationCenterToFigureVec = transpose->GetPosition() - rotationCenter;
 	glm::vec3 newPos = MathOperations::RotationAlongAxis(rotationCenterToFigureVec, angle, axis);
 	if(newPos != glm::vec3{0.0f})
-		transpose.SetObjectPosition(newPos + rotationCenter);
+		transpose->SetObjectPosition(newPos + rotationCenter);
 }
 
 void Figure::RotationAlong(Quaternion q, glm::vec3 rotationCenter)
 {
-	transpose.SetObjectPosition(rotationCenter + q.RotatePoint(transpose.GetPosition() - rotationCenter));
+	transpose->SetObjectPosition(rotationCenter + q.RotatePoint(transpose->GetPosition() - rotationCenter));
 }
 
 void Figure::ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec)
 {
-	auto scaleCenterPos = transpose.GetPosition() - scaleCenter;
+	auto scaleCenterPos = transpose->GetPosition() - scaleCenter;
 	if (scaleCenterPos != glm::vec3{ 0.0f })
-		transpose.SetObjectPosition(scaleCenter + scaleVec * scaleCenterPos);
+		transpose->SetObjectPosition(scaleCenter + scaleVec * scaleCenterPos);
 }
 
 void Figure::MoveAlong(const Camera& camera, glm::vec3 direction)
 {
-	transpose.MoveObjectPosition(direction);
+	transpose->MoveObjectPosition(direction);
 }
 
 bool  Figure::Inputs(GLFWwindow* window, const Camera& camera)
@@ -106,4 +106,33 @@ void Figure::Mark() {
 
 void  Figure::Delete() {
 	vao.Delete();
+	while (containIn.begin() != containIn.end()) {
+		(*containIn.begin())->Erase(this);
+	}
+}
+
+bool Figure::AddContainer(FigureContainer* fc)
+{
+	auto result = containIn.insert(fc);
+	return result.second;
+}
+
+bool Figure::EraseContainer(FigureContainer* fc)
+{
+	auto result = containIn.erase(fc);
+	return result;
+}
+
+void Figure::InformContainers()
+{
+	for (std::set<FigureContainer*>::iterator iter = containIn.begin(); 
+		iter != containIn.end(); iter++) {
+		(*iter)->SomethingHasChange();
+	}
+}
+
+void Figure::SetObjectPosition(float x, float y, float z)
+{
+	Transpose::SetObjectPosition(x, y, z);
+	InformContainers();
 }

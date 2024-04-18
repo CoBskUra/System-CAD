@@ -11,14 +11,18 @@
 #include "TransposeImGui.h"
 #include "Camera.h"
 #include "Quaternion.h"
+#include "FigureContainer.h"
+#include <set>
 
-class Figure
+class FigureContainer;
+
+class Figure: protected TransposeImGui
 {
 public:
 	char name[100] = "Figura";
 	glm::vec4 color;
 	Shader* shader;
-	TransposeImGui transpose;
+	TransposeImGui* transpose;
 
 	Figure(Shader* shader);
 
@@ -29,7 +33,7 @@ public:
 
 	~Figure();
 
-	void virtual Draw();
+	void virtual Draw(const Camera& camera);
 
 	void virtual ActiveImGui();
 	void virtual FigureSpecificImGui();
@@ -47,16 +51,22 @@ public:
 	void Mark();
 	void virtual Delete();
 
+	bool AddContainer(FigureContainer* fc);
+	bool EraseContainer(FigureContainer* fc);
+	void InformContainers();
+
+	void SetObjectPosition(float x, float y, float z) override;
+
 protected:
 	bool editAbleName = true;
 	Figure(Shader* shader, const char* uniqueName, const char* type);
 
 	const char* Type = "Figura";
-	//AfirmationTransformation_ImGui afirmationTransformation;
 	VAO vao;
 	const int id;
 private:
 	static int count;
 	std::string UniqueName = "#Figura";
+	std::set<FigureContainer*> containIn;
 };
 #endif

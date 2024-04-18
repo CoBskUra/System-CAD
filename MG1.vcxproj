@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BazierCurve.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Figure3D.cpp" />

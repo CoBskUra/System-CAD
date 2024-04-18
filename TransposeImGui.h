@@ -1,6 +1,6 @@
 #pragma once
 #pragma once
-#include "Transpose.h"
+#include "transpose.h"
 #include <ImGui/imgui.h>
 #include "Constants.h"
 class TransposeImGui : public Transpose {

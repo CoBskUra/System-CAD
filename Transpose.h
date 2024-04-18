@@ -12,7 +12,7 @@ class Transpose
 	glm::vec3 GetPosition() const;
 
 	void SetObjectPosition(glm::vec3 vec);
-	void SetObjectPosition(float x, float y, float z);
+	void virtual SetObjectPosition(float x, float y, float z);
 	void MoveObjectPosition(glm::vec3 vec);
 	void MoveObjectPosition(float x, float y, float z);
 protected:

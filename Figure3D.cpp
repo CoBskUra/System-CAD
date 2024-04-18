@@ -30,7 +30,7 @@ void Figure3D::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float ang
     //rotation.Rotate_Z(angle * axisVec.z);
 
     //// druga próba 
-   /* auto centerToFigure = glm::normalize(transpose.GetPosition() - rotationCenter);
+   /* auto centerToFigure = glm::normalize(transpose->GetPosition() - rotationCenter);
     glm::vec4 axis_x(1, 0, 0, 1), axis_y(0, 1, 0, 1), axis_z(0, 0, 1, 1);
     axis_x = rotation.Get_Rx() * axis_x;
     axis_y = rotation.Get_Rx() * axis_y;
@@ -42,7 +42,7 @@ void Figure3D::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float ang
 
     Figure::RotationAlong(axis, rotationCenter, angle);
 
-    centerToFigure = glm::normalize(transpose.GetPosition() - rotationCenter);
+    centerToFigure = glm::normalize(transpose->GetPosition() - rotationCenter);
     alfa_x = glm::dot(centerToFigure, glm::vec3(axis_x));
     alfa_y = glm::dot(centerToFigure, glm::vec3(axis_y));
     alfa_z = glm::dot(centerToFigure, glm::vec3(axis_z));*/
@@ -75,10 +75,10 @@ void Figure3D::ActiveImGui()
 
 glm::mat4x4 Figure3D::GetModelMatrix()
 {
-    return  transpose.Get() *  quaternion.GetEulerRotation() * rotation.Get_R() *  scale.Get(); // do zmiany
+    return  transpose->Get() *  quaternion.GetEulerRotation() * rotation.Get_R() *  scale.Get(); // do zmiany
 }
 
 glm::mat4x4 Figure3D::GetModelMatrixInvers()
 {
-    return  scale.GetInvers() * rotation.Get_RInvers() * quaternion.Invers().GetEulerRotation() * transpose.GetInvers();
+    return  scale.GetInvers() * rotation.Get_RInvers() * quaternion.Invers().GetEulerRotation() * transpose->GetInvers();
 }

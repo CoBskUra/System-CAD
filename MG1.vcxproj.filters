@@ -61,6 +61,15 @@
     <Filter Include="Resource Files\Shaders\simple">
       <UniqueIdentifier>{e0979ee6-bfcc-4e93-b258-0848e608263d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Bezier">
+      <UniqueIdentifier>{6583133e-d89d-46d1-b03e-2f0ae5c95a6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Container">
+      <UniqueIdentifier>{c6158e2e-1c69-4063-8f9b-3fd25310093f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Container">
+      <UniqueIdentifier>{420a9d0c-a22e-4d5d-b714-b5e155273afc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -119,6 +128,12 @@
     </ClCompile>
     <ClCompile Include="QuaternionRotationImGui.cpp">
       <Filter>Source Files\Transformations</Filter>
+    </ClCompile>
+    <ClCompile Include="FigureContainer.cpp">
+      <Filter>Source Files\Container</Filter>
+    </ClCompile>
+    <ClCompile Include="BazierCurve.cpp">
+      <Filter>Source Files\Figures</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -224,6 +239,12 @@
     <ClInclude Include="QuaternionRotationImGui.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
+    <ClInclude Include="BazierCurve.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="FigureContainer.h">
+      <Filter>Header Files\Container</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cursor_vert.glsl">
@@ -249,6 +270,24 @@
     </None>
     <None Include="simple_frag.glsl">
       <Filter>Resource Files\Shaders\simple</Filter>
+    </None>
+    <None Include="bezierCurve_vert.glsl">
+      <Filter>Resource Files\Shaders\Bezier</Filter>
+    </None>
+    <None Include="bezierCurve_frag.glsl">
+      <Filter>Resource Files\Shaders\Bezier</Filter>
+    </None>
+    <None Include="bezier3d_vert.glsl">
+      <Filter>Resource Files\Shaders\Bezier</Filter>
+    </None>
+    <None Include="bezier3d_te.glsl">
+      <Filter>Resource Files\Shaders\Bezier</Filter>
+    </None>
+    <None Include="bezier3d_frag.glsl">
+      <Filter>Resource Files\Shaders\Bezier</Filter>
+    </None>
+    <None Include="bezier3d_tc.glsl">
+      <Filter>Resource Files\Shaders\Bezier</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

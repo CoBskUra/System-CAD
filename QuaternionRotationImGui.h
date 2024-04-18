@@ -30,11 +30,11 @@ public:
 			ImGui::EndGroup();
 			if (ImGui::DragFloat("Alfa##QuaternionRotationImGui", &alfa, 0.1f, -M_PI, M_PI, "%.3f", ImGuiSliderFlags_AlwaysClamp))
 			{
-				if (glm::dot(axis, axis) < M_ESP)
-					return false;
-				axis = glm::normalize(axis);
-				setAbleQuaternion.SetRotationAlong(alfa, axis);
-				valueHasBeenUpdated = true;
+				if (glm::dot(axis, axis) >= M_ESP) {
+					axis = glm::normalize(axis);
+					setAbleQuaternion.SetRotationAlong(alfa, axis);
+					valueHasBeenUpdated = true;
+				}
 			}
 			if (ImGui::DragFloat("x##QuaternionRotationImGui", &axis.x, 0.1f) ||
 				ImGui::DragFloat("y##QuaternionRotationImGui", &axis.y, 0.1f) ||

@@ -1,4 +1,4 @@
-#version 330 core
+#version 410 core
 
 // Positions/Coordinates
 layout (location = 0) in vec3 aPos;
@@ -7,10 +7,9 @@ layout (location = 0) in vec3 aPos;
 // out vec4 o_color;
 
 // Imports the camera matrix from the main function
-uniform mat4 CAM_MATRIX;
 
 void main()
 {
 	// Outputs the positions/coordinates of all vertices
-	gl_Position = CAM_MATRIX * vec4(aPos, 1.0);
+	gl_Position = vec4(aPos, 1.0);
 }

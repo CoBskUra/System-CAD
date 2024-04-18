@@ -29,6 +29,11 @@ public:
 	void Delete() {
 		glDeleteBuffers(1, &ID);
 	}
+
+
+	~VBO() {
+		Delete();
+	}
 };
 
 #endif

@@ -87,7 +87,7 @@ class Manager {
 	void DeleteSelected();
 
 	void Select(int i);
-	void DrawSpecialFigure(Figure& figure);
+	//void DrawSpecialFigure(Figure& figure);
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);

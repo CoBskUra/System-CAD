@@ -28,6 +28,11 @@ public:
 	{
 		glDeleteBuffers(1, &ID);
 	}
+
+
+	~EBO() {
+		Delete();
+	}
 };
 
 #endif

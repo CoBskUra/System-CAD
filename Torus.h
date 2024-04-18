@@ -24,12 +24,14 @@ public:
 		SetName("Torus");
 	}
 
-	void virtual Draw() {
+	void virtual Draw(const Camera& camera) {
+		shader->Activate();
 		vao.Bind();
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
 		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
+		camera.SaveMatrixToShader(shader->ID);
 
 		glDrawElements(GL_LINE_STRIP, 2*segment1*segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
 		vao.Unbind();
@@ -106,6 +108,7 @@ private:
 	}
 
 	void CreateTorus() {
+		vao.Reactive();
 		vao.Bind();
 		auto vs = createTorusVertexBuffer();
 		auto ies = createTorusIndeces();

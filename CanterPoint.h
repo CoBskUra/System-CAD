@@ -14,9 +14,11 @@ public:
 		color = glm::vec4(1, 0, 0, 1);
 	}
 
-	void virtual Draw() {
-		if (ContainerSize() > 0)
-			Point::Draw();
+	void virtual Draw(const Camera& camera) {
+		if (ContainerSize() > 0) {
+			Update();
+			Point::Draw(camera);
+		}
 	}
 
 	void virtual ActiveImGui() {
@@ -26,15 +28,15 @@ public:
 		ImGui::BeginGroup(); {
 			ImGui::Text("Control selected");
 			// translation
-			transpose.ActiveInterferes();
-			if (transpose_last.GetPosition() != transpose.GetPosition()) {
+			transpose->ActiveInterferes();
+			if (transpose_last.GetPosition() != transpose->GetPosition()) {
 				std::map<std::string, Figure* >::iterator iter;
 				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 				{
-					(*iter).second->transpose.
-						MoveObjectPosition(transpose.GetPosition() - transpose_last.GetPosition());
+					(*iter).second->transpose->
+						MoveObjectPosition(transpose->GetPosition() - transpose_last.GetPosition());
 				}
-				transpose_last = transpose;
+				transpose_last = *transpose;
 			}
 
 
@@ -78,23 +80,28 @@ private:
 
 	glm::vec3 ReferencePoint(const Figure& figure) {
 		if (localReference)
-			return figure.transpose.GetPosition();
+			return figure.transpose->GetPosition();
 		else
-			return transpose.GetPosition();
+			return transpose->GetPosition();
 	}
 
 	void Update() override
 	{
+		if (!(valueAdded || valueErased))
+			return;
 		glm::vec3 position(0);
 		std::map<std::string, Figure* >::iterator iter;
 		for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 		{
-			position += (*iter).second->transpose.GetPosition();
+			position += (*iter).second->transpose->GetPosition();
 		}
 		float number = selectedFigures.size();
-		transpose.SetObjectPosition(position / number);
+		transpose->SetObjectPosition(position / number);
 
 		ResetValues();
+		somethingHasChange = false;
+		valueAdded = false;
+		valueErased = false;
 	}
 
 	void RotationInterfers() {
@@ -130,6 +137,6 @@ private:
 		globalQuaternion_last.Reset();
 
 		LastScaleVec = scaleVec = glm::vec3(1, 1, 1);
-		transpose_last = transpose;
+		transpose_last = *transpose;
 	}
 };

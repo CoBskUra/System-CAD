@@ -30,6 +30,15 @@ public:
 	void Delete(){
 		glDeleteVertexArrays(1, &ID);
 	}
+
+	void Reactive() {
+		glDeleteVertexArrays(1, &ID);
+		glGenVertexArrays(1, &ID);
+	}
+
+	~VAO() {
+		Delete();
+	}
 };
 
 #endif

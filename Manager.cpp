@@ -7,15 +7,13 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 {
 	TorusShader = Shader({
 		{"simple_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"simple_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
-		/*{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}*/
-		});//("simple_vert.glsl", "simple_frag.glsl");
+		{"simple_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER}
+		});
 	BezierShader = Shader({
 		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
 		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
-		/*{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}*/
+		{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}
 		});
 	currentCamera = camera;
 	centerPoint.color = glm::vec4(1, 0, 0, 1);
@@ -40,16 +38,6 @@ void Manager::Draw()
 {
 	for (int i = 0; i < figuresVector.Size(); i++)
 	{
-		if (figuresVector.figures[i]->shader != currentShader)
-		{
-			currentShader = figuresVector.figures[i]->shader;
-			currentShader->Activate();
-			currentCamera->SaveMatrixToShader(*currentShader);
-		}
-
-		if (currentCamera->HasBeenUpdated())
-			currentCamera->SaveMatrixToShader(*currentShader);
-
 		if (figuresVector.active[i])
 		{
 			ImGui::PushID(i);
@@ -62,23 +50,17 @@ void Manager::Draw()
 			ImGui::Separator();
 		}
 
-		figuresVector.figures[i]->Draw();
+		figuresVector.figures[i]->Draw(*currentCamera);
 	}
 
-	DrawSpecialFigure(centerPoint);
-	DrawSpecialFigure(cursor);
+	centerPoint.Draw(*currentCamera);
+	cursor.Draw(*currentCamera);
 }
 
 Manager::~Manager()
 {
 }
 
-void Manager::DrawSpecialFigure(Figure& figure) {
-	if( currentShader != figure.shader) figure.shader->Activate();
-	currentCamera->SaveMatrixToShader(*figure.shader);
-	figure.Draw();
-	if (currentShader != nullptr) currentShader->Activate();
-}
 
 int Manager::TheClosetFigureToMouse(const char* figureType)
 {
@@ -109,21 +91,22 @@ void Manager::CreateFiguresInterfers()
 	if (ImGui::Button("Create Torus", ImVec2(100, 20))) {
 
 		Torus* torus = new Torus(&TorusShader);
-		torus->transpose.SetObjectPosition(cursor.transpose.GetPosition());
+		torus->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(torus);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Create Point", ImVec2(100, 20))) {
 
 		Point* point = new Point(&PointShader);
-		point->transpose.SetObjectPosition(cursor.transpose.GetPosition());
+		point->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(point);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Create Bezier Curve", ImVec2(100, 20))) {
 		BezierCurve* bezierCurve = new BezierCurve(&BezierShader);
-		bezierCurve->transpose.SetObjectPosition(cursor.transpose.GetPosition());
+		bezierCurve->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(bezierCurve);
+		bezierCurve->Add(centerPoint);
 	}
 }
 
@@ -157,7 +140,6 @@ void Manager::DeleteSelected()
 		if (ImGui::Button("Delete", ImVec2(50, 20))) {
 			for (int i = figuresVector.Size() - 1; i >= 0; i--)
 				if (figuresVector.active[i]) {
-					centerPoint.Erase(figuresVector.figures[i]);
 					figuresVector.DeleteFigure(i);
 				}
 		}

@@ -1,4 +1,4 @@
-#include "Transpose.h"
+#include "transpose.h"
 
 Transpose::Transpose()
 {
