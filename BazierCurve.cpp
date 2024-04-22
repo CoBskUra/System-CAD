@@ -12,12 +12,16 @@ BezierCurve::BezierCurve(Shader* shader) : BezierCurve(shader, "##BezierCurve", 
 	SetName("BezierCurve");
 }
 
-BezierCurve::BezierCurve(Shader* shader, const char* uniqueName, const char* type) : Figure(shader, uniqueName, type) {
+//BezierCurve::~BezierCurve()
+//{
+//	FigureContainer::~FigureContainer();
+//	Figure::~Figure();
+//}
 
-}
+BezierCurve::BezierCurve(Shader* shader, const char* uniqueName, const char* type) : Figure(shader, uniqueName, type) 
+{}
 
 void BezierCurve::Draw(const Camera& camera) {
-
 	Update();
 	if (showBezierPol) {
 		shader->Activate();
@@ -57,10 +61,10 @@ void BezierCurve::ActiveImGui() {
 			showBezierPol = !showBezierPol;
 
 		int i = 0;
-		for (std::map<std::string, Figure* >::iterator iter = selectedFigures.begin();
+		for (std::set<Figure* >::iterator iter = selectedFigures.begin();
 			iter != selectedFigures.end(); iter++)
 		{
-			auto figure = (*iter).second;
+			auto figure = (*iter);
 
 			char buf[100];
 			sprintf_s(buf, "%d. %s", i, figure->name);
@@ -74,7 +78,6 @@ void BezierCurve::ActiveImGui() {
 		}
 	}
 	ImGui::EndGroup();
-
 }
 
 bool BezierCurve::Inputs(GLFWwindow* window, const Camera& camera) {
@@ -102,10 +105,9 @@ void BezierCurve::CreateBezierCurve() {
 
 	std::vector<float> vs;
 	int i = 1;
-	for (std::map<std::string, Figure* >::iterator iter = selectedFigures.begin();
-		iter != selectedFigures.end(); iter++)
+	for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++)
 	{
-		auto pos = (*iter).second->transpose->GetPosition();
+		auto pos = (*iter)->transpose->GetPosition();
 		vs.push_back(pos.x); vs.push_back(pos.y); vs.push_back(pos.z);
 		if (i == 4) {
 			vs.push_back(pos.x); vs.push_back(pos.y); vs.push_back(pos.z);

@@ -9,9 +9,10 @@ bool FigureContainer::Add(Figure* figure) {
 	if (!IsValid(figure))
 		return false;
 
-	auto pair = selectedFigures.insert({ figure->GetUniqueName() , figure });
+	auto pair = selectedFigures.insert(figure );
 	figure->Mark();
 	if (pair.second) {
+		orderdFigures.push_back(figure);
 		figure->AddContainer(this);
 		SomethingHasChange();
 		valueAdded = true;
@@ -22,10 +23,9 @@ bool FigureContainer::Add(Figure* figure) {
 bool FigureContainer::Add(const FigureContainer& figureCoatiner)
 {
 	bool addAny = false;
-	std::map<std::string, Figure* >::const_iterator iter;
-	for (iter = figureCoatiner.selectedFigures.begin(); iter != figureCoatiner.selectedFigures.end(); iter++)
+	for (auto iter = figureCoatiner.orderdFigures.begin(); iter != figureCoatiner.orderdFigures.end(); iter++)
 	{
-		if( Add((*iter).second)) {
+		if( Add(*iter)) {
 			addAny = true;
 		}
 	}
@@ -33,9 +33,15 @@ bool FigureContainer::Add(const FigureContainer& figureCoatiner)
 }
 
 bool FigureContainer:: Erase(Figure* figure) {
-	bool erased = selectedFigures.erase(figure->GetUniqueName());
+	bool erased = selectedFigures.erase(figure);
 	figure->UnMark();
 	if (erased) {
+		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) {
+			if (figure == *iter) {
+				orderdFigures.erase(iter);
+				break;
+			}
+		}
 		figure->EraseContainer(this);
 		SomethingHasChange();
 		valueErased = true;
@@ -44,7 +50,7 @@ bool FigureContainer:: Erase(Figure* figure) {
 }
 
 bool FigureContainer:: Contain(Figure* figure) {
-	return selectedFigures.find(figure->GetUniqueName()) != selectedFigures.end();
+	return selectedFigures.find(figure) != selectedFigures.end();
 }
 
 int FigureContainer::ContainerSize()
@@ -71,6 +77,11 @@ FigureContainer::~FigureContainer()
 {
 	while (selectedFigures.begin() != selectedFigures.end())
 	{
-		Erase((*selectedFigures.begin()).second);
+		auto figure = *selectedFigures.begin();
+		selectedFigures.erase(selectedFigures.begin());
+		figure->UnMark();
+		figure->EraseContainer(this);
+		SomethingHasChange();
+		valueErased = true;
 	}
 }

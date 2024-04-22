@@ -13,7 +13,6 @@ Figure::Figure(Shader* shader) : id(count), transpose(this) {
 	this->shader = shader;
 	UnMark();
 
-	//count = 0;
 	count++;
 	UniqueName += std::to_string(id);
 }
@@ -40,6 +39,7 @@ const char* Figure::GetType() const
 Figure::~Figure()
 {
 	Delete();
+	printf("\nDestroyed %s", name);
 }
 
 void  Figure::Draw(const Camera& camera) {

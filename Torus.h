@@ -59,8 +59,6 @@ public:
 		ImGui::EndGroup();
 	}
 
-
-
 private:
 	int segment1 = 10;
 	int segment2 = 10;
@@ -120,6 +118,4 @@ private:
 		vao.Unbind(); vbo.Unbind(); ebo.Unbind();
 	}
 };
-
-
 #endif

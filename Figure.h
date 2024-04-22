@@ -31,7 +31,7 @@ public:
 	glm::mat4x4 virtual GetModelMatrixInvers();
 	const char* GetType() const;
 
-	~Figure();
+	virtual ~Figure();
 
 	void virtual Draw(const Camera& camera);
 

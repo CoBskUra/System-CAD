@@ -1,13 +1,13 @@
 #pragma once
 #include "Figure.h"
-#include <map>
+#include <set>
 class Figure;
 
 class FigureContainer
 {
 protected:
-	
-	std::map<std::string, Figure* > selectedFigures;
+	std::vector<Figure*> orderdFigures;
+	std::set<Figure* > selectedFigures;
 	bool somethingHasChange;
 	bool valueAdded;
 	bool valueErased;
@@ -24,6 +24,6 @@ public:
 
 	void virtual Update();
 
-	~FigureContainer();
+	virtual ~FigureContainer();
 };
 

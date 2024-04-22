@@ -15,9 +15,13 @@ class Manager {
 	class FiguresVector {
 	public:
 		std::vector<Figure*> figures;
+		std::map<std::string ,FigureContainer*> activeFigureContainers;
+		std::map<std::string, FigureContainer*> figureContainers;
 
 		std::vector< const char*> names;
 		std::vector<bool> active;
+
+		FigureContainer* testContainer;
 
 		int NumberOfActive() {
 			return activeCount;
@@ -26,26 +30,44 @@ class Manager {
 		void AddFigure(Figure* figure) {
 			figures.push_back(figure);
 			names.push_back(figure->name);
+
+			if (figure->GetType() == "BezierCurve")
+			{
+				figureContainers.insert({ figure->GetUniqueName(), (BezierCurve*)figure });
+			}
+			else {
+				std::map<std::string, FigureContainer*>::iterator iter;
+				for (iter = figureContainers.begin(); iter != figureContainers.end(); iter++) {
+					iter->second->Add(figure);
+				}
+			}
 			active.push_back(false);
 		}
 
 		void DeleteFigure(int id) {
-			delete figures[id];
-			figures.erase(std::next(figures.begin(), id));
-			names.erase(std::next(names.begin(), id));
-
 			if (active[id])
 				ChangeActiveState(id);
 			active.erase(std::next(active.begin(), id));
+
+			auto toDelete = figures[id];
+			figures.erase(std::next(figures.begin(), id));
+			names.erase(std::next(names.begin(), id));
+			delete toDelete;
 		}
 
 		bool ChangeActiveState(int i) {
 			active[i] = !active[i];
 
-			if (active[i])
+			if (active[i]) {
 				activeCount++;
-			else
+				auto a = figureContainers.find(figures.at(i)->GetUniqueName());
+				if (a != figureContainers.end())
+					activeFigureContainers.insert({ a->first, a->second });
+			}
+			else {
 				activeCount--;
+				activeFigureContainers.erase(figures.at(i)->GetUniqueName());
+			}
 			return active[i];
 		}
 
@@ -58,6 +80,9 @@ class Manager {
 		}
 
 		void Delete() {
+			figureContainers.erase(figureContainers.begin(), figureContainers.end());
+			activeFigureContainers.erase(activeFigureContainers.begin(), activeFigureContainers.end());
+
 			for (int i = 0; i < figures.size(); i++)
 				delete figures[i];
 		}
@@ -78,6 +103,7 @@ class Manager {
 	Cursor cursor;
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
+	glm::vec2 mouseLastPosition;
 
 	float minLengthFromMouse = 0.0004f;
 	int TheClosetFigureToMouse(const char* figureType);

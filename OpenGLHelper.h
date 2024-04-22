@@ -3,6 +3,7 @@
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_int2.hpp>
 #include <glm/ext/vector_double2.hpp>
+
 static class OpenGLHelper {
 public:
 	static glm::vec2  MousePositionOnScreen(GLFWwindow* window) {

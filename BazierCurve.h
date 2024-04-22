@@ -1,12 +1,11 @@
 #pragma once
 #include "Figure.h"
 #include "FigureContainer.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
 
 #include <iostream>
 #include <vector>
@@ -20,6 +19,7 @@ class BezierCurve : public Figure, public  FigureContainer {
 public:
 	BezierCurve(Shader* shader, const char* name);
 	BezierCurve(Shader* shader);
+	//~BezierCurve();
 
 	void virtual Draw(const Camera& camera);
 	void virtual ActiveImGui();

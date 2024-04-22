@@ -26,10 +26,7 @@ void Manager::MenuInterferes()
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
-		
 		SelectableList();
-		DeleteSelected();
-		
 	}
 	ImGui::End();
 }
@@ -116,6 +113,14 @@ void Manager::SelectableList()
 	for (int i = 0; i < figuresVector.Size(); i++)
 	{
 		ImGui::PushID(i);
+		if (ImGui::Button("X", ImVec2(20, 20))) {
+			figuresVector.DeleteFigure(i);
+			ImGui::PopID();
+			return;
+		}
+		ImGui::SameLine();
+
+
 		if (ImGui::RadioButton("", figuresVector.active[i])) {
 			figuresVector.ChangeActiveState(i);
 		}
@@ -133,18 +138,7 @@ void Manager::SelectableList()
 	}
 }
 
-void Manager::DeleteSelected()
-{
-	if (figuresVector.NumberOfActive() > 0)
-	{
-		if (ImGui::Button("Delete", ImVec2(50, 20))) {
-			for (int i = figuresVector.Size() - 1; i >= 0; i--)
-				if (figuresVector.active[i]) {
-					figuresVector.DeleteFigure(i);
-				}
-		}
-	}
-}
+
 
 
 void Manager::Select(int i)
@@ -170,13 +164,13 @@ void Manager::ProcesInput()
 		if (id >= 0) {
 			Select(id);
 		}
-		
+		mouseLastPosition = OpenGLHelper::MousePositionOnScreen(window);
 		mouseLeftFirstClick = false;
-
 	}
 	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 		mouseLeftFirstClick = true;
 	}
+
 
 	cursor.Inputs(window, *currentCamera);
 }

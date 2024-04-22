@@ -8,6 +8,7 @@ class CenterPoint: public Point, public FigureContainer {
 public:
 	CenterPoint(Shader* shader, const char* name) : Point(shader, "##CenterPoint", "CenterPoint"){
 		color = glm::vec4(1, 0, 0, 1);
+		SetName(name);
 	}
 
 	CenterPoint(Shader* shader) : Point(shader, "##CenterPoint", "CenterPoint"){
@@ -30,10 +31,10 @@ public:
 			// translation
 			transpose->ActiveInterferes();
 			if (transpose_last.GetPosition() != transpose->GetPosition()) {
-				std::map<std::string, Figure* >::iterator iter;
+				std::set<Figure* >::iterator iter;
 				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 				{
-					(*iter).second->transpose->
+					(*iter)->transpose->
 						MoveObjectPosition(transpose->GetPosition() - transpose_last.GetPosition());
 				}
 				transpose_last = *transpose;
@@ -49,10 +50,10 @@ public:
 			if (ImGui::DragFloat("scale x##centerPoint", &scaleVec.x, 0.1f, M_ESP, M_FLOAT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp) ||
 				ImGui::DragFloat("scale y##centerPoint", &scaleVec.y, 0.1f, M_ESP, M_FLOAT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp) ||
 				ImGui::DragFloat("scale z##centerPoint", &scaleVec.z, 0.1f, M_ESP, M_FLOAT_MAX, "%.3f", ImGuiSliderFlags_AlwaysClamp)) {
-				std::map<std::string, Figure* >::iterator iter;
+				std::set<Figure* >::iterator iter;
 				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 				{
-					(*iter).second->ScaleAlong(ReferencePoint(*(*iter).second), scaleVec / LastScaleVec);
+					(*iter)->ScaleAlong(ReferencePoint(*(*iter)), scaleVec / LastScaleVec);
 				}
 				LastScaleVec = scaleVec;
 
@@ -65,7 +66,46 @@ public:
 		ImGui::PopID();
 	}
 
+	bool virtual Inputs(GLFWwindow* window, const Camera& camera) {
+		ImGuiIO& io = ImGui::GetIO();
+
+		if (io.WantCaptureMouse)
+			return false;
+
+		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+			auto currentMousePosition = OpenGLHelper::MousePositionOnScreen(window);
+			auto delta = currentMousePosition - mouseLastPosition;
+
+			auto castCursorToScreen = camera.GetCameraMatrix() * glm::vec4(transpose->GetPosition(), 1);
+			castCursorToScreen /= castCursorToScreen.w;
+
+			if (castCursorToScreen.z < 0.2f)
+				castCursorToScreen.z = 0.2f;
+			if (castCursorToScreen.z > 1)
+				castCursorToScreen.z = 0.8f;
+
+			glm::vec4 mousePos{
+				OpenGLHelper::MousePositionOnScreen(window),
+				castCursorToScreen.z,
+				1.0f
+			};
+
+			mousePos = camera.GetCameraMatrixInvers() * mousePos;
+			mousePos /= mousePos.w;
+			transpose->SetObjectPosition(mousePos);
+			return true;
+		}
+		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
+		{
+			firstClick = true;
+		}
+		return false;
+	}
+
 private:
+	bool firstClick = true;
+	glm::vec2 mouseLastPosition;
+
 	QuaternionRotationImGui localQuaternion;
 	QuaternionRotationImGui localQuaternion_last;
 
@@ -90,10 +130,9 @@ private:
 		if (!(valueAdded || valueErased))
 			return;
 		glm::vec3 position(0);
-		std::map<std::string, Figure* >::iterator iter;
-		for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++)
 		{
-			position += (*iter).second->transpose->GetPosition();
+			position += (*iter)->transpose->GetPosition();
 		}
 		float number = selectedFigures.size();
 		transpose->SetObjectPosition(position / number);
@@ -107,10 +146,9 @@ private:
 	void RotationInterfers() {
 		if (localReference) {
 			if (localQuaternion.ActiveInterferes()) {
-				std::map<std::string, Figure* >::iterator iter;
-				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+				for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) 
 				{
-					(*iter).second->RotationAlong( localQuaternion.Get() * localQuaternion_last.Invers(), ReferencePoint(*(*iter).second));
+					(*iter)->RotationAlong( localQuaternion.Get() * localQuaternion_last.Invers(), ReferencePoint(*(*iter)));
 				}
 			}
 			if (localQuaternion_last != localQuaternion)
@@ -118,10 +156,9 @@ private:
 		}
 		else {
 			if (globalQuaternion.ActiveInterferes()) {
-				std::map<std::string, Figure* >::iterator iter;
-				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+				for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++)
 				{
-					(*iter).second->RotationAlong( globalQuaternion.Get() * globalQuaternion_last.Invers(), ReferencePoint(*(*iter).second));
+					(*iter)->RotationAlong( globalQuaternion.Get() * globalQuaternion_last.Invers(), ReferencePoint(*(*iter)));
 				}
 			}
 			if (globalQuaternion_last != globalQuaternion)

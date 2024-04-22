@@ -28,14 +28,12 @@ void ResizeCallBack(GLFWwindow* window, int w, int h);
 
 int main()
 {
-	
 	GLFWwindow* window = Init();
 	if (window == NULL)
 		return -1;
 
 	auto shader = Shader("simple_vert.glsl", "simple_frag.glsl");
 	bool showTorus = true;
-	//Point p(&shader);
 
 	Manager manader(&camera, window);
 	// Main while loop
@@ -52,17 +50,14 @@ int main()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
-		//glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "CAM_MATRIX"), 1, GL_FALSE, glm::value_ptr(glm::mat4(camera.GetCameraMatrix())));
+
 		manader.MenuInterferes();
 		manader.Draw();
 		manader.ProcesInput();
-		//p.Draw();
 
 		camera.Inputs(window);
 		camera.ActiveInterferes();
 
-		//figura->Draw(showTorus);
-		//kwadrat.Draw();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -127,6 +122,9 @@ GLFWwindow* Init() {
 	return window;
 }
 
+// PóŸniej tutaj dam resize, mam tylko problem, ¿e po risie Ÿle 
+// kursor po klikniêciu ustawia mi siê w z³ym miejscu
+// 
 //void ResizeCallBack(GLFWwindow* window, int w, int h)
 //{
 //	width = w;
