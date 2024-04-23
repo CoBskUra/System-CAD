@@ -4,7 +4,7 @@
 
 int Figure::count = 0;
 
-Figure::Figure(Shader* shader, const char* uniqueName, const char* type) :  Figure(shader) {
+Figure::Figure(Shader* shader, const char* uniqueName, FigureType type) :  Figure(shader) {
 	UniqueName = uniqueName + std::to_string(id);
 	Type = type;
 }
@@ -31,7 +31,7 @@ glm::mat4x4 Figure::GetModelMatrixInvers()
 	return transpose->GetInvers();
 }
 
-const char* Figure::GetType() const
+FigureType Figure::GetType() const
 {
 	return Type;
 }
@@ -42,7 +42,7 @@ Figure::~Figure()
 	printf("\nDestroyed %s", name);
 }
 
-void  Figure::Draw(const Camera& camera) {
+void  Figure::Draw(GLFWwindow* window, const Camera& camera) {
 }
 
 void  Figure::ActiveImGui() {

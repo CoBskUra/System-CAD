@@ -27,7 +27,7 @@ public:
 
 protected:
 
-	Figure3D(Shader* shader, const char* uniqueName, const char* type);
+	Figure3D(Shader* shader, const char* uniqueName, FigureType type);
 };
 
 #endif

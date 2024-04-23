@@ -4,7 +4,7 @@
 
 class Cursor : public Figure {
 public:
-	Cursor(Shader* shader, const char* name) : Figure(shader, "##Cursor", "Cursor")
+	Cursor(Shader* shader, const char* name) : Figure(shader, "##Cursor", FigureType::Cursor)
 	{
 		CreatePoint();
 		SetName(name);
@@ -12,7 +12,7 @@ public:
 		editAbleName = false;
 	}
 
-	Cursor(Shader* shader) : Figure(shader, "##Cursor", "Cursor")
+	Cursor(Shader* shader) : Figure(shader, "##Cursor", FigureType::Cursor)
 	{
 		CreatePoint();
 		SetName("Cursor");
@@ -20,7 +20,7 @@ public:
 		color = glm::vec4(0, 1, 0, 1);
 	}
 
-	void virtual Draw(const Camera& camera) {
+	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		shader->Activate();
 		vao.Bind();
 

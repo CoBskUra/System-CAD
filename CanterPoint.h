@@ -6,19 +6,19 @@
 
 class CenterPoint: public Point, public FigureContainer {
 public:
-	CenterPoint(Shader* shader, const char* name) : Point(shader, "##CenterPoint", "CenterPoint"){
+	CenterPoint(Shader* shader, const char* name) : Point(shader, "##CenterPoint", FigureType::CenterPoint){
 		color = glm::vec4(1, 0, 0, 1);
 		SetName(name);
 	}
 
-	CenterPoint(Shader* shader) : Point(shader, "##CenterPoint", "CenterPoint"){
+	CenterPoint(Shader* shader) : Point(shader, "##CenterPoint", FigureType::CenterPoint){
 		color = glm::vec4(1, 0, 0, 1);
 	}
 
-	void virtual Draw(const Camera& camera) {
+	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		if (ContainerSize() > 0) {
 			Update();
-			Point::Draw(camera);
+			Point::Draw(window, camera);
 		}
 	}
 
@@ -72,27 +72,32 @@ public:
 		if (io.WantCaptureMouse)
 			return false;
 
+		if (firstClick && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+			firstClick = false;
+			mouseLastPosition = OpenGLHelper::MousePositionOnScreen(window);
+		}
 		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 			auto currentMousePosition = OpenGLHelper::MousePositionOnScreen(window);
 			auto delta = currentMousePosition - mouseLastPosition;
+			if (currentMousePosition != mouseLastPosition)
+			{
+				std::set<Figure* >::iterator iter;
+				for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+				{
+					auto figure = (*iter);
 
-			auto castCursorToScreen = camera.GetCameraMatrix() * glm::vec4(transpose->GetPosition(), 1);
-			castCursorToScreen /= castCursorToScreen.w;
+					glm::vec4 mousePos{
+						delta,
+						0,
+						0.0f
+					};
 
-			if (castCursorToScreen.z < 0.2f)
-				castCursorToScreen.z = 0.2f;
-			if (castCursorToScreen.z > 1)
-				castCursorToScreen.z = 0.8f;
-
-			glm::vec4 mousePos{
-				OpenGLHelper::MousePositionOnScreen(window),
-				castCursorToScreen.z,
-				1.0f
-			};
-
-			mousePos = camera.GetCameraMatrixInvers() * mousePos;
-			mousePos /= mousePos.w;
-			transpose->SetObjectPosition(mousePos);
+					mousePos = camera.GetCameraMatrixInvers() * mousePos;
+					//mousePos /= mousePos.w;
+					figure->transpose->MoveObjectPosition(glm::vec3(mousePos));
+				}
+			}
+			mouseLastPosition = currentMousePosition;
 			return true;
 		}
 		else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
@@ -127,26 +132,36 @@ private:
 
 	void Update() override
 	{
-		if (!(valueAdded || valueErased))
-			return;
-		glm::vec3 position(0);
-		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++)
+		if (somethingHasChange)
 		{
-			position += (*iter)->transpose->GetPosition();
-		}
-		float number = selectedFigures.size();
-		transpose->SetObjectPosition(position / number);
+			glm::vec3 position(0);
+			for (auto iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+			{
+				position += (*iter)->transpose->GetPosition();
+			}
+			float number = selectedFigures.size();
+			transpose->SetObjectPosition(position / number);
+			transpose_last = *transpose;
 
-		ResetValues();
-		somethingHasChange = false;
-		valueAdded = false;
-		valueErased = false;
+			if (valueAdded || valueErased) {
+				ResetValues();
+
+				valueAdded = false;
+				valueErased = false;
+			}
+
+			somethingHasChange = false;
+		}
+	}
+
+	void MarkFigure(Figure* f) override{
+		f->Mark();
 	}
 
 	void RotationInterfers() {
 		if (localReference) {
 			if (localQuaternion.ActiveInterferes()) {
-				for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) 
+				for (auto iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 				{
 					(*iter)->RotationAlong( localQuaternion.Get() * localQuaternion_last.Invers(), ReferencePoint(*(*iter)));
 				}
@@ -156,7 +171,7 @@ private:
 		}
 		else {
 			if (globalQuaternion.ActiveInterferes()) {
-				for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++)
+				for (auto iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 				{
 					(*iter)->RotationAlong( globalQuaternion.Get() * globalQuaternion_last.Invers(), ReferencePoint(*(*iter)));
 				}

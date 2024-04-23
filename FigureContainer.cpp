@@ -10,7 +10,7 @@ bool FigureContainer::Add(Figure* figure) {
 		return false;
 
 	auto pair = selectedFigures.insert(figure );
-	figure->Mark();
+	MarkFigure(figure);
 	if (pair.second) {
 		orderdFigures.push_back(figure);
 		figure->AddContainer(this);
@@ -67,6 +67,10 @@ void FigureContainer::SomethingHasChange()
 bool FigureContainer::IsSomethingChange()
 {
 	return somethingHasChange;
+}
+
+void FigureContainer::MarkFigure(Figure* figure)
+{
 }
 
 void FigureContainer::Update()

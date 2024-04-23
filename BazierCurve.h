@@ -21,7 +21,7 @@ public:
 	BezierCurve(Shader* shader);
 	//~BezierCurve();
 
-	void virtual Draw(const Camera& camera);
+	void virtual Draw(GLFWwindow* window, const Camera& camera);
 	void virtual ActiveImGui();
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
 
@@ -29,7 +29,7 @@ public:
 	void Update() override;
 
 protected:
-	BezierCurve(Shader* shader, const char* uniqueName, const char* type);
+	BezierCurve(Shader* shader, const char* uniqueName, FigureType type);
 
 private:
 

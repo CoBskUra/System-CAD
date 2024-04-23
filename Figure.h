@@ -13,6 +13,7 @@
 #include "Quaternion.h"
 #include "FigureContainer.h"
 #include <set>
+#include "FigureType.h"
 
 class FigureContainer;
 
@@ -29,11 +30,11 @@ public:
 	std::string GetUniqueName();
 	glm::mat4x4 virtual GetModelMatrix();
 	glm::mat4x4 virtual GetModelMatrixInvers();
-	const char* GetType() const;
+	FigureType GetType() const;
 
 	virtual ~Figure();
 
-	void virtual Draw(const Camera& camera);
+	void virtual Draw(GLFWwindow* window, const Camera& camera);
 
 	void virtual ActiveImGui();
 	void virtual FigureSpecificImGui();
@@ -55,16 +56,16 @@ public:
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
 
-	void SetObjectPosition(float x, float y, float z) override;
 
 protected:
 	bool editAbleName = true;
-	Figure(Shader* shader, const char* uniqueName, const char* type);
+	Figure(Shader* shader, const char* uniqueName, FigureType type);
 
-	const char* Type = "Figura";
+	FigureType Type = FigureType::Figure;
 	VAO vao;
 	const int id;
 private:
+	void SetObjectPosition(float x, float y, float z) override;
 	static int count;
 	std::string UniqueName = "#Figura";
 	std::set<FigureContainer*> containIn;

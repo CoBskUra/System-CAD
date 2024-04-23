@@ -12,7 +12,6 @@ void Camera::updateMatrixes()
 {
 	UpdateViewMatrix();
 	updateProjectionMatrix();
-	SetScale(ScaleVec);
 
 	cameraMatrix = projection * view * Scale;
 	hasBeenUpdated = true;
@@ -133,6 +132,8 @@ void Camera::SetScale(float x, float y, float z)
 	Scale_invers[0][0] = 1 / x;
 	Scale_invers[1][1] = 1 / y;
 	Scale_invers[2][2] = 1 / z;
+
+	updateMatrixes();
 }
 
 glm::mat4 Camera::RotationMatrix() const
@@ -286,7 +287,7 @@ void Camera::ActiveInterferes()
 				ImGui::DragFloat("Scale y", &ScaleVec.y, 0.1f) ||
 				ImGui::DragFloat("Scale z", &ScaleVec.z, 0.1f))
 			{
-				updateMatrixes();
+				SetScale(ScaleVec);
 			}
 		}
 		ImGui::EndGroup();
@@ -315,8 +316,7 @@ void Camera::ActiveInterferes()
 			}
 			if (ImGui::DragFloat("Aspect", &aspect, 0.1f, M_ESP, M_FLOAT_MAX))
 			{
-				aspect_invers = 1 / aspect;
-				updateMatrixes();
+				SetAspect(aspect);
 			}
 			if (ImGui::DragFloat("FOV Rad", &FOVRad, 0.1f, M_ESP, M_PI))
 			{
@@ -358,4 +358,5 @@ void Camera::SetAspect(float newAspect)
 	hasBeenUpdated = true;
 	aspect = newAspect;
 	aspect_invers = 1/newAspect;
+	updateMatrixes();
 }

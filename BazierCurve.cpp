@@ -1,27 +1,22 @@
 #include "BazierCurve.h"
+#include "OpenGLHelper.h"
 
-BezierCurve::BezierCurve(Shader* shader, const char* name) : BezierCurve(shader, "##BezierCurve", "BezierCurve")
+BezierCurve::BezierCurve(Shader* shader, const char* name) : BezierCurve(shader, "##BezierCurve", FigureType::BezierCurve)
 {
 	CreateBezierCurve();
 	SetName(name);
 }
 
-BezierCurve::BezierCurve(Shader* shader) : BezierCurve(shader, "##BezierCurve", "BezierCurve")
+BezierCurve::BezierCurve(Shader* shader) : BezierCurve(shader, "##BezierCurve", FigureType::BezierCurve)
 {
 	CreateBezierCurve();
 	SetName("BezierCurve");
 }
 
-//BezierCurve::~BezierCurve()
-//{
-//	FigureContainer::~FigureContainer();
-//	Figure::~Figure();
-//}
-
-BezierCurve::BezierCurve(Shader* shader, const char* uniqueName, const char* type) : Figure(shader, uniqueName, type) 
+BezierCurve::BezierCurve(Shader* shader, const char* uniqueName, FigureType type) : Figure(shader, uniqueName, type)
 {}
 
-void BezierCurve::Draw(const Camera& camera) {
+void BezierCurve::Draw(GLFWwindow* window, const Camera& camera) {
 	Update();
 	if (showBezierPol) {
 		shader->Activate();
@@ -30,7 +25,11 @@ void BezierCurve::Draw(const Camera& camera) {
 			camera.SaveMatrixToShader(shader->ID);
 			glUniform4f(glGetUniformLocation(shader->ID, "COLOR"),
 				color.x, color.y, color.z, color.w);
-			glUniform1i(glGetUniformLocation(shader->ID, "gNumSegments"), 1000);
+
+			glm::ivec2 windowSize;
+			glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
+			int max = windowSize.x > windowSize.y ? windowSize.x : windowSize.y;
+			glUniform1f(glGetUniformLocation(shader->ID, "resolution"), max*max);
 			glDrawArrays(GL_PATCHES, 0, numberOfVertexes);
 		}
 		vao.Unbind();
@@ -85,7 +84,7 @@ bool BezierCurve::Inputs(GLFWwindow* window, const Camera& camera) {
 }
 
 bool BezierCurve::IsValid(Figure* figure) {
-	return figure->GetType() == "Point";
+	return figure->GetType() == FigureType::Point;
 }
 
 
@@ -103,19 +102,49 @@ void BezierCurve::CreateBezierCurve() {
 	vao.Reactive();
 	vao.Bind();
 
+	glm::vec3 pos;
 	std::vector<float> vs;
 	int i = 1;
 	for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++)
 	{
-		auto pos = (*iter)->transpose->GetPosition();
-		vs.push_back(pos.x); vs.push_back(pos.y); vs.push_back(pos.z);
+		pos = (*iter)->transpose->GetPosition();
+		OpenGLHelper::AddVecToVector(vs, pos);
 		if (i == 4) {
-			vs.push_back(pos.x); vs.push_back(pos.y); vs.push_back(pos.z);
+			OpenGLHelper::AddVecToVector(vs, pos);
 			i = 1;
 		}
 		i++;
 	}
-	numberOfVertexes = vs.size()/3;
+
+	if (vs.size() / 3 % 4 == 1) {
+		vs.push_back(pos.x); vs.push_back(pos.y); vs.push_back(pos.z);
+	}
+
+	if (vs.size() / 3 % 4 == 2) {
+		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
+		glm::vec3 p0 = OpenGLHelper::TakeLastVecFromVector(vs);
+		glm::vec3 pMid = (p1 + p0) * 0.5f;
+		
+		OpenGLHelper::AddVecToVector(vs, p0);
+		OpenGLHelper::AddVecToVector(vs, pMid);
+		OpenGLHelper::AddVecToVector(vs, p1);
+	}
+
+	if (vs.size() / 3 % 4 == 3) {
+		glm::vec3 p2 = OpenGLHelper::TakeLastVecFromVector(vs);
+		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
+		glm::vec3 p0 = OpenGLHelper::TakeLastVecFromVector(vs);
+		glm::vec3 pMid_1 = (p0 + 2.0f * p1) / 3.0f;
+		glm::vec3 pMid_2 = (2.0f * p1 + p2) / 3.0f;
+
+		OpenGLHelper::AddVecToVector(vs, p0);
+		OpenGLHelper::AddVecToVector(vs, pMid_1);
+		OpenGLHelper::AddVecToVector(vs, pMid_2);
+		OpenGLHelper::AddVecToVector(vs, p2);
+	}
+
+	numberOfVertexes = vs.size() / 3;
+
 	VBO vbo(vs, GL_DYNAMIC_DRAW);
 
 	vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);

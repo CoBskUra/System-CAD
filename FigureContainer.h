@@ -21,7 +21,7 @@ public:
 	int ContainerSize();
 	void SomethingHasChange();
 	bool IsSomethingChange();
-
+	void virtual MarkFigure(Figure* figure);
 	void virtual Update();
 
 	virtual ~FigureContainer();

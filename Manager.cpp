@@ -47,11 +47,11 @@ void Manager::Draw()
 			ImGui::Separator();
 		}
 
-		figuresVector.figures[i]->Draw(*currentCamera);
+		figuresVector.figures[i]->Draw(window, *currentCamera);
 	}
 
-	centerPoint.Draw(*currentCamera);
-	cursor.Draw(*currentCamera);
+	centerPoint.Draw(window, *currentCamera);
+	cursor.Draw(window, *currentCamera);
 }
 
 Manager::~Manager()
@@ -59,14 +59,15 @@ Manager::~Manager()
 }
 
 
-int Manager::TheClosetFigureToMouse(const char* figureType)
+int Manager::TheClosetFigureToMouse(FigureType figureType)
 {
 	auto castMousePos = OpenGLHelper::MousePositionOnScreen(window);
 	float minLength = M_FLOAT_MAX;
 	int id = -1;
 
 	for (int i = 0; i < figuresVector.Size(); i++) {
-		if (strcmp(figuresVector.figures[i]->GetType(), figureType) == 0) {
+		if (figuresVector.figures[i]->GetType() == figureType || FigureType::Any == figureType) {
+
 			auto posOnScreen = figuresVector.figures[i]->PositionOnScreen(*currentCamera);
 			float length = powf(posOnScreen.x - castMousePos.x, 2) + powf(posOnScreen.y - castMousePos.y, 2);
 			if (minLength > length)
@@ -145,6 +146,9 @@ void Manager::Select(int i)
 {
 	if (!centerPoint.Contain(figuresVector.figures[i])) {
 		centerPoint.Add(figuresVector.figures[i]);
+		for (auto iter = figuresVector.activeFigureContainers.begin(); iter != figuresVector.activeFigureContainers.end(); iter++) {
+			iter->second->Add(figuresVector.figures[i]);
+		}
 	}
 	else {
 		centerPoint.Erase(figuresVector.figures[i]);
@@ -160,7 +164,7 @@ void Manager::ProcesInput()
 
 	if (mouseLeftFirstClick && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 
-		int id = TheClosetFigureToMouse("Point");
+		int id = TheClosetFigureToMouse(FigureType::Any);
 		if (id >= 0) {
 			Select(id);
 		}
@@ -171,7 +175,7 @@ void Manager::ProcesInput()
 		mouseLeftFirstClick = true;
 	}
 
-
+	centerPoint.Inputs(window, *currentCamera);
 	cursor.Inputs(window, *currentCamera);
 }
 

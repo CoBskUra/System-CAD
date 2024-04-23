@@ -70,6 +70,12 @@
     <Filter Include="Source Files\Container">
       <UniqueIdentifier>{420a9d0c-a22e-4d5d-b714-b5e155273afc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Bezier\3_stopnia">
+      <UniqueIdentifier>{a0e0c2af-d176-4d0f-a511-749426d8ac00}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Shaders\Bezier\2_stopnia">
+      <UniqueIdentifier>{def565c7-caa2-4149-9423-6be3bc876306}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -245,6 +251,9 @@
     <ClInclude Include="FigureContainer.h">
       <Filter>Header Files\Container</Filter>
     </ClInclude>
+    <ClInclude Include="FigureType.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cursor_vert.glsl">
@@ -277,17 +286,23 @@
     <None Include="bezierCurve_frag.glsl">
       <Filter>Resource Files\Shaders\Bezier</Filter>
     </None>
-    <None Include="bezier3d_vert.glsl">
-      <Filter>Resource Files\Shaders\Bezier</Filter>
+    <None Include="bezier3d_tc.glsl">
+      <Filter>Resource Files\Shaders\Bezier\3_stopnia</Filter>
     </None>
     <None Include="bezier3d_te.glsl">
+      <Filter>Resource Files\Shaders\Bezier\3_stopnia</Filter>
+    </None>
+    <None Include="bezier3d_vert.glsl">
       <Filter>Resource Files\Shaders\Bezier</Filter>
     </None>
     <None Include="bezier3d_frag.glsl">
       <Filter>Resource Files\Shaders\Bezier</Filter>
     </None>
-    <None Include="bezier3d_tc.glsl">
-      <Filter>Resource Files\Shaders\Bezier</Filter>
+    <None Include="bezier2d_te.glsl">
+      <Filter>Resource Files\Shaders\Bezier\2_stopnia</Filter>
+    </None>
+    <None Include="bezier2d_tc.glsl">
+      <Filter>Resource Files\Shaders\Bezier\2_stopnia</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -12,19 +12,19 @@
 class Torus: public Figure3D
 {
 public:
-	Torus(Shader* shader,  const char* name) : Figure3D(shader, "##Torus", "Torus")
+	Torus(Shader* shader,  const char* name) : Figure3D(shader, "##Torus", FigureType::Torus)
 	{
 		CreateTorus();
 		SetName(name);
 	}
 
-	Torus(Shader* shader): Figure3D(shader, "##Torus", "Torus")
+	Torus(Shader* shader): Figure3D(shader, "##Torus", FigureType::Torus)
 	{
 		CreateTorus();
 		SetName("Torus");
 	}
 
-	void virtual Draw(const Camera& camera) {
+	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		shader->Activate();
 		vao.Bind();
 

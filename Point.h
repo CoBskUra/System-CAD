@@ -3,19 +3,19 @@
 
 class Point : public Figure {
 public:
-	Point(Shader* shader, const char* name) : Point(shader, "##Point", "Point")
+	Point(Shader* shader, const char* name) : Point(shader, "##Point", FigureType::Point)
 	{
 		CreatePoint();
 		SetName(name);
 	}
 
-	Point(Shader* shader) : Point(shader, "##Point", "Point")
+	Point(Shader* shader) : Point(shader, "##Point", FigureType::Point)
 	{
 		CreatePoint();
 		SetName("Point");
 	}
 
-	void virtual Draw(const Camera& camera) {
+	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		shader->Activate();
 		vao.Bind();
 
@@ -31,7 +31,7 @@ public:
 		return false;
 	}
 protected:
-	Point(Shader* shader, const char* uniqueName, const char* type) : Figure(shader, uniqueName, type){
+	Point(Shader* shader, const char* uniqueName, FigureType type) : Figure(shader, uniqueName, type){
 
 	}
 

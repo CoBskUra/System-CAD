@@ -31,13 +31,13 @@ class Manager {
 			figures.push_back(figure);
 			names.push_back(figure->name);
 
-			if (figure->GetType() == "BezierCurve")
+			if (figure->GetType() == FigureType::BezierCurve)
 			{
-				figureContainers.insert({ figure->GetUniqueName(), (BezierCurve*)figure });
+				figureContainers.insert({ figure->GetUniqueName(),(BezierCurve*)figure });
 			}
 			else {
 				std::map<std::string, FigureContainer*>::iterator iter;
-				for (iter = figureContainers.begin(); iter != figureContainers.end(); iter++) {
+				for (iter = activeFigureContainers.begin(); iter != activeFigureContainers.end(); iter++) {
 					iter->second->Add(figure);
 				}
 			}
@@ -105,12 +105,11 @@ class Manager {
 	bool mouseLeftFirstClick = true;
 	glm::vec2 mouseLastPosition;
 
-	float minLengthFromMouse = 0.0004f;
-	int TheClosetFigureToMouse(const char* figureType);
+	float minLengthFromMouse = 0.001f;
+	int TheClosetFigureToMouse(FigureType figureType);
 	
 	void CreateFiguresInterfers();
 	void SelectableList();
-	void DeleteSelected();
 
 	void Select(int i);
 	//void DrawSpecialFigure(Figure& figure);

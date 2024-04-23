@@ -18,8 +18,8 @@
 #include "Manager.h"
 #include "Point.h"
 
-const unsigned int width = 1600;
-const unsigned int height = 1024;
+unsigned int width = 1600;
+unsigned int height = 1024;
 
 Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
 
@@ -96,7 +96,7 @@ GLFWwindow* Init() {
 		return NULL;
 	}
 	glfwMakeContextCurrent(window);
-	//glfwSetWindowSizeCallback(window, ResizeCallBack);
+	glfwSetWindowSizeCallback(window, ResizeCallBack);
 
 	gladLoadGL();
 	glViewport(0, 0, width, height);
@@ -125,10 +125,10 @@ GLFWwindow* Init() {
 // PóŸniej tutaj dam resize, mam tylko problem, ¿e po risie Ÿle 
 // kursor po klikniêciu ustawia mi siê w z³ym miejscu
 // 
-//void ResizeCallBack(GLFWwindow* window, int w, int h)
-//{
-//	width = w;
-//	height = h;
-//	glViewport(0, 0, width, height);
-//	camera.SetAspect(width / (float)height);
-//}
+void ResizeCallBack(GLFWwindow* window, int w, int h)
+{
+	width = w;
+	height = h;
+	glViewport(0, 0, width, height);
+	camera.SetAspect(width / (float)height);
+}
