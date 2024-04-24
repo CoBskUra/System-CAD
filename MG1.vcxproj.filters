@@ -76,6 +76,12 @@
     <Filter Include="Resource Files\Shaders\Bezier\2_stopnia">
       <UniqueIdentifier>{def565c7-caa2-4149-9423-6be3bc876306}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\InfiniteGride">
+      <UniqueIdentifier>{14002069-9c0a-4441-8b85-960f42427596}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\StaticShaders">
+      <UniqueIdentifier>{18ada3fb-a6ab-44ce-af52-2381340983ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -254,6 +260,9 @@
     <ClInclude Include="FigureType.h">
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
+    <ClInclude Include="StaticShaders.h">
+      <Filter>Header Files\StaticShaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cursor_vert.glsl">
@@ -303,6 +312,12 @@
     </None>
     <None Include="bezier2d_tc.glsl">
       <Filter>Resource Files\Shaders\Bezier\2_stopnia</Filter>
+    </None>
+    <None Include="infinityGrid_frag.glsl">
+      <Filter>Resource Files\Shaders\InfiniteGride</Filter>
+    </None>
+    <None Include="infinityGrid_vert.glsl">
+      <Filter>Resource Files\Shaders\InfiniteGride</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

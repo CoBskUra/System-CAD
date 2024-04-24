@@ -22,6 +22,15 @@ unsigned int width = 1600;
 unsigned int height = 1024;
 
 Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
+std::vector<float> infinityGrid {
+	1, 1, 0,
+	-1, -1, 0,
+	-1, 1, 0,
+
+	-1, -1, 0,
+	1, 1, 0,
+	1, -1, 0
+};
 
 GLFWwindow* Init();
 void ResizeCallBack(GLFWwindow* window, int w, int h);
@@ -32,9 +41,17 @@ int main()
 	if (window == NULL)
 		return -1;
 
-	auto shader = Shader("simple_vert.glsl", "simple_frag.glsl");
-	bool showTorus = true;
+	// infinity Grid
+	VAO vaoInfinityGrid;
+	vaoInfinityGrid.Bind();
+	VBO vboInfinityGrid(infinityGrid, GL_STATIC_DRAW);
 
+	vaoInfinityGrid.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+
+	vaoInfinityGrid.Unbind(); vboInfinityGrid.Unbind();
+	Shader infinityGridShader("infinityGrid_vert.glsl", "infinityGrid_frag.glsl");
+
+	////////////////////////////////
 	Manager manader(&camera, window);
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -51,13 +68,26 @@ int main()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		
+
+
 		manader.MenuInterferes();
 		manader.Draw();
 		manader.ProcesInput();
 
 		camera.Inputs(window);
 		camera.ActiveInterferes();
+		infinityGridShader.Activate();
+		vaoInfinityGrid.Bind();
+		glUniformMatrix4fv(glGetUniformLocation(infinityGridShader.ID, "camMatrixInvers"),
+			1, GL_FALSE, glm::value_ptr(camera.GetCameraMatrixInvers()));
+		camera.SaveMatrixToShader(infinityGridShader.ID);
+		glUniform1f(glGetUniformLocation(infinityGridShader.ID, "near"), camera.GetNearPlane());
+		glUniform1f(glGetUniformLocation(infinityGridShader.ID, "far"), camera.GetFarPlane());
 
+
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		vaoInfinityGrid.Unbind();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -118,6 +148,8 @@ GLFWwindow* Init() {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return window;
 }

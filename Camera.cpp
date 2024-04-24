@@ -353,6 +353,10 @@ float Camera::GetNearPlane() const {
 	return nearPlane;
 }
 
+float Camera::GetFarPlane() const {
+	return farPlane;
+}
+
 void Camera::SetAspect(float newAspect)
 {
 	hasBeenUpdated = true;

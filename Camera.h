@@ -31,6 +31,7 @@ public:
 	glm::vec3 GetOrientation() const;
 	glm::vec3 GetUp() const;
 	float GetNearPlane() const;
+	float GetFarPlane() const;
 	void SetAspect(float newAspect);
 
 private:

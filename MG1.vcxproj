@@ -210,6 +210,7 @@
     <ClInclude Include="Scale.h" />
     <ClInclude Include="ScaleImGui.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="StaticShaders.h" />
     <ClInclude Include="Torus.h" />
     <ClInclude Include="TransposeImGui.h" />
     <ClInclude Include="Transpose.h" />
@@ -225,6 +226,7 @@
     <None Include="bezier3d_vert.glsl" />
     <None Include="bezierCurve_frag.glsl" />
     <None Include="bezierCurve_vert.glsl" />
+    <None Include="infinityGrid_vert.glsl" />
     <None Include="cursor_geometry.glsl" />
     <None Include="cursor_vert.glsl" />
     <None Include="point_vert.glsl" />
@@ -233,6 +235,7 @@
     <None Include="default.vert" />
     <None Include="simple_vert.glsl" />
     <None Include="point_frag.glsl" />
+    <None Include="infinityGrid_frag.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MG1.rc" />
