@@ -52,7 +52,7 @@ public:
 	void Mark();
 	void virtual Delete();
 
-	bool AddContainer(FigureContainer* fc);
+	bool virtual AddContainer(FigureContainer* fc);
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
 

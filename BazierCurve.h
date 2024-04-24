@@ -27,6 +27,7 @@ public:
 
 	bool IsValid(Figure* figure) override;
 	void Update() override;
+	bool virtual AddContainer(FigureContainer* fc);
 
 protected:
 	BezierCurve(Shader* shader, const char* uniqueName, FigureType type);

@@ -85,7 +85,7 @@ FigureContainer::~FigureContainer()
 		selectedFigures.erase(selectedFigures.begin());
 		figure->UnMark();
 		figure->EraseContainer(this);
-		SomethingHasChange();
-		valueErased = true;
 	}
+	SomethingHasChange();
+	valueErased = true;
 }

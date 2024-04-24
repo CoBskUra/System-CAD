@@ -21,7 +21,7 @@
 unsigned int width = 1600;
 unsigned int height = 1024;
 
-Camera camera(width, height, glm::vec3(0.0f, 0.0f, -2.0f));
+Camera camera(width, height, glm::vec3(0.0f, 1.0f, -2.0f));
 std::vector<float> infinityGrid {
 	1, 1, 0,
 	-1, -1, 0,
@@ -77,6 +77,9 @@ int main()
 
 		camera.Inputs(window);
 		camera.ActiveInterferes();
+
+
+		// inifinity Grid
 		infinityGridShader.Activate();
 		vaoInfinityGrid.Bind();
 		glUniformMatrix4fv(glGetUniformLocation(infinityGridShader.ID, "camMatrixInvers"),
@@ -84,10 +87,9 @@ int main()
 		camera.SaveMatrixToShader(infinityGridShader.ID);
 		glUniform1f(glGetUniformLocation(infinityGridShader.ID, "near"), camera.GetNearPlane());
 		glUniform1f(glGetUniformLocation(infinityGridShader.ID, "far"), camera.GetFarPlane());
-
-
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		vaoInfinityGrid.Unbind();
+
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

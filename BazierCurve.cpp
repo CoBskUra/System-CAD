@@ -72,7 +72,6 @@ void BezierCurve::ActiveImGui() {
 				Erase(figure);
 				break;
 			}
-
 			i++;
 		}
 	}
@@ -87,15 +86,19 @@ bool BezierCurve::IsValid(Figure* figure) {
 	return figure->GetType() == FigureType::Point;
 }
 
-
-
-
 void BezierCurve::Update() {
 	if (!IsSomethingChange())
 		return;
 
 	CreateBezierCurve();
 	somethingHasChange = false;
+}
+
+bool BezierCurve::AddContainer(FigureContainer* fc)
+{
+	this->UnMark();
+	fc->Erase(this);
+	return fc->Add(*(FigureContainer*)this);
 }
 
 void BezierCurve::CreateBezierCurve() {

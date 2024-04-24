@@ -6,19 +6,14 @@ class Cursor : public Figure {
 public:
 	Cursor(Shader* shader, const char* name) : Figure(shader, "##Cursor", FigureType::Cursor)
 	{
+		color = glm::vec4(0.8, 0.8, 0.8, 0.6);
 		CreatePoint();
 		SetName(name);
-		color = glm::vec4(0, 1, 0, 1);
 		editAbleName = false;
 	}
 
-	Cursor(Shader* shader) : Figure(shader, "##Cursor", FigureType::Cursor)
-	{
-		CreatePoint();
-		SetName("Cursor");
-		editAbleName = false;
-		color = glm::vec4(0, 1, 0, 1);
-	}
+	Cursor(Shader* shader) : Cursor(shader, "Cursor")
+	{}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		shader->Activate();
@@ -26,9 +21,8 @@ public:
 
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
 		camera.SaveMatrixToShader(shader->ID);
-		glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_LINES, 0, 12);
 		vao.Unbind();
 	}
 
@@ -67,27 +61,27 @@ private:
 	void CreatePoint() {
 		std::vector<float> vs =
 		{
-		length , 0, 0,
-		0, length, 0,
-		0, 0, length,
-		-length, 0, 0,
-		0, -length, 0,
-		0, 0, -length };
-
-		std::vector<GLuint> ies =
-		{
-		0, 3,
-		1, 4,
-		2, 5
+		0, 0, 0,			1, 0, 0, 1,
+		length , 0, 0,		1, 0, 0, 1,
+		0, length, 0,		0, 1, 0, 1,
+		0, 0, 0,			0, 1, 0, 1,
+		0, 0, length,		0, 0, 1, 1,
+		0, 0, 0,			0, 0, 1, 1,
+		-length / 3, 0, 0,		color.r, 0.2, 0.2, color.a,
+		0, 0, 0,			color.r, 0.2, 0.2, color.a,
+		0, -length / 3, 0,		0.2, color.g, 0.2, color.a,
+		0, 0, 0,			0.2, color.g, 0.2, color.a,
+		0, 0, -length / 3, 		0.2, 0.2, color.b, color.a,
+		0, 0, 0, 			0.2, 0.2, color.b, color.a,
 		};
 
 
 		vao.Bind();
 		VBO vbo(vs, GL_STATIC_DRAW);
-		EBO ebo(ies);
 
-		vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+		vao.LinkAttrib(0, 3, GL_FLOAT, false, 7 * sizeof(float), 0);
+		vao.LinkAttrib(1, 4, GL_FLOAT, false, 7 * sizeof(float),(void*) (3 * sizeof(float)));
 
-		vao.Unbind(); vbo.Unbind(); ebo.Unbind();
+		vao.Unbind(); vbo.Unbind();
 	}
 };

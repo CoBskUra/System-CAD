@@ -227,7 +227,7 @@
     <None Include="bezierCurve_frag.glsl" />
     <None Include="bezierCurve_vert.glsl" />
     <None Include="infinityGrid_vert.glsl" />
-    <None Include="cursor_geometry.glsl" />
+    <None Include="cursor_frag.glsl" />
     <None Include="cursor_vert.glsl" />
     <None Include="point_vert.glsl" />
     <None Include="simple_frag.glsl" />

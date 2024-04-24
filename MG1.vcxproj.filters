@@ -265,10 +265,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cursor_vert.glsl">
-      <Filter>Resource Files\Shaders\cursorShader</Filter>
-    </None>
-    <None Include="cursor_geometry.glsl">
+    <None Include="cursor_frag.glsl">
       <Filter>Resource Files\Shaders\cursorShader</Filter>
     </None>
     <None Include="default.vert">
@@ -318,6 +315,9 @@
     </None>
     <None Include="infinityGrid_vert.glsl">
       <Filter>Resource Files\Shaders\InfiniteGride</Filter>
+    </None>
+    <None Include="cursor_vert.glsl">
+      <Filter>Resource Files\Shaders\cursorShader</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

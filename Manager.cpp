@@ -2,7 +2,7 @@
 
 Manager::Manager(Camera* camera, GLFWwindow* window):
 	window(window), PointShader("point_vert.glsl", "point_frag.glsl"),
-	CursorShader("point_vert.glsl", "point_frag.glsl"),
+	CursorShader("cursor_vert.glsl", "cursor_frag.glsl"),
 	centerPoint(&PointShader), cursor(&CursorShader)
 {
 	TorusShader = Shader({
@@ -17,6 +17,7 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 		});
 	currentCamera = camera;
 	centerPoint.color = glm::vec4(1, 0, 0, 1);
+	cursor.transpose->SetObjectPosition(0.5f, 1.2f, -1.0f);
 }
 
 void Manager::MenuInterferes()
