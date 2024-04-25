@@ -144,7 +144,13 @@
     <ClCompile Include="FigureContainer.cpp">
       <Filter>Source Files\Container</Filter>
     </ClCompile>
-    <ClCompile Include="BazierCurve.cpp">
+    <ClCompile Include="BezierC0.cpp">
+      <Filter>Source Files\Figures</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierC2.cpp">
+      <Filter>Source Files\Figures</Filter>
+    </ClCompile>
+    <ClCompile Include="VirtualPoint.cpp">
       <Filter>Source Files\Figures</Filter>
     </ClCompile>
   </ItemGroup>
@@ -251,7 +257,7 @@
     <ClInclude Include="QuaternionRotationImGui.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
-    <ClInclude Include="BazierCurve.h">
+    <ClInclude Include="BezierC0.h">
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
     <ClInclude Include="FigureContainer.h">
@@ -262,6 +268,18 @@
     </ClInclude>
     <ClInclude Include="StaticShaders.h">
       <Filter>Header Files\StaticShaders</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierC2.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCreator.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="FiguresVector.h">
+      <Filter>Header Files\Test</Filter>
+    </ClInclude>
+    <ClInclude Include="VirtualPoint.h">
+      <Filter>Header Files\Figures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

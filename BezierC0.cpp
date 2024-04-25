@@ -1,41 +1,44 @@
-#include "BazierCurve.h"
+#include "BezierC0.h"
 #include "OpenGLHelper.h"
 
-BezierCurve::BezierCurve(Shader* shader, const char* name) : BezierCurve(shader, "##BezierCurve", FigureType::BezierCurve)
-{
-	CreateBezierCurve();
-	SetName(name);
-}
-
-BezierCurve::BezierCurve(Shader* shader) : BezierCurve(shader, "##BezierCurve", FigureType::BezierCurve)
-{
-	CreateBezierCurve();
-	SetName("BezierCurve");
-}
-
-BezierCurve::BezierCurve(Shader* shader, const char* uniqueName, FigureType type) : Figure(shader, uniqueName, type)
+BezierC0::BezierC0(Shader* shader, const char* name) : BezierC0(shader, name,"##BezierC0", FigureType::BezierC0)
 {}
 
-void BezierCurve::Draw(GLFWwindow* window, const Camera& camera) {
+BezierC0::BezierC0(Shader* shader) : BezierC0(shader, "BezierC0")
+{}
+
+BezierC0::BezierC0(Shader* shader, const char* name, const char* uniqueName, FigureType type) : CenterPoint(shader, name, uniqueName, type)
+{
+	CreateBezier();
+	SetColor(glm::vec4(1, 0, 0, 1));
+}
+
+void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 	Update();
 	if (showBezierPol) {
 		shader->Activate();
 		vao.Bind();
 		{
+
+			auto showColor = GetShowColor();
 			camera.SaveMatrixToShader(shader->ID);
 			glUniform4f(glGetUniformLocation(shader->ID, "COLOR"),
-				color.x, color.y, color.z, color.w);
+				showColor.x, showColor.y, showColor.z, showColor.w);
 
 			glm::ivec2 windowSize;
 			glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
 			int max = windowSize.x > windowSize.y ? windowSize.x : windowSize.y;
 			glUniform1f(glGetUniformLocation(shader->ID, "resolution"), max*max);
-			glDrawArrays(GL_PATCHES, 0, numberOfVertexes);
+			for (int i = 0; i < 10; i++) {
+				glUniform1f(glGetUniformLocation(shader->ID, "numberOfSegments"), 10);
+				glUniform1f(glGetUniformLocation(shader->ID, "segmentId"), i);
+				glDrawArrays(GL_PATCHES, 0, numberOfVertexes);
+			}
 		}
 		vao.Unbind();
 	}
 
-	if (showBezierCurve) {
+	if (showBezierC0) {
 		lineDrawing.Activate();
 		vao.Bind();
 		{
@@ -49,59 +52,52 @@ void BezierCurve::Draw(GLFWwindow* window, const Camera& camera) {
 }
 
 
-void BezierCurve::ActiveImGui() {
+void BezierC0::ActiveImGui() {
 	ImGui::BeginGroup();
 	{
 		Figure::ActiveImGui();
-		if (ImGui::RadioButton("Show Bezier's Curve", showBezierCurve))
-			showBezierCurve = !showBezierCurve;
+		RotationInterfers();
+		ScaleInterfers();
+
+		if (ImGui::RadioButton("Show Bezier's Curve", showBezierC0))
+			ChangeShowBezierC0();
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Show Bezier's polynomial", showBezierPol))
-			showBezierPol = !showBezierPol;
+			ChangeShowBezierPol(); 
 
-		int i = 0;
-		for (std::set<Figure* >::iterator iter = selectedFigures.begin();
-			iter != selectedFigures.end(); iter++)
-		{
-			auto figure = (*iter);
-
-			char buf[100];
-			sprintf_s(buf, "%d. %s", i, figure->name);
-
-			if (ImGui::Selectable(buf)) {
-				Erase(figure);
-				break;
-			}
-			i++;
-		}
+		SelectedPoints();
 	}
 	ImGui::EndGroup();
 }
 
-bool BezierCurve::Inputs(GLFWwindow* window, const Camera& camera) {
+bool BezierC0::Inputs(GLFWwindow* window, const Camera& camera) {
 	return false;
 }
 
-bool BezierCurve::IsValid(Figure* figure) {
+bool BezierC0::IsValid(Figure* figure) {
 	return figure->GetType() == FigureType::Point;
 }
 
-void BezierCurve::Update() {
+void BezierC0::Update() {
 	if (!IsSomethingChange())
 		return;
-
-	CreateBezierCurve();
+	CenterPoint::Update();
+	CreateBezier();
 	somethingHasChange = false;
 }
 
-bool BezierCurve::AddContainer(FigureContainer* fc)
+bool BezierC0::AddContainer(FigureContainer* fc)
 {
 	this->UnMark();
 	fc->Erase(this);
 	return fc->Add(*(FigureContainer*)this);
 }
 
-void BezierCurve::CreateBezierCurve() {
+void BezierC0::MarkFigure(Figure* f)
+{
+}
+
+void BezierC0::CreateBezier() {
 	vao.Reactive();
 	vao.Bind();
 
@@ -155,4 +151,33 @@ void BezierCurve::CreateBezierCurve() {
 	vao.Unbind(); vbo.Unbind();
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
+}
+
+void BezierC0::SelectedPoints()
+{
+	int i = 0;
+	for (std::set<Figure* >::iterator iter = selectedFigures.begin();
+		iter != selectedFigures.end(); iter++)
+	{
+		auto figure = (*iter);
+
+		char buf[100];
+		sprintf_s(buf, "%d. %s", i, figure->name);
+
+		if (ImGui::Selectable(buf)) {
+			Erase(figure);
+			break;
+		}
+		i++;
+	}
+}
+
+void BezierC0::ChangeShowBezierC0()
+{
+	showBezierC0 = !showBezierC0;
+}
+
+void BezierC0::ChangeShowBezierPol()
+{
+	showBezierPol = !showBezierPol;
 }

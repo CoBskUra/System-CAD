@@ -15,6 +15,15 @@ public:
 		auto castMousePos = glm::vec2(mousPos.x - windowSize.x * 0.5f, -mousPos.y + windowSize.y * 0.5f);
 		return glm::vec2(castMousePos.x / (windowSize.x * 0.5f), castMousePos.y / (windowSize.y * 0.5f));
 	}
+
+	static float QuadraticDistanceFromMouse(GLFWwindow* window, const Camera& camera, const Transpose& transpose) {
+		glm::vec2 mousePosOnScreen = MousePositionOnScreen( window);
+		glm::vec4 objectPosOnScreen = camera.GetCameraMatrix() * transpose.Get() * glm::vec4(0, 0, 0, 1);
+		objectPosOnScreen /= objectPosOnScreen.w;
+
+		float length = powf(objectPosOnScreen.x - mousePosOnScreen.x, 2) + powf(objectPosOnScreen.y - mousePosOnScreen.y, 2);
+		return length;
+	}
 	
 	static void AddVecToVector(std::vector<float>& vector, const glm::vec3& pos) {
 		vector.push_back(pos.x); vector.push_back(pos.y); vector.push_back(pos.z);

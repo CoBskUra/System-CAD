@@ -8,13 +8,14 @@ public:
 	void ActiveInterferes() {
 		ImGui::BeginGroup();
 		{
+			glm::vec3 objectPositionCopy = ObjectPosition;
 			ImGui::Text("Translate");
-			if (ImGui::DragFloat("x:", &ObjectPosition.x, 0.1f))
-				SetObjectPosition(ObjectPosition);
-			if (ImGui::DragFloat("y:", &ObjectPosition.y, 0.1f))
-				SetObjectPosition(ObjectPosition);
-			if (ImGui::DragFloat("z:", &ObjectPosition.z, 0.1f))
-				SetObjectPosition(ObjectPosition);
+			if (ImGui::DragFloat("x:", &objectPositionCopy.x, 0.1f))
+				SetObjectPosition(objectPositionCopy);
+			if (ImGui::DragFloat("y:", &objectPositionCopy.y, 0.1f))
+				SetObjectPosition(objectPositionCopy);
+			if (ImGui::DragFloat("z:", &objectPositionCopy.z, 0.1f))
+				SetObjectPosition(objectPositionCopy);
 		}
 		ImGui::EndGroup();
 	}

@@ -155,7 +155,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BazierCurve.cpp" />
+    <ClCompile Include="BezierC0.cpp" />
+    <ClCompile Include="BezierC2.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Figure3D.cpp" />
@@ -176,9 +177,11 @@
     <ClCompile Include="Scale.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="Transpose.cpp" />
+    <ClCompile Include="VirtualPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BazierCurve.h" />
+    <ClInclude Include="BezierC0.h" />
+    <ClInclude Include="BezierC2.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CanterPoint.h" />
     <ClInclude Include="Constants.h" />
@@ -188,6 +191,7 @@
     <ClInclude Include="Figure3D.h" />
     <ClInclude Include="FigureContainer.h" />
     <ClInclude Include="FigureType.h" />
+    <ClInclude Include="FiguresVector.h" />
     <ClInclude Include="Libraries\include\ImGui\imconfig.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui_impl_glfw.h" />
@@ -210,12 +214,14 @@
     <ClInclude Include="Scale.h" />
     <ClInclude Include="ScaleImGui.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderCreator.h" />
     <ClInclude Include="StaticShaders.h" />
     <ClInclude Include="Torus.h" />
     <ClInclude Include="TransposeImGui.h" />
     <ClInclude Include="Transpose.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
+    <ClInclude Include="VirtualPoint.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="bezier2d_tc.glsl" />

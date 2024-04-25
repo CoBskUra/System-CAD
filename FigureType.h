@@ -5,5 +5,6 @@ enum class FigureType {
 	Torus,
 	Cursor,
 	CenterPoint,
-	BezierCurve
+	BezierC0,
+	BezierC2
 };

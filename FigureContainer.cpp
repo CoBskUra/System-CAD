@@ -20,6 +20,10 @@ bool FigureContainer::Add(Figure* figure) {
 	return pair.second;
 }
 
+bool FigureContainer::Add(FigureContainer* figureCoatiner) {
+	return Add(*figureCoatiner);
+}
+
 bool FigureContainer::Add(const FigureContainer& figureCoatiner)
 {
 	bool addAny = false;
@@ -53,6 +57,22 @@ bool FigureContainer:: Contain(Figure* figure) {
 	return selectedFigures.find(figure) != selectedFigures.end();
 }
 
+void FigureContainer::Clear()
+{
+	while (selectedFigures.begin() != selectedFigures.end())
+	{
+		auto figure = *selectedFigures.begin();
+		selectedFigures.erase(selectedFigures.begin());
+		figure->UnMark();
+		figure->EraseContainer(this);
+	}
+	SomethingHasChange();
+	valueErased = true;
+
+	selectedFigures.clear();
+	orderdFigures.clear();
+}
+
 int FigureContainer::ContainerSize()
 {
 	return selectedFigures.size();
@@ -77,15 +97,12 @@ void FigureContainer::Update()
 {
 }
 
+Figure* FigureContainer::At(int i)
+{
+	return orderdFigures.at(i);
+}
+
 FigureContainer::~FigureContainer()
 {
-	while (selectedFigures.begin() != selectedFigures.end())
-	{
-		auto figure = *selectedFigures.begin();
-		selectedFigures.erase(selectedFigures.begin());
-		figure->UnMark();
-		figure->EraseContainer(this);
-	}
-	SomethingHasChange();
-	valueErased = true;
+	Clear();
 }

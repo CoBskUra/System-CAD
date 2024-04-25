@@ -19,9 +19,15 @@ class FigureContainer;
 
 class Figure: protected TransposeImGui
 {
+private:
+	glm::vec4 showColor;
+	glm::vec4 color{ 1,1,1,1 };
+	static int count;
+	std::string UniqueName = "#Figura";
+	std::set<FigureContainer*> containIn;
+	bool mark = false;
 public:
 	char name[100] = "Figura";
-	glm::vec4 color;
 	Shader* shader;
 	TransposeImGui* transpose;
 
@@ -31,6 +37,8 @@ public:
 	glm::mat4x4 virtual GetModelMatrix();
 	glm::mat4x4 virtual GetModelMatrixInvers();
 	FigureType GetType() const;
+	glm::vec4 GetShowColor() const;
+	void SetColor(glm::vec4 newColor);
 
 	virtual ~Figure();
 
@@ -56,18 +64,13 @@ public:
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
 
-
 protected:
+	void virtual SetObjectPosition(float x, float y, float z);
 	bool editAbleName = true;
 	Figure(Shader* shader, const char* uniqueName, FigureType type);
 
 	FigureType Type = FigureType::Figure;
 	VAO vao;
 	const int id;
-private:
-	void SetObjectPosition(float x, float y, float z) override;
-	static int count;
-	std::string UniqueName = "#Figura";
-	std::set<FigureContainer*> containIn;
 };
 #endif

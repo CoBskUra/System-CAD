@@ -7,6 +7,7 @@ int Figure::count = 0;
 Figure::Figure(Shader* shader, const char* uniqueName, FigureType type) :  Figure(shader) {
 	UniqueName = uniqueName + std::to_string(id);
 	Type = type;
+	showColor = color;
 }
 
 Figure::Figure(Shader* shader) : id(count), transpose(this) {
@@ -15,6 +16,8 @@ Figure::Figure(Shader* shader) : id(count), transpose(this) {
 
 	count++;
 	UniqueName += std::to_string(id);
+	Type = FigureType::Figure;
+	showColor = color;
 }
 
 std::string Figure::GetUniqueName() {
@@ -34,6 +37,21 @@ glm::mat4x4 Figure::GetModelMatrixInvers()
 FigureType Figure::GetType() const
 {
 	return Type;
+}
+
+glm::vec4 Figure::GetShowColor() const
+{
+	return showColor;
+}
+
+void Figure::SetColor(glm::vec4 newColor)
+{
+	color = newColor;
+	if (!mark)
+	{
+		showColor = color;
+		InformContainers();
+	}
 }
 
 Figure::~Figure()
@@ -97,11 +115,11 @@ void Figure::SetName(const char* newName) {
 }
 
 void Figure::UnMark() {
-	this->color = glm::vec4(1, 1, 1, 1);
+	this->showColor = color;
 }
 
 void Figure::Mark() {
-	this->color = glm::vec4(1, 0.8f, 0, 1);
+	this->showColor = glm::vec4(1, 0.8f, 0, 1);
 }
 
 void  Figure::Delete() {
@@ -130,6 +148,7 @@ void Figure::InformContainers()
 		(*iter)->SomethingHasChange();
 	}
 }
+
 
 void Figure::SetObjectPosition(float x, float y, float z)
 {

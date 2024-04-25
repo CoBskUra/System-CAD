@@ -16,7 +16,7 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}
 		});
 	currentCamera = camera;
-	centerPoint.color = glm::vec4(1, 0, 0, 1);
+	centerPoint.SetColor( glm::vec4(1, 0, 0, 1));
 	cursor.transpose->SetObjectPosition(0.5f, 1.2f, -1.0f);
 }
 
@@ -87,25 +87,32 @@ int Manager::TheClosetFigureToMouse(FigureType figureType)
 
 void Manager::CreateFiguresInterfers()
 {
-	if (ImGui::Button("Create Torus", ImVec2(100, 20))) {
+	if (ImGui::Button("Torus", ImVec2(100, 20))) {
 
 		Torus* torus = new Torus(&TorusShader);
 		torus->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(torus);
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Create Point", ImVec2(100, 20))) {
+	if (ImGui::Button("Point", ImVec2(100, 20))) {
 
 		Point* point = new Point(&PointShader);
 		point->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(point);
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Create Bezier Curve", ImVec2(100, 20))) {
-		BezierCurve* bezierCurve = new BezierCurve(&BezierShader);
-		bezierCurve->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		figuresVector.AddFigure(bezierCurve);
-		bezierCurve->Add(centerPoint);
+	if (ImGui::Button("Bezier C0", ImVec2(100, 20))) {
+		BezierC0* Bezier = new BezierC0(&BezierShader);
+		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
+		figuresVector.AddFigure(Bezier);
+		Bezier->Add(centerPoint);
+	}
+
+	if (ImGui::Button("Bezier C2", ImVec2(100, 20))) {
+		BezierC2* Bezier = new BezierC2(&BezierShader);
+		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
+		figuresVector.AddFigure(Bezier);
+		Bezier->Add(centerPoint);
 	}
 }
 
@@ -175,6 +182,9 @@ void Manager::ProcesInput()
 	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 		mouseLeftFirstClick = true;
 	}
+
+	for (int i = 0; i < figuresVector.Size(); i++)
+		figuresVector.at(i)->Inputs(window, *currentCamera);
 
 	centerPoint.Inputs(window, *currentCamera);
 	cursor.Inputs(window, *currentCamera);

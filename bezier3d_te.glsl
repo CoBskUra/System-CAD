@@ -2,7 +2,8 @@
 
 layout (equal_spacing ,isolines) in;
 
-
+uniform float numberOfSegments;
+uniform float segmentId;
 uniform mat4 CAM_MATRIX;
 
 void main()
@@ -13,7 +14,8 @@ void main()
     vec3 p2 = gl_in[2].gl_Position.xyz;
     vec3 p3 = gl_in[3].gl_Position.xyz;
     
-    float t = gl_TessCoord.x;
+    float t = (1 / numberOfSegments) *segmentId +  gl_TessCoord.x / numberOfSegments;
+
 
     float t1 = (1.0 - t);
     float t2 = t * t;

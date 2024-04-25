@@ -6,7 +6,7 @@ class Cursor : public Figure {
 public:
 	Cursor(Shader* shader, const char* name) : Figure(shader, "##Cursor", FigureType::Cursor)
 	{
-		color = glm::vec4(0.8, 0.8, 0.8, 0.6);
+		SetColor( glm::vec4(0.8, 0.8, 0.8, 0.6));
 		CreatePoint();
 		SetName(name);
 		editAbleName = false;
@@ -59,6 +59,8 @@ public:
 private:
 	const float length = 0.25f;
 	void CreatePoint() {
+
+		auto showColor = GetShowColor();
 		std::vector<float> vs =
 		{
 		0, 0, 0,			1, 0, 0, 1,
@@ -67,12 +69,12 @@ private:
 		0, 0, 0,			0, 1, 0, 1,
 		0, 0, length,		0, 0, 1, 1,
 		0, 0, 0,			0, 0, 1, 1,
-		-length / 3, 0, 0,		color.r, 0.2, 0.2, color.a,
-		0, 0, 0,			color.r, 0.2, 0.2, color.a,
-		0, -length / 3, 0,		0.2, color.g, 0.2, color.a,
-		0, 0, 0,			0.2, color.g, 0.2, color.a,
-		0, 0, -length / 3, 		0.2, 0.2, color.b, color.a,
-		0, 0, 0, 			0.2, 0.2, color.b, color.a,
+		-length / 3, 0, 0,		showColor.r, 0.2, 0.2, showColor.a,
+		0, 0, 0,			showColor.r, 0.2, 0.2, showColor.a,
+		0, -length / 3, 0,		0.2, showColor.g, 0.2, showColor.a,
+		0, 0, 0,			0.2, showColor.g, 0.2, showColor.a,
+		0, 0, -length / 3, 		0.2, 0.2, showColor.b, showColor.a,
+		0, 0, 0, 			0.2, 0.2, showColor.b, showColor.a,
 		};
 
 

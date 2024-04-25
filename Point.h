@@ -18,10 +18,10 @@ public:
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		shader->Activate();
 		vao.Bind();
-
+		auto showColor = GetShowColor();
 		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), color.x, color.y, color.z, color.w);
+		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
 		camera.SaveMatrixToShader(shader->ID);
 		glDrawArrays(GL_POINTS, 0, 1);
 		vao.Unbind();
