@@ -34,7 +34,7 @@ void BezierC2::ActiveImGui()
 	if (ImGui::RadioButton("Show Virtual Points on sccene", showVirtualPoints))
 		showVirtualPoints = !showVirtualPoints;
 
-	BezierC0::ActiveImGui();
+	BezierBase::ActiveImGui();
 
 	if (showVirtualPointsInterfers) {
 		for (int i = 0; i < virtualPointsNumber; i++)
@@ -47,9 +47,6 @@ void BezierC2::ActiveImGui()
 	ImGui::PopID();
 }
 
-void BezierC2::SelectableList()
-{
-}
 
 bool BezierC2::Inputs(GLFWwindow* window, const Camera& camera)
 {
@@ -67,7 +64,7 @@ bool BezierC2::Inputs(GLFWwindow* window, const Camera& camera)
 }
 
 BezierC2::BezierC2(Shader* shader, const char* name, const char* uniqueName, FigureType type)
-	:BezierC0(shader, name, uniqueName, type), 
+	:BezierBase(shader, name, uniqueName, type),
 	point_shader{ ShaderCreator::CenterPoint() }, bezierC0_shader{ShaderCreator::Bezier_C0()},
 	innerBezierC0{&bezierC0_shader }
 {}
@@ -86,7 +83,7 @@ void BezierC2::CreateBezier()
 	{
 		for (int i = virtualPoints.size(); virtualPoints.size() < (ContainerSize() - 3) * 3 + 4; i++) {
 			VirtualPoint* p = new VirtualPoint(&point_shader);
-			p->SetColor(curveColor);
+			p->SetColor(virtualPointColor);
 			virtualPoints.push_back(p);
 			p->SetName(std::to_string(i).c_str());
 		}

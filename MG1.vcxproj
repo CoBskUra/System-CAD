@@ -155,6 +155,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BezierBase.cpp" />
     <ClCompile Include="BezierC0.cpp" />
     <ClCompile Include="BezierC2.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="VirtualPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BezierBase.h" />
     <ClInclude Include="BezierC0.h" />
     <ClInclude Include="BezierC2.h" />
     <ClInclude Include="Camera.h" />
@@ -192,6 +194,7 @@
     <ClInclude Include="FigureContainer.h" />
     <ClInclude Include="FigureType.h" />
     <ClInclude Include="FiguresVector.h" />
+    <ClInclude Include="Figure_ControlSelected.h" />
     <ClInclude Include="Libraries\include\ImGui\imconfig.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui_impl_glfw.h" />

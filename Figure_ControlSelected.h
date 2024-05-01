@@ -1,4 +1,15 @@
 #pragma once
+// zastanawiam siê by wyabstrachowaæ czêœci z centarPoint
+// tak by mo¿na by³o ³atwo kontrolowaæ dodane obiekty do
+// kontainera figur, mo¿na by te¿ pójœæ w ten sposób, ¿e 
+// ka¿da funkcja ma w sobie klasê która odpowiada tylko za 
+// specyficzny rodzaj wyœwietlania, kontrole imputu, itp.
+// ale probelm wystêpuje wtedy parê problemów
+// 1. trudniejsze debugowanie.
+// 2. Koniecznoœæ specyfikacji unikalnych klas dla obiektów.
+// 3. Jak nie unikalne to tworzymy misz masz kodu w funkcji i u¿ytych klas
+// 4. Potrzebne by by³y wskazniki wiêc gdzieæ w porgramie musia³bym przechowywaæ dane.
+// 5. Koniecznoœæ stworzenie fabryki, singeltona, podajnika.
 #include "Point.h"
 #include <map>
 #include <string>
@@ -6,24 +17,22 @@
 #include "OpenGLHelper.h"
 #include "QuaternionRotationImGui.h"
 
-class CenterPoint: public Point, public FigureContainer {
+class Figure_ControlSelected : public Figure, public FigureContainer {
 protected:
-	CenterPoint(Shader* shader, const char* name, const char* uniqueName, FigureType type):Point(shader, "##CenterPoint", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader, const char* name, const char* uniqueName, FigureType type) :Figure(shader, "##CenterPoint", FigureType::CenterPoint) {
 		SetName(name);
 		mouseLastPosition = glm::vec2{ 0 };
 	}
 public:
-	CenterPoint(Shader* shader, const char* name) : CenterPoint(shader, name, "##CenterPoint", FigureType::CenterPoint){
+	Figure_ControlSelected(Shader* shader, const char* name) : Figure_ControlSelected(shader, name, "##Figure_ControlSelected", FigureType::CenterPoint) {
 	}
 
-	CenterPoint(Shader* shader) : CenterPoint(shader, "CenterPoint", "##CenterPoint", FigureType::CenterPoint){
+	Figure_ControlSelected(Shader* shader) : Figure_ControlSelected(shader, "Figure_ControlSelected", "##Figure_ControlSelected", FigureType::CenterPoint) {
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
-		if (ContainerSize() > 0) {
+		if(IsSomethingChange())
 			Update();
-			Point::Draw(window, camera);
-		}
 	}
 
 	void virtual ActiveImGui() {
@@ -36,7 +45,7 @@ public:
 				ResetValues();
 			RotationInterfers();
 			ScaleInterfers();
-			
+
 		}
 		ImGui::EndGroup();
 		ImGui::PopID();
@@ -85,20 +94,18 @@ public:
 
 	void virtual Update()
 	{
-		if (somethingHasChange)
-		{
-			CalculateNewPosition();
+		CalculateNewPosition();
 
-			if (valueAdded || valueErased) {
-				ResetValues();
+		if (valueAdded || valueErased) {
+			ResetValues();
 
-				valueAdded = false;
-				valueErased = false;
-			}
-
-			somethingHasChange = false;
+			valueAdded = false;
+			valueErased = false;
 		}
+
+		somethingHasChange = false;
 	}
+
 protected:
 	void virtual SetObjectPosition(float x, float y, float z) {
 		Transpose::SetObjectPosition(x, y, z);
@@ -178,13 +185,6 @@ private:
 			return transpose->GetPosition();
 	}
 
-	
-
-	void MarkFigure(Figure* f) override{
-		f->Mark();
-	}
-
-	
 
 	void ResetValues() {
 		localQuaternion.Reset();
