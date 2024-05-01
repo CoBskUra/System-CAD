@@ -7,14 +7,15 @@ BezierC0::BezierC0(Shader* shader, const char* name) : BezierC0(shader, name,"##
 BezierC0::BezierC0(Shader* shader) : BezierC0(shader, "BezierC0")
 {}
 
-BezierC0::BezierC0(Shader* shader, const char* name, const char* uniqueName, FigureType type) : CenterPoint(shader, name, uniqueName, type)
+BezierC0::BezierC0(Shader* shader, const char* name, const char* uniqueName, FigureType type) : BezierBase(shader, name, uniqueName, type)
 {
 	CreateBezier();
 	SetColor(glm::vec4(1, 0, 0, 1));
 }
 
 void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
-	Update();
+	if(IsSomethingChange())
+		Update();
 	if (showBezierPol) {
 		shader->Activate();
 		vao.Bind();
@@ -51,52 +52,6 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 	}
 }
 
-
-void BezierC0::ActiveImGui() {
-	ImGui::BeginGroup();
-	{
-		Figure::ActiveImGui();
-		RotationInterfers();
-		ScaleInterfers();
-
-		if (ImGui::RadioButton("Show Bezier's Curve", showBezierC0))
-			ChangeShowBezierC0();
-		ImGui::SameLine();
-		if (ImGui::RadioButton("Show Bezier's polynomial", showBezierPol))
-			ChangeShowBezierPol(); 
-
-		SelectedPoints();
-	}
-	ImGui::EndGroup();
-}
-
-bool BezierC0::Inputs(GLFWwindow* window, const Camera& camera) {
-	return false;
-}
-
-bool BezierC0::IsValid(Figure* figure) {
-	return figure->GetType() == FigureType::Point;
-}
-
-void BezierC0::Update() {
-	if (!IsSomethingChange())
-		return;
-	CenterPoint::Update();
-	CreateBezier();
-	somethingHasChange = false;
-}
-
-bool BezierC0::AddContainer(FigureContainer* fc)
-{
-	this->UnMark();
-	fc->Erase(this);
-	return fc->Add(*(FigureContainer*)this);
-}
-
-void BezierC0::MarkFigure(Figure* f)
-{
-}
-
 void BezierC0::CreateBezier() {
 	vao.Reactive();
 	vao.Bind();
@@ -130,7 +85,7 @@ void BezierC0::CreateBezier() {
 	}
 
 	if (vs.size() / 3 % 4 == 3) {
-		glm::vec3 p2 = OpenGLHelper::TakeLastVecFromVector(vs);
+		/*glm::vec3 p2 = OpenGLHelper::TakeLastVecFromVector(vs);
 		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
 		glm::vec3 p0 = OpenGLHelper::TakeLastVecFromVector(vs);
 		glm::vec3 pMid_1 = (p0 + 2.0f * p1) / 3.0f;
@@ -139,7 +94,10 @@ void BezierC0::CreateBezier() {
 		OpenGLHelper::AddVecToVector(vs, p0);
 		OpenGLHelper::AddVecToVector(vs, pMid_1);
 		OpenGLHelper::AddVecToVector(vs, pMid_2);
-		OpenGLHelper::AddVecToVector(vs, p2);
+		OpenGLHelper::AddVecToVector(vs, p2);*/
+		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
+		OpenGLHelper::AddVecToVector(vs, p1);
+		OpenGLHelper::AddVecToVector(vs, p1);
 	}
 
 	numberOfVertexes = vs.size() / 3;
@@ -151,33 +109,4 @@ void BezierC0::CreateBezier() {
 	vao.Unbind(); vbo.Unbind();
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
-}
-
-void BezierC0::SelectedPoints()
-{
-	int i = 0;
-	for (std::set<Figure* >::iterator iter = selectedFigures.begin();
-		iter != selectedFigures.end(); iter++)
-	{
-		auto figure = (*iter);
-
-		char buf[100];
-		sprintf_s(buf, "%d. %s", i, figure->name);
-
-		if (ImGui::Selectable(buf)) {
-			Erase(figure);
-			break;
-		}
-		i++;
-	}
-}
-
-void BezierC0::ChangeShowBezierC0()
-{
-	showBezierC0 = !showBezierC0;
-}
-
-void BezierC0::ChangeShowBezierPol()
-{
-	showBezierPol = !showBezierPol;
 }

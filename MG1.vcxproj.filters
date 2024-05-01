@@ -153,6 +153,9 @@
     <ClCompile Include="VirtualPoint.cpp">
       <Filter>Source Files\Figures</Filter>
     </ClCompile>
+    <ClCompile Include="BezierBase.cpp">
+      <Filter>Source Files\Figures</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -279,6 +282,12 @@
       <Filter>Header Files\Test</Filter>
     </ClInclude>
     <ClInclude Include="VirtualPoint.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="Figure_ControlSelected.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierBase.h">
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
   </ItemGroup>
