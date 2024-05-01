@@ -18,18 +18,22 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 		Update();
 	if (showBezierPol) {
 		shader->Activate();
+
+		glm::ivec2 windowSize;
+		glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
+		int max = windowSize.x > windowSize.y ? windowSize.x : windowSize.y;
+		auto showColor = GetShowColor();
+
+		shader->Activate();
 		vao.Bind();
 		{
 
-			auto showColor = GetShowColor();
+			glPatchParameteri(GL_PATCH_VERTICES, 4);
 			camera.SaveMatrixToShader(shader->ID);
 			glUniform4f(glGetUniformLocation(shader->ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
 
-			glm::ivec2 windowSize;
-			glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
-			int max = windowSize.x > windowSize.y ? windowSize.x : windowSize.y;
-			glUniform1f(glGetUniformLocation(shader->ID, "resolution"), max*max);
+			glUniform1f(glGetUniformLocation(shader->ID, "resolution"), max * max);
 			for (int i = 0; i < 10; i++) {
 				glUniform1f(glGetUniformLocation(shader->ID, "numberOfSegments"), 10);
 				glUniform1f(glGetUniformLocation(shader->ID, "segmentId"), i);
@@ -37,6 +41,20 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 			}
 		}
 		vao.Unbind();
+
+		shader_bezier2D.Activate();
+		vao_bezier2D.Bind();
+		{
+			glPatchParameteri(GL_PATCH_VERTICES, 3);
+			auto showColor = GetShowColor();
+			camera.SaveMatrixToShader(shader_bezier2D.ID);
+			glUniform4f(glGetUniformLocation(shader_bezier2D.ID, "COLOR"),
+				showColor.x, showColor.y, showColor.z, showColor.w);
+
+			glUniform1f(glGetUniformLocation(shader_bezier2D.ID, "resolution"), max * max );
+			glDrawArrays(GL_PATCHES, 0, 3);
+		}
+		vao_bezier2D.Unbind();
 	}
 
 	if (showBezierC0) {
@@ -46,15 +64,27 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 			glUniform4f(glGetUniformLocation(lineDrawing.ID, "COLOR"),
 				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
 			camera.SaveMatrixToShader(lineDrawing.ID);
-			glDrawArrays(GL_LINE_STRIP, 0, numberOfVertexes ); //ContainerSize() + (ContainerSize() - 4) / 3
+			glDrawArrays(GL_LINE_STRIP, 0, numberOfVertexes); //ContainerSize() + (ContainerSize() - 4) / 3
 		}
 		vao.Unbind();
+
+
+		vao_bezier2D.Bind();
+		{
+			glUniform4f(glGetUniformLocation(lineDrawing.ID, "COLOR"),
+				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
+			camera.SaveMatrixToShader(lineDrawing.ID);
+			glDrawArrays(GL_LINE_STRIP, 0, 3); //ContainerSize() + (ContainerSize() - 4) / 3
+		}
+		vao_bezier2D.Unbind();
 	}
 }
 
 void BezierC0::CreateBezier() {
 	vao.Reactive();
-	vao.Bind();
+	vao_bezier2D.Reactive();
+	bezier2D_on = false;
+
 
 	glm::vec3 pos;
 	std::vector<float> vs;
@@ -95,13 +125,34 @@ void BezierC0::CreateBezier() {
 		OpenGLHelper::AddVecToVector(vs, pMid_1);
 		OpenGLHelper::AddVecToVector(vs, pMid_2);
 		OpenGLHelper::AddVecToVector(vs, p2);*/
+
+		//glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
+		//OpenGLHelper::AddVecToVector(vs, p1);
+		//OpenGLHelper::AddVecToVector(vs, p1);
+
+		glm::vec3 p2 = OpenGLHelper::TakeLastVecFromVector(vs);
 		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
-		OpenGLHelper::AddVecToVector(vs, p1);
-		OpenGLHelper::AddVecToVector(vs, p1);
+		glm::vec3 p0 = OpenGLHelper::TakeLastVecFromVector(vs);
+
+
+		std::vector<float> vs_bezier2D;
+
+		OpenGLHelper::AddVecToVector(vs_bezier2D, p0);
+		OpenGLHelper::AddVecToVector(vs_bezier2D, p1);
+		OpenGLHelper::AddVecToVector(vs_bezier2D, p2);
+
+		vao_bezier2D.Bind();
+		VBO vbo(vs_bezier2D, GL_DYNAMIC_DRAW);
+
+		vao_bezier2D.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+
+		vao_bezier2D.Unbind(); vbo.Unbind();
+		bezier2D_on = true;
 	}
 
 	numberOfVertexes = vs.size() / 3;
 
+	vao.Bind();
 	VBO vbo(vs, GL_DYNAMIC_DRAW);
 
 	vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
