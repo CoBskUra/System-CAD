@@ -19,8 +19,8 @@ class BezierC2: public BezierBase
 	bool showVirtualPoints = true;
 
 public:
-	BezierC2(Shader* shader, const char* name);
-	BezierC2(Shader* shader);
+	BezierC2(const char* name);
+	BezierC2();
 	virtual ~BezierC2();
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
@@ -31,7 +31,7 @@ public:
 	void virtual ChangeShowBezierC0();
 
 protected:
-	BezierC2(Shader* shader, const char* name, const char* uniqueName, FigureType type);
+	BezierC2( const char* name, const char* uniqueName, FigureType type);
 	void virtual ChangeShowBezierPol();
 };
 

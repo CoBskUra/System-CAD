@@ -15,8 +15,8 @@ public:
 	bool showBezierC0 = true;
 	bool showBezierPol = true;
 
-	BezierBase(Shader* shader, const char* name);
-	BezierBase(Shader* shader);
+	BezierBase( const char* name);
+	BezierBase();
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 	void virtual ActiveImGui();
@@ -30,7 +30,7 @@ public:
 	void virtual ChangeShowBezierC0();
 	void virtual ChangeShowBezierPol();
 protected:
-	BezierBase(Shader* shader, const char* name, const char* uniqueName, FigureType type);
+	BezierBase(const char* name, const char* uniqueName, FigureType type);
 	void virtual CreateBezier();
 	void SelectedPoints();
 };

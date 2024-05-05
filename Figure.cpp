@@ -4,14 +4,13 @@
 
 int Figure::count = 0;
 
-Figure::Figure(Shader* shader, const char* uniqueName, FigureType type) :  Figure(shader) {
+Figure::Figure( const char* uniqueName, FigureType type) :  Figure() {
 	UniqueName = uniqueName + std::to_string(id);
 	Type = type;
 	showColor = color;
 }
 
-Figure::Figure(Shader* shader) : id(count), transpose(this) {
-	this->shader = shader;
+Figure::Figure() : id(count), transpose(this) {
 	UnMark();
 
 	count++;
@@ -123,7 +122,6 @@ void Figure::Mark() {
 }
 
 void  Figure::Delete() {
-	vao.Delete();
 	while (containIn.begin() != containIn.end()) {
 		(*containIn.begin())->Erase(this);
 	}

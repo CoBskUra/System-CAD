@@ -1,13 +1,13 @@
 #include "BezierBase.h"
 #include "OpenGLHelper.h"
 
-BezierBase::BezierBase(Shader* shader, const char* name) : BezierBase(shader, name, "##BezierBase", FigureType::CenterPoint)
+BezierBase::BezierBase( const char* name) : BezierBase( name, "##BezierBase", FigureType::CenterPoint)
 {}
 
-BezierBase::BezierBase(Shader* shader) : BezierBase(shader, "BezierBase")
+BezierBase::BezierBase() : BezierBase("BezierBase")
 {}
 
-BezierBase::BezierBase(Shader* shader, const char* name, const char* uniqueName, FigureType type) : CenterPoint(shader, name, uniqueName, type)
+BezierBase::BezierBase(const char* name, const char* uniqueName, FigureType type) : CenterPoint(name, uniqueName, type)
 {
 	CreateBezier();
 	SetColor(glm::vec4(1, 0, 0, 1));

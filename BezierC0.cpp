@@ -1,13 +1,14 @@
 #include "BezierC0.h"
 #include "OpenGLHelper.h"
 
-BezierC0::BezierC0(Shader* shader, const char* name) : BezierC0(shader, name,"##BezierC0", FigureType::BezierC0)
+BezierC0::BezierC0( const char* name) : BezierC0(name,"##BezierC0", FigureType::BezierC0)
 {}
 
-BezierC0::BezierC0(Shader* shader) : BezierC0(shader, "BezierC0")
+BezierC0::BezierC0() : BezierC0("BezierC0")
 {}
 
-BezierC0::BezierC0(Shader* shader, const char* name, const char* uniqueName, FigureType type) : BezierBase(shader, name, uniqueName, type)
+
+BezierC0::BezierC0(const char* name, const char* uniqueName, FigureType type) : BezierBase( name, uniqueName, type)
 {
 	CreateBezier();
 	SetColor(glm::vec4(1, 0, 0, 1));
@@ -17,30 +18,28 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 	if(IsSomethingChange())
 		Update();
 	if (showBezierPol) {
-		shader->Activate();
-
 		glm::ivec2 windowSize;
 		glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
 		int max = windowSize.x > windowSize.y ? windowSize.x : windowSize.y;
 		auto showColor = GetShowColor();
 
-		shader->Activate();
-		vao.Bind();
+		shader_bezier3D->Activate();
+		vao_bezier3D.Bind();
 		{
 
 			glPatchParameteri(GL_PATCH_VERTICES, 4);
-			camera.SaveMatrixToShader(shader->ID);
-			glUniform4f(glGetUniformLocation(shader->ID, "COLOR"),
+			camera.SaveMatrixToShader(shader_bezier3D->ID);
+			glUniform4f(glGetUniformLocation(shader_bezier3D->ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
 
-			glUniform1f(glGetUniformLocation(shader->ID, "resolution"), max * max);
+			glUniform1f(glGetUniformLocation(shader_bezier3D->ID, "resolution"), max * max);
 			for (int i = 0; i < 10; i++) {
-				glUniform1f(glGetUniformLocation(shader->ID, "numberOfSegments"), 10);
-				glUniform1f(glGetUniformLocation(shader->ID, "segmentId"), i);
+				glUniform1f(glGetUniformLocation(shader_bezier3D->ID, "numberOfSegments"), 10);
+				glUniform1f(glGetUniformLocation(shader_bezier3D->ID, "segmentId"), i);
 				glDrawArrays(GL_PATCHES, 0, numberOfVertexes);
 			}
 		}
-		vao.Unbind();
+		vao_bezier3D.Unbind();
 
 		shader_bezier2D->Activate();
 		vao_bezier2D.Bind();
@@ -52,9 +51,10 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 				showColor.x, showColor.y, showColor.z, showColor.w);
 
 			glUniform1f(glGetUniformLocation(shader_bezier2D->ID, "resolution"), max * max );
-			for (int i = 0; i < 10; i++) {
-				glUniform1f(glGetUniformLocation(shader->ID, "numberOfSegments"), 10);
-				glUniform1f(glGetUniformLocation(shader->ID, "segmentId"), i);
+			int numberOfsegments = 5;
+			for (int i = 0; i < numberOfsegments; i++) {
+				glUniform1f(glGetUniformLocation(shader_bezier2D->ID, "numberOfSegments"), numberOfsegments);
+				glUniform1f(glGetUniformLocation(shader_bezier2D->ID, "segmentId"), i);
 				glDrawArrays(GL_PATCHES, 0, 3);
 			}
 		}
@@ -62,22 +62,22 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 	}
 
 	if (showBezierC0) {
-		lineDrawing.Activate();
-		vao.Bind();
+		lineDrawing->Activate();
+		vao_bezier3D.Bind();
 		{
-			glUniform4f(glGetUniformLocation(lineDrawing.ID, "COLOR"),
+			glUniform4f(glGetUniformLocation(lineDrawing->ID, "COLOR"),
 				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
-			camera.SaveMatrixToShader(lineDrawing.ID);
+			camera.SaveMatrixToShader(lineDrawing->ID);
 			glDrawArrays(GL_LINE_STRIP, 0, numberOfVertexes); //ContainerSize() + (ContainerSize() - 4) / 3
 		}
-		vao.Unbind();
+		vao_bezier3D.Unbind();
 
 
 		vao_bezier2D.Bind();
 		{
-			glUniform4f(glGetUniformLocation(lineDrawing.ID, "COLOR"),
+			glUniform4f(glGetUniformLocation(lineDrawing->ID, "COLOR"),
 				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
-			camera.SaveMatrixToShader(lineDrawing.ID);
+			camera.SaveMatrixToShader(lineDrawing->ID);
 			glDrawArrays(GL_LINE_STRIP, 0, 3); //ContainerSize() + (ContainerSize() - 4) / 3
 		}
 		vao_bezier2D.Unbind();
@@ -85,7 +85,7 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 }
 
 void BezierC0::CreateBezier() {
-	vao.Reactive();
+	vao_bezier3D.Reactive();
 	vao_bezier2D.Reactive();
 	bezier2D_on = false;
 
@@ -156,12 +156,12 @@ void BezierC0::CreateBezier() {
 
 	numberOfVertexes = vs.size() / 3;
 
-	vao.Bind();
+	vao_bezier3D.Bind();
 	VBO vbo(vs, GL_DYNAMIC_DRAW);
 
-	vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+	vao_bezier3D.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
-	vao.Unbind(); vbo.Unbind();
+	vao_bezier3D.Unbind(); vbo.Unbind();
 
 	glPatchParameteri(GL_PATCH_VERTICES, 4);
 }

@@ -1,12 +1,14 @@
 #include "BezierC2.h"
 
-BezierC2::BezierC2(Shader* shader, const char* name):BezierC2(shader, name, "##BezierC2", FigureType::BezierC2)
+BezierC2::BezierC2( const char* name):BezierC2(name, "##BezierC2", FigureType::BezierC2)
+{
+
+}
+
+BezierC2::BezierC2():BezierC2("BezierC2")
 {
 }
 
-BezierC2::BezierC2(Shader* shader):BezierC2(shader, "BezierC2")
-{
-}
 
 BezierC2::~BezierC2()
 {
@@ -63,9 +65,8 @@ bool BezierC2::Inputs(GLFWwindow* window, const Camera& camera)
 	return any;
 }
 
-BezierC2::BezierC2(Shader* shader, const char* name, const char* uniqueName, FigureType type)
-	:BezierBase(shader, name, uniqueName, type),
-	innerBezierC0{bezierC0_shader }
+BezierC2::BezierC2(const char* name, const char* uniqueName, FigureType type)
+	:BezierBase(name, uniqueName, type)
 {}
 
 void BezierC2::ChangeShowBezierPol()

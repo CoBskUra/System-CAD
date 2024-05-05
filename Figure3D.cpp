@@ -1,8 +1,8 @@
 #include "Figure3D.h"
 
-Figure3D::Figure3D(Shader* shader) : Figure(shader) {}
+Figure3D::Figure3D() : Figure() {}
 
-Figure3D::Figure3D(Shader* shader, const char* uniqueName, FigureType type) : Figure(shader, uniqueName, type) {}
+Figure3D::Figure3D(const char* uniqueName, FigureType type) : Figure(uniqueName, type) {}
 
 void Figure3D::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
 {

@@ -4,7 +4,7 @@
 
 class Cursor : public Figure {
 public:
-	Cursor(Shader* shader, const char* name) : Figure(shader, "##Cursor", FigureType::Cursor)
+	Cursor(const char* name) : Figure("##Cursor", FigureType::Cursor)
 	{
 		SetColor( glm::vec4(0.8, 0.8, 0.8, 0.6));
 		CreatePoint();
@@ -12,18 +12,18 @@ public:
 		editAbleName = false;
 	}
 
-	Cursor(Shader* shader) : Cursor(shader, "Cursor")
+	Cursor() : Cursor("Cursor")
 	{}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
-		shader->Activate();
-		vao.Bind();
+		cursorShader->Activate();
+		vaoCursor.Bind();
 
-		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
+		glUniformMatrix4fv(glGetUniformLocation(cursorShader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		camera.SaveMatrixToShader(shader->ID);
+		camera.SaveMatrixToShader(cursorShader->ID);
 		glDrawArrays(GL_LINES, 0, 12);
-		vao.Unbind();
+		vaoCursor.Unbind();
 	}
 
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera) {
@@ -57,6 +57,8 @@ public:
 
 
 private:
+	Shader* cursorShader = StaticShaders::GetPointerToCursor();
+	VAO vaoCursor;
 	const float length = 0.25f;
 	void CreatePoint() {
 
@@ -78,12 +80,12 @@ private:
 		};
 
 
-		vao.Bind();
+		vaoCursor.Bind();
 		VBO vbo(vs, GL_STATIC_DRAW);
 
-		vao.LinkAttrib(0, 3, GL_FLOAT, false, 7 * sizeof(float), 0);
-		vao.LinkAttrib(1, 4, GL_FLOAT, false, 7 * sizeof(float),(void*) (3 * sizeof(float)));
+		vaoCursor.LinkAttrib(0, 3, GL_FLOAT, false, 7 * sizeof(float), 0);
+		vaoCursor.LinkAttrib(1, 4, GL_FLOAT, false, 7 * sizeof(float),(void*) (3 * sizeof(float)));
 
-		vao.Unbind(); vbo.Unbind();
+		vaoCursor.Unbind(); vbo.Unbind();
 	}
 };

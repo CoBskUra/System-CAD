@@ -79,11 +79,11 @@
     <Filter Include="Resource Files\Shaders\InfiniteGride">
       <UniqueIdentifier>{14002069-9c0a-4441-8b85-960f42427596}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\StaticShaders">
-      <UniqueIdentifier>{18ada3fb-a6ab-44ce-af52-2381340983ea}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\StaticShaders">
       <UniqueIdentifier>{f9b7f8cc-f30e-4dc8-8481-b1b2d9e5e0a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ShaderRefrence">
+      <UniqueIdentifier>{18ada3fb-a6ab-44ce-af52-2381340983ea}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -279,12 +279,9 @@
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
     <ClInclude Include="StaticShaders.h">
-      <Filter>Header Files\StaticShaders</Filter>
+      <Filter>Header Files\ShaderRefrence</Filter>
     </ClInclude>
     <ClInclude Include="BezierC2.h">
-      <Filter>Header Files\Figures</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderCreator.h">
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
     <ClInclude Include="FiguresVector.h">
@@ -301,6 +298,9 @@
     </ClInclude>
     <ClInclude Include="InterpolatedBezier.h">
       <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderCreator.h">
+      <Filter>Header Files\ShaderRefrence</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

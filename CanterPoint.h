@@ -8,15 +8,15 @@
 
 class CenterPoint: public Point, public FigureContainer {
 protected:
-	CenterPoint(Shader* shader, const char* name, const char* uniqueName, FigureType type):Point(shader, "##CenterPoint", FigureType::CenterPoint) {
+	CenterPoint(const char* name, const char* uniqueName, FigureType type):Point("##CenterPoint", FigureType::CenterPoint) {
 		SetName(name);
 		mouseLastPosition = glm::vec2{ 0 };
 	}
 public:
-	CenterPoint(Shader* shader, const char* name) : CenterPoint(shader, name, "##CenterPoint", FigureType::CenterPoint){
+	CenterPoint(const char* name) : CenterPoint(name, "##CenterPoint", FigureType::CenterPoint){
 	}
 
-	CenterPoint(Shader* shader) : CenterPoint(shader, "CenterPoint", "##CenterPoint", FigureType::CenterPoint){
+	CenterPoint() : CenterPoint("CenterPoint", "##CenterPoint", FigureType::CenterPoint){
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {

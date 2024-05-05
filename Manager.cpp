@@ -2,8 +2,7 @@
 #include "StaticShaders.h"
 
 Manager::Manager(Camera* camera, GLFWwindow* window):
-	window(window),
-	centerPoint{ StaticShaders::GetPointerToPoint() }, cursor(StaticShaders::GetPointerToCursor())
+	window(window)
 {
 	StaticShaders::Init();
 	currentCamera = camera;
@@ -82,27 +81,27 @@ void Manager::CreateFiguresInterfers()
 {
 	if (ImGui::Button("Torus", ImVec2(100, 20))) {
 
-		Torus* torus = new Torus(StaticShaders::GetPointerToTorus());
+		Torus* torus = new Torus();
 		torus->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(torus);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Point", ImVec2(100, 20))) {
 
-		Point* point = new Point(StaticShaders::GetPointerToPoint());
+		Point* point = new Point();
 		point->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(point);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Bezier C0", ImVec2(100, 20))) {
-		BezierC0* Bezier = new BezierC0(StaticShaders::GetPointerToBezier3D());
+		BezierC0* Bezier = new BezierC0();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
 
 	if (ImGui::Button("Bezier C2", ImVec2(100, 20))) {
-		BezierC2* Bezier = new BezierC2(StaticShaders::GetPointerToBezier3D());
+		BezierC2* Bezier = new BezierC2();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(Bezier);
 		Bezier->Add(centerPoint);

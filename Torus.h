@@ -8,35 +8,34 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Constants.h"
 #include "Figure3D.h"
+#include "StaticShaders.h"
 
 class Torus: public Figure3D
 {
 public:
-	Torus(Shader* shader,  const char* name) : Figure3D(shader, "##Torus", FigureType::Torus)
+	Torus( const char* name) : Figure3D("##Torus", FigureType::Torus)
 	{
 		CreateTorus();
 		SetName(name);
 	}
 
-	Torus(Shader* shader): Figure3D(shader, "##Torus", FigureType::Torus)
+	Torus(): Torus("Torus")
 	{
-		CreateTorus();
-		SetName("Torus");
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
-		shader->Activate();
-		vao.Bind();
+		torusShader->Activate();
+		vao_torus.Bind();
 
 		auto showColor = GetShowColor();
 
-		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
+		glUniformMatrix4fv(glGetUniformLocation(torusShader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
-		camera.SaveMatrixToShader(shader->ID);
+		glUniform4f(glGetUniformLocation(torusShader->ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
+		camera.SaveMatrixToShader(torusShader->ID);
 
 		glDrawElements(GL_LINE_STRIP, 2*segment1*segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
-		vao.Unbind();
+		vao_torus.Unbind();
 	}
 
 	void virtual ActiveImGui() {
@@ -62,6 +61,8 @@ public:
 	}
 
 private:
+	Shader* torusShader = StaticShaders::GetPointerToTorus();
+	VAO vao_torus;
 	int segment1 = 10;
 	int segment2 = 10;
 	float R = 0.5f;
@@ -108,16 +109,16 @@ private:
 	}
 
 	void CreateTorus() {
-		vao.Reactive();
-		vao.Bind();
+		vao_torus.Reactive();
+		vao_torus.Bind();
 		auto vs = createTorusVertexBuffer();
 		auto ies = createTorusIndeces();
 		VBO vbo(vs, GL_DYNAMIC_DRAW);
 		EBO ebo(ies);
 
-		vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+		vao_torus.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
-		vao.Unbind(); vbo.Unbind(); ebo.Unbind();
+		vao_torus.Unbind(); vbo.Unbind(); ebo.Unbind();
 	}
 };
 #endif

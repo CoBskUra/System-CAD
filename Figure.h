@@ -28,10 +28,9 @@ private:
 	bool mark = false;
 public:
 	char name[100] = "Figura";
-	Shader* shader;
 	TransposeImGui* transpose;
 
-	Figure(Shader* shader);
+	Figure();
 
 	std::string GetUniqueName();
 	glm::mat4x4 virtual GetModelMatrix();
@@ -67,10 +66,9 @@ public:
 protected:
 	void virtual SetObjectPosition(float x, float y, float z);
 	bool editAbleName = true;
-	Figure(Shader* shader, const char* uniqueName, FigureType type);
+	Figure(const char* uniqueName, FigureType type);
 
 	FigureType Type = FigureType::Figure;
-	VAO vao;
 	const int id;
 };
 #endif

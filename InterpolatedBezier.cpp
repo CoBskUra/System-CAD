@@ -1,10 +1,10 @@
 #include "InterpolatedBezier.h"
 
-InterpolatedBezier::InterpolatedBezier(Shader* shader, const char* name) :InterpolatedBezier(shader, name, "##InterpolatedBezier", FigureType::InterpolatedBezier)
+InterpolatedBezier::InterpolatedBezier(const char* name) :InterpolatedBezier( name, "##InterpolatedBezier", FigureType::InterpolatedBezier)
 {
 }
 
-InterpolatedBezier::InterpolatedBezier(Shader* shader):InterpolatedBezier(shader, "InterpolatedBezier")
+InterpolatedBezier::InterpolatedBezier():InterpolatedBezier( "InterpolatedBezier")
 {
 }
 
@@ -22,10 +22,9 @@ void InterpolatedBezier::ChangeShowBezierC0()
 	BezierBase::ChangeShowBezierC0();
 }
 
-InterpolatedBezier::InterpolatedBezier(Shader* shader, const char* name, const char* uniqueName, FigureType type) :
-	BezierBase(shader, name, uniqueName, type),
-	bezierC0_shader{ ShaderCreator::Bezier_C0() },
-	innerBezierC0{ &bezierC0_shader }
+InterpolatedBezier::InterpolatedBezier( const char* name, const char* uniqueName, FigureType type) :
+	BezierBase(name, uniqueName, type),
+	bezierC0_shader{ ShaderCreator::Bezier_C0() }
 {
 }
 

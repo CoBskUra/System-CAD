@@ -4,48 +4,45 @@
 
 class Point : public Figure {
 public:
-	Point(Shader* shader, const char* name) : Point(shader, "##Point", FigureType::Point)
+	Point(Shader* shader, const char* name) : Point("##Point", FigureType::Point)
 	{
 		CreatePoint();
 		SetName(name);
 	}
 
-	Point(Shader* shader) : Point(shader, "##Point", FigureType::Point)
-	{
-	}
-
-	Point() : Point(StaticShaders::GetPointerToPoint())
+	Point( ): Point("##Point", FigureType::Point)
 	{
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
-		shader->Activate();
-		vao.Bind();
+		pointShader->Activate();
+		vao_point.Bind();
 		auto showColor = GetShowColor();
-		glUniformMatrix4fv(glGetUniformLocation(shader->ID, "MODEL_MATRIX"),
+		glUniformMatrix4fv(glGetUniformLocation(pointShader->ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(shader->ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
-		camera.SaveMatrixToShader(shader->ID);
+		glUniform4f(glGetUniformLocation(pointShader->ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
+		camera.SaveMatrixToShader(pointShader->ID);
 		glDrawArrays(GL_POINTS, 0, 1);
-		vao.Unbind();
+		vao_point.Unbind();
 	}
 
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera) {
 		return false;
 	}
 protected:
-	Point(Shader* shader, const char* uniqueName, FigureType type) : Figure(shader, uniqueName, type){
-
+	Point( const char* uniqueName, FigureType type) : Figure(uniqueName, type){
 	}
 
 private:
+	VAO vao_point;
+	Shader* pointShader = StaticShaders::GetPointerToPoint();
 	void CreatePoint() {
-		vao.Bind();
+		vao_point.Bind();
 		std::vector<float> vs = {0, 0, 0};
 		VBO vbo(vs, GL_STATIC_DRAW);
 
-		vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+		vao_point.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
-		vao.Unbind(); vbo.Unbind();
+		vao_point.Unbind(); vbo.Unbind();
 	}
 };

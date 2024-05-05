@@ -13,7 +13,7 @@ public:
 	RotationImGui rotation;
 	QuaternionRotationImGui quaternion;
 
-	Figure3D(Shader* shader);
+	Figure3D();
 
 	void virtual RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle);
 	void virtual RotationAlong(Quaternion q, glm::vec3 rotationCenter);
@@ -27,7 +27,7 @@ public:
 
 protected:
 
-	Figure3D(Shader* shader, const char* uniqueName, FigureType type);
+	Figure3D(const char* uniqueName, FigureType type);
 };
 
 #endif
