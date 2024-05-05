@@ -106,6 +106,14 @@ void Manager::CreateFiguresInterfers()
 		figuresVector.AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Bezier Interpolated", ImVec2(100, 20))) {
+		BezierInterpolated* Bezier = new BezierInterpolated();
+		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
+		figuresVector.AddFigure(Bezier);
+		Bezier->Add(centerPoint);
+	}
 }
 
 void Manager::SelectableList()

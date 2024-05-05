@@ -4,13 +4,13 @@
 
 class Point : public Figure {
 public:
-	Point(Shader* shader, const char* name) : Point("##Point", FigureType::Point)
+	Point( const char* name) : Point("##Point", FigureType::Point)
 	{
 		CreatePoint();
 		SetName(name);
 	}
 
-	Point( ): Point("##Point", FigureType::Point)
+	Point( ): Point("Point")
 	{
 	}
 

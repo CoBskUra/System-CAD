@@ -47,7 +47,7 @@ bool VirtualPoint::Inputs(GLFWwindow* window, const Camera& camera)
 	return false;
 }
 
-VirtualPoint::VirtualPoint(Shader* shader) : Point("##VirtualPoint", FigureType::Point)
+VirtualPoint::VirtualPoint() : Point("##VirtualPoint", FigureType::Point)
 {
 	SetName("VirtualPoint");
 }

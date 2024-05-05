@@ -8,17 +8,16 @@
 
 class BezierC2: public BezierBase
 {
-	Shader* point_shader = StaticShaders::GetPointerToPoint();
-	Shader* bezierC0_shader = StaticShaders::GetPointerToBezier3D();
 	BezierC0 innerBezierC0;
 	std::vector<VirtualPoint*> virtualPoints;
 	int virtualPointsNumber = 0;
 	glm::vec4 virtualPointColor = { 1,0,1,1 };
 
+
+public:
 	bool showVirtualPointsInterfers = false;
 	bool showVirtualPoints = true;
 
-public:
 	BezierC2(const char* name);
 	BezierC2();
 	virtual ~BezierC2();
@@ -29,9 +28,9 @@ public:
 
 	void virtual CreateBezier();
 	void virtual ChangeShowBezierC0();
+	void virtual ChangeShowBezierPol();
 
 protected:
 	BezierC2( const char* name, const char* uniqueName, FigureType type);
-	void virtual ChangeShowBezierPol();
 };
 

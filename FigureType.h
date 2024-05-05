@@ -7,5 +7,5 @@ enum class FigureType {
 	CenterPoint,
 	BezierC0,
 	BezierC2,
-	InterpolatedBezier
+	BezierInterpolated
 };

@@ -163,7 +163,7 @@
     <ClCompile Include="Figure3D.cpp" />
     <ClCompile Include="FigureContainer.cpp" />
     <ClCompile Include="glad.c" />
-    <ClCompile Include="InterpolatedBezier.cpp" />
+    <ClCompile Include="BezierInterpolated.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui_draw.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui_impl_glfw.cpp" />
@@ -197,7 +197,7 @@
     <ClInclude Include="FigureType.h" />
     <ClInclude Include="FiguresVector.h" />
     <ClInclude Include="Figure_ControlSelected.h" />
-    <ClInclude Include="InterpolatedBezier.h" />
+    <ClInclude Include="BezierInterpolated.h" />
     <ClInclude Include="Libraries\include\ImGui\imconfig.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui_impl_glfw.h" />

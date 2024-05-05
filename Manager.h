@@ -11,6 +11,7 @@
 #include "BezierC0.h"
 #include "BezierC2.h"
 #include "FiguresVector.h"
+#include "BezierInterpolated.h"
 //#include <GLFW/glcorearb.h>
 
 class Manager {

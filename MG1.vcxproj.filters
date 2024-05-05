@@ -85,6 +85,12 @@
     <Filter Include="Header Files\ShaderRefrence">
       <UniqueIdentifier>{18ada3fb-a6ab-44ce-af52-2381340983ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Figures\Bezier">
+      <UniqueIdentifier>{e3a6c5d9-62a3-4a59-b76b-0aa16f05017a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Figures\Bezier">
+      <UniqueIdentifier>{e625c827-48dd-4ad1-ad1f-5ae399691ad5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -147,23 +153,23 @@
     <ClCompile Include="FigureContainer.cpp">
       <Filter>Source Files\Container</Filter>
     </ClCompile>
-    <ClCompile Include="BezierC0.cpp">
-      <Filter>Source Files\Figures</Filter>
-    </ClCompile>
-    <ClCompile Include="BezierC2.cpp">
-      <Filter>Source Files\Figures</Filter>
-    </ClCompile>
     <ClCompile Include="VirtualPoint.cpp">
-      <Filter>Source Files\Figures</Filter>
-    </ClCompile>
-    <ClCompile Include="BezierBase.cpp">
-      <Filter>Source Files\Figures</Filter>
-    </ClCompile>
-    <ClCompile Include="InterpolatedBezier.cpp">
       <Filter>Source Files\Figures</Filter>
     </ClCompile>
     <ClCompile Include="StaticShaders.cpp">
       <Filter>Source Files\StaticShaders</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierBase.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierC0.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierC2.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierInterpolated.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -269,9 +275,6 @@
     <ClInclude Include="QuaternionRotationImGui.h">
       <Filter>Header Files\Transformations</Filter>
     </ClInclude>
-    <ClInclude Include="BezierC0.h">
-      <Filter>Header Files\Figures</Filter>
-    </ClInclude>
     <ClInclude Include="FigureContainer.h">
       <Filter>Header Files\Container</Filter>
     </ClInclude>
@@ -280,9 +283,6 @@
     </ClInclude>
     <ClInclude Include="StaticShaders.h">
       <Filter>Header Files\ShaderRefrence</Filter>
-    </ClInclude>
-    <ClInclude Include="BezierC2.h">
-      <Filter>Header Files\Figures</Filter>
     </ClInclude>
     <ClInclude Include="FiguresVector.h">
       <Filter>Header Files\Test</Filter>
@@ -293,14 +293,20 @@
     <ClInclude Include="Figure_ControlSelected.h">
       <Filter>Header Files\Figures</Filter>
     </ClInclude>
-    <ClInclude Include="BezierBase.h">
-      <Filter>Header Files\Figures</Filter>
-    </ClInclude>
-    <ClInclude Include="InterpolatedBezier.h">
-      <Filter>Header Files\Figures</Filter>
-    </ClInclude>
     <ClInclude Include="ShaderCreator.h">
       <Filter>Header Files\ShaderRefrence</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierBase.h">
+      <Filter>Header Files\Figures\Bezier</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierC0.h">
+      <Filter>Header Files\Figures\Bezier</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierC2.h">
+      <Filter>Header Files\Figures\Bezier</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierInterpolated.h">
+      <Filter>Header Files\Figures\Bezier</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

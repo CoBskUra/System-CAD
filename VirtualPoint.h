@@ -8,5 +8,5 @@ public:
 	std::vector<Figure*> connectedPoints;
 	void virtual SetObjectPosition(float x, float y, float z);
 	bool virtual  Inputs(GLFWwindow* window, const Camera& camera);
-	VirtualPoint(Shader* shader);
+	VirtualPoint();
 };

@@ -18,7 +18,8 @@ BezierC2::~BezierC2()
 
 void BezierC2::Draw(GLFWwindow* window, const Camera& camera)
 {
-	Update();
+	if(IsSomethingChange())
+		Update();
 	if (showVirtualPoints) {
 		for (int i = 0; i < virtualPointsNumber; i++)
 			virtualPoints.at(i)->Draw(window, camera);
@@ -76,7 +77,6 @@ void BezierC2::ChangeShowBezierPol()
 
 void BezierC2::CreateBezier()
 {
-
 	innerBezierC0.Clear();
 	virtualPointsNumber = 0;
 	if (ContainerSize() < 3)
@@ -85,7 +85,7 @@ void BezierC2::CreateBezier()
 	if ((ContainerSize() - 3) * 3 + 4 > virtualPoints.size())
 	{
 		for (int i = virtualPoints.size(); virtualPoints.size() < (ContainerSize() - 3) * 3 + 4; i++) {
-			VirtualPoint* p = new VirtualPoint(point_shader);
+			VirtualPoint* p = new VirtualPoint();
 			p->SetColor(virtualPointColor);
 			virtualPoints.push_back(p);
 			p->SetName(std::to_string(i).c_str());
