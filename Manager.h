@@ -17,11 +17,6 @@ class Manager {
 	FiguresVector figuresVector;
 	Camera* currentCamera;
 
-	Shader TorusShader; // fajnie jakbym nie musia³ definiowaæ za ka¿dym razem tych shaderów, mo¿e statyczny shader w clasie
-	Shader PointShader;
-	Shader CursorShader;
-	Shader BezierShader;
-
 	CenterPoint centerPoint;
 
 	Cursor cursor;

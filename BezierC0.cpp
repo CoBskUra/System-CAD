@@ -42,17 +42,21 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 		}
 		vao.Unbind();
 
-		shader_bezier2D.Activate();
+		shader_bezier2D->Activate();
 		vao_bezier2D.Bind();
 		{
 			glPatchParameteri(GL_PATCH_VERTICES, 3);
 			auto showColor = GetShowColor();
-			camera.SaveMatrixToShader(shader_bezier2D.ID);
-			glUniform4f(glGetUniformLocation(shader_bezier2D.ID, "COLOR"),
+			camera.SaveMatrixToShader(shader_bezier2D->ID);
+			glUniform4f(glGetUniformLocation(shader_bezier2D->ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
 
-			glUniform1f(glGetUniformLocation(shader_bezier2D.ID, "resolution"), max * max );
-			glDrawArrays(GL_PATCHES, 0, 3);
+			glUniform1f(glGetUniformLocation(shader_bezier2D->ID, "resolution"), max * max );
+			for (int i = 0; i < 10; i++) {
+				glUniform1f(glGetUniformLocation(shader->ID, "numberOfSegments"), 10);
+				glUniform1f(glGetUniformLocation(shader->ID, "segmentId"), i);
+				glDrawArrays(GL_PATCHES, 0, 3);
+			}
 		}
 		vao_bezier2D.Unbind();
 	}

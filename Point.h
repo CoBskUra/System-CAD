@@ -1,5 +1,6 @@
 #pragma once
 #include "Figure.h"
+#include "StaticShaders.h"
 
 class Point : public Figure {
 public:
@@ -11,8 +12,10 @@ public:
 
 	Point(Shader* shader) : Point(shader, "##Point", FigureType::Point)
 	{
-		CreatePoint();
-		SetName("Point");
+	}
+
+	Point() : Point(StaticShaders::GetPointerToPoint())
+	{
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {

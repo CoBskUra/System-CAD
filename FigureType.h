@@ -6,5 +6,6 @@ enum class FigureType {
 	Cursor,
 	CenterPoint,
 	BezierC0,
-	BezierC2
+	BezierC2,
+	InterpolatedBezier
 };

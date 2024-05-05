@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <vector>
+#include "StaticShaders.h"
 
 class BezierC0 : public BezierBase {
 	Shader lineDrawing{"bezierCurve_vert.glsl", "bezierCurve_frag.glsl"};
@@ -16,12 +17,7 @@ class BezierC0 : public BezierBase {
 protected:
 	glm::vec4 curveColor{ 1, 0, 1, 1 };
 	bool bezier2D_on = false;
-	Shader shader_bezier2D = Shader({
-		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
-		{"bezier2d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"bezier2d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}
-		});
+	Shader* shader_bezier2D = StaticShaders::GetPointerToBezier2D();
 	VAO vao_bezier2D;
 public:
 	BezierC0(Shader* shader, const char* name);

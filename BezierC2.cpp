@@ -65,8 +65,7 @@ bool BezierC2::Inputs(GLFWwindow* window, const Camera& camera)
 
 BezierC2::BezierC2(Shader* shader, const char* name, const char* uniqueName, FigureType type)
 	:BezierBase(shader, name, uniqueName, type),
-	point_shader{ ShaderCreator::CenterPoint() }, bezierC0_shader{ShaderCreator::Bezier_C0()},
-	innerBezierC0{&bezierC0_shader }
+	innerBezierC0{bezierC0_shader }
 {}
 
 void BezierC2::ChangeShowBezierPol()
@@ -76,21 +75,22 @@ void BezierC2::ChangeShowBezierPol()
 
 void BezierC2::CreateBezier()
 {
+
+	innerBezierC0.Clear();
+	virtualPointsNumber = 0;
 	if (ContainerSize() < 3)
 		return;
 
 	if ((ContainerSize() - 3) * 3 + 4 > virtualPoints.size())
 	{
 		for (int i = virtualPoints.size(); virtualPoints.size() < (ContainerSize() - 3) * 3 + 4; i++) {
-			VirtualPoint* p = new VirtualPoint(&point_shader);
+			VirtualPoint* p = new VirtualPoint(point_shader);
 			p->SetColor(virtualPointColor);
 			virtualPoints.push_back(p);
 			p->SetName(std::to_string(i).c_str());
 		}
 	}
 	
-	innerBezierC0.Clear();
-	virtualPointsNumber = 0;
 	auto p = virtualPoints.at(virtualPointsNumber);
 	virtualPointsNumber++;
 	p->connectedPoints.clear();
@@ -102,6 +102,7 @@ void BezierC2::CreateBezier()
 	p->connectedPoints.push_back(At(1));
 
 	innerBezierC0.Add(p);
+
 	for (int i = 1; i < ContainerSize() - 1; i++) {
 		auto f = virtualPoints.at(virtualPointsNumber);
 		virtualPointsNumber++;

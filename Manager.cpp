@@ -1,20 +1,11 @@
 #include "Manager.h"
+#include "StaticShaders.h"
 
 Manager::Manager(Camera* camera, GLFWwindow* window):
-	window(window), PointShader("point_vert.glsl", "point_frag.glsl"),
-	CursorShader("cursor_vert.glsl", "cursor_frag.glsl"),
-	centerPoint(&PointShader), cursor(&CursorShader)
+	window(window),
+	centerPoint{ StaticShaders::GetPointerToPoint() }, cursor(StaticShaders::GetPointerToCursor())
 {
-	TorusShader = Shader({
-		{"simple_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"simple_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER}
-		});
-	BezierShader = Shader({
-		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
-		{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}
-		});
+	StaticShaders::Init();
 	currentCamera = camera;
 	centerPoint.SetColor( glm::vec4(1, 0, 0, 1));
 	cursor.transpose->SetObjectPosition(0.5f, 1.2f, -1.0f);
@@ -67,6 +58,8 @@ int Manager::TheClosetFigureToMouse(FigureType figureType)
 	int id = -1;
 
 	for (int i = 0; i < figuresVector.Size(); i++) {
+		if (dynamic_cast<FigureContainer*>(figuresVector.figures[i]))
+			continue;
 		if (figuresVector.figures[i]->GetType() == figureType || FigureType::Any == figureType) {
 
 			auto posOnScreen = figuresVector.figures[i]->PositionOnScreen(*currentCamera);
@@ -89,27 +82,27 @@ void Manager::CreateFiguresInterfers()
 {
 	if (ImGui::Button("Torus", ImVec2(100, 20))) {
 
-		Torus* torus = new Torus(&TorusShader);
+		Torus* torus = new Torus(StaticShaders::GetPointerToTorus());
 		torus->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(torus);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Point", ImVec2(100, 20))) {
 
-		Point* point = new Point(&PointShader);
+		Point* point = new Point(StaticShaders::GetPointerToPoint());
 		point->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(point);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Bezier C0", ImVec2(100, 20))) {
-		BezierC0* Bezier = new BezierC0(&BezierShader);
+		BezierC0* Bezier = new BezierC0(StaticShaders::GetPointerToBezier3D());
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
 
 	if (ImGui::Button("Bezier C2", ImVec2(100, 20))) {
-		BezierC2* Bezier = new BezierC2(&BezierShader);
+		BezierC2* Bezier = new BezierC2(StaticShaders::GetPointerToBezier3D());
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		figuresVector.AddFigure(Bezier);
 		Bezier->Add(centerPoint);

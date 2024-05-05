@@ -4,11 +4,12 @@
 #include "CanterPoint.h"
 #include "ShaderCreator.h"
 #include "VirtualPoint.h"
+#include "StaticShaders.h"
 
 class BezierC2: public BezierBase
 {
-	Shader point_shader;
-	Shader bezierC0_shader;
+	Shader* point_shader = StaticShaders::GetPointerToPoint();
+	Shader* bezierC0_shader = StaticShaders::GetPointerToBezier3D();
 	BezierC0 innerBezierC0;
 	std::vector<VirtualPoint*> virtualPoints;
 	int virtualPointsNumber = 0;
