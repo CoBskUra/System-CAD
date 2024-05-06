@@ -1,14 +1,14 @@
 #pragma once
 #include <vector>
-#include <map>
+#include <set>
 #include "Figure.h"
 #include "FigureContainer.h";
 
 class FiguresVector {
 public:
 	std::vector<Figure*> figures;
-	std::map<std::string, FigureContainer*> activeFigureContainers;
-	std::map<std::string, FigureContainer*> figureContainers;
+	std::set<FigureContainer*> activeFigureContainers;
+	std::set<FigureContainer*> figureContainers;
 
 	std::vector< const char*> names;
 	std::vector<bool> active;
@@ -27,12 +27,12 @@ public:
 
 		if (dynamic_cast<FigureContainer*>(figure))
 		{
-			figureContainers.insert({ figure->GetUniqueName(),dynamic_cast<FigureContainer*>(figure) });
+			figureContainers.insert({ dynamic_cast<FigureContainer*>(figure) });
 		}
 		else {
-			std::map<std::string, FigureContainer*>::iterator iter;
+			std::set<FigureContainer*>::iterator iter;
 			for (iter = activeFigureContainers.begin(); iter != activeFigureContainers.end(); iter++) {
-				iter->second->Add(figure);
+				(*iter)->Add(figure);
 			}
 		}
 		active.push_back(false);
@@ -54,13 +54,15 @@ public:
 
 		if (active[i]) {
 			activeCount++;
-			auto a = figureContainers.find(figures.at(i)->GetUniqueName());
-			if (a != figureContainers.end())
-				activeFigureContainers.insert({ a->first, a->second });
+			auto castedFigureToContainer = dynamic_cast<FigureContainer*>( figures.at(i));
+			if (castedFigureToContainer)
+				activeFigureContainers.insert(castedFigureToContainer);
 		}
 		else {
 			activeCount--;
-			activeFigureContainers.erase(figures.at(i)->GetUniqueName());
+			auto castedFigureToContainer = dynamic_cast<FigureContainer*>(figures.at(i));
+			if (castedFigureToContainer)
+				activeFigureContainers.erase(castedFigureToContainer);
 		}
 		return active[i];
 	}

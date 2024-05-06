@@ -155,7 +155,7 @@ void Manager::Select(int i)
 	if (!centerPoint.Contain(figuresVector.figures[i])) {
 		centerPoint.Add(figuresVector.figures[i]);
 		for (auto iter = figuresVector.activeFigureContainers.begin(); iter != figuresVector.activeFigureContainers.end(); iter++) {
-			iter->second->Add(figuresVector.figures[i]);
+			(*iter)->Add(figuresVector.figures[i]);
 		}
 	}
 	else {
