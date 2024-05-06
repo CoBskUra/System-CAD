@@ -11,7 +11,6 @@
 // 4. Potrzebne by by³y wskazniki wiêc gdzieæ w porgramie musia³bym przechowywaæ dane.
 // 5. Koniecznoœæ stworzenie fabryki, singeltona, podajnika.
 #include "Point.h"
-#include <map>
 #include <string>
 #include "FigureContainer.h"
 #include "OpenGLHelper.h"

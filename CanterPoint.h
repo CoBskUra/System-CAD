@@ -1,6 +1,5 @@
 #pragma once
 #include "Point.h"
-#include <map>
 #include <string>
 #include "FigureContainer.h"
 #include "OpenGLHelper.h"
