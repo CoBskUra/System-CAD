@@ -35,9 +35,9 @@ public:
 		return R;
 	}
 
-	static void InversThreeDiagonalMatrix(const int n, glm::vec3 x[],
-		const float a[], const float b[],
-		const float c[], glm::vec3 scratch[]) {
+	static void InversThreeDiagonalMatrix(const int n, glm::vec3* x,
+		float* a, float* b,
+		float* c, glm::vec3 *scratch) {
 		/*
 		 solves Ax = d, where A is a tridiagonal matrix consisting of vectors a, b, c
 		 X = number of equations

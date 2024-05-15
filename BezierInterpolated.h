@@ -7,7 +7,7 @@ class BezierInterpolated: public BezierBase
 {
 	std::vector<VirtualPoint*> virtualPoints;
 	int virtualPointsNumber = 0;
-	BezierC2 innerBezierC2;
+	BezierC0 innerBezierC0;
 public:
 	BezierInterpolated( const char* name);
 	BezierInterpolated();
@@ -20,5 +20,8 @@ public:
 protected:
 	BezierInterpolated(const char* name, const char* uniqueName, FigureType type);
 	void virtual ChangeShowBezierPol();
+	float TakePointDelta(int i);
+	float TakePointDelta(std::vector<glm::vec3> points, int i);
+	void AddPoint(BezierC0& bezier, glm::vec3 pos);
 };
 

@@ -29,5 +29,5 @@ void main()
     float area1 =  length(cross(v1, v2));
     float area2 =  length(cross(v3, v4));
 
-    gl_TessLevelOuter[1] = (area1 + area2) * resolution;
+    gl_TessLevelOuter[1] = (area1 + area2) * resolution + 800;
 }

@@ -2,7 +2,7 @@
 
 BezierInterpolated::BezierInterpolated(const char* name) :BezierInterpolated( name, "##BezierInterpolated", FigureType::BezierInterpolated)
 {
-	innerBezierC2.showVirtualPoints = false;
+	//innerBezierC2.showVirtualPoints = false;
 }
 
 BezierInterpolated::BezierInterpolated():BezierInterpolated( "BezierInterpolated")
@@ -14,7 +14,11 @@ void BezierInterpolated::Draw(GLFWwindow* window, const Camera& camera)
 	if (IsSomethingChange())
 		Update();
 
-	innerBezierC2.Draw(window, camera);
+	innerBezierC0.Draw(window, camera);
+
+	/*for (int i = 0; i < virtualPointsNumber; i++) {
+		virtualPoints[i]->Draw(window, camera);
+	}*/
 }
 
 BezierInterpolated::BezierInterpolated(const char* name, const char* uniqueName, FigureType type) :
@@ -25,73 +29,148 @@ BezierInterpolated::BezierInterpolated(const char* name, const char* uniqueName,
 
 void BezierInterpolated::CreateBezier()
 {
-	innerBezierC2.Clear();
+	innerBezierC0.Clear();
 	virtualPointsNumber = 0;
+	if (virtualPoints.size() > 8 * ContainerSize()) {
+		auto ite_3div4 = std::next(virtualPoints.begin(), 3 * virtualPoints.size() / 4);
+		virtualPoints.erase(ite_3div4, virtualPoints.end());
+	}
+
 	if (ContainerSize() < 2)
 		return;
 
 	int id = 0;
-	while (virtualPoints.size() < ContainerSize() + 2) {
+	while (virtualPoints.size() < 4 * ContainerSize() ) {
 		VirtualPoint* p = new VirtualPoint();
 		virtualPoints.push_back(p);
 		p->SetColor({ 0, 0, 0, 1 });
 		p->SetName(std::to_string(id).c_str());
 		id++;
 	}
-	
 
-	VirtualPoint* p = virtualPoints.at(virtualPointsNumber);
-	virtualPointsNumber++;
-	p->connectedPoints.clear();
-	p->transpose->SetObjectPosition(At(0)->transpose->GetPosition());
+	float minDelta = 0.01;
+	std::vector<glm::vec3> interpolatedPoints;
+	interpolatedPoints.push_back(At(0)->transpose->GetPosition());
+	for (int i = 1; i < ContainerSize(); i++) {
+		auto tmp = interpolatedPoints.at(interpolatedPoints.size() - 1) - At(i)->transpose->GetPosition();
 
-	innerBezierC2.Add(p);
-
-	int n = ContainerSize();
-	float* a = new float[n];
-	float* b = new float[n];
-	float* c = new float[n];
-
-	glm::vec3* interpolatedPointsPositions = new glm::vec3[n];
-	glm::vec3* virtualPointsPositions = new glm::vec3[n];
-	for (int i = 0; i < n; i++) {
-		virtualPointsPositions[i] = interpolatedPointsPositions[i] = 
-			orderdFigures[i]->transpose->GetPosition();
-		a[i] = 1.0f / 6.0f;
-		b[i] = 4.0f / 6.0f;
-		c[i] = 1.0f / 6.0f;
+		if (sqrtf(glm::dot(tmp, tmp)) >= minDelta)
+		{
+			interpolatedPoints.push_back(At(i)->transpose->GetPosition());
+		}
 	}
 
-	a[0] = 0; a[n - 1] = 0;
-	b[0] = 1; b[n - 1] = 1;
-	c[0] = 0; c[n - 1] = 0;
+	if (interpolatedPoints.size() == 2) {
 
-	MathOperations::InversThreeDiagonalMatrix(n, virtualPointsPositions, a, b, c, interpolatedPointsPositions);
+		glm::vec3 next_a = At(0)->transpose->GetPosition();
+		glm::vec3 next_b = { 0, 0, 0 };
+		glm::vec3 next_c = { 0, 0, 0 };
+		glm::vec3 next_d = At(1)->transpose->GetPosition();
 
-	for (int i = 0; i < n; i++) {
-		p = virtualPoints.at(virtualPointsNumber);
-		virtualPointsNumber++;
-		p->connectedPoints.clear();
-		p->transpose->SetObjectPosition(virtualPointsPositions[i]);
-
-		innerBezierC2.Add(p);
+		AddPoint(innerBezierC0, next_a);
+		AddPoint(innerBezierC0, next_a);
+		AddPoint(innerBezierC0, next_a);
+		AddPoint(innerBezierC0, next_d);
 	}
-	p = virtualPoints.at(virtualPointsNumber);
-	virtualPointsNumber++;
-	p->connectedPoints.clear();
-	p->transpose->SetObjectPosition(At(ContainerSize() - 1)->transpose->GetPosition());
-	
-	innerBezierC2.Add(p);
+	else {
+		int n = interpolatedPoints.size() - 2;
+		if (n <= 0)
+			return;
+		
 
+		float* belowDiagonal = new float[n];
+		float* diagonal = new float[n] {2.0f};
+		float* aboveDiagonal = new float[n];
+
+		glm::vec3* beizer_c_values = new glm::vec3[n + 2];
+		glm::vec3* scratch = new glm::vec3[n];
+
+		for (int i = 0; i < n; i++) {
+			int k = i + 1;
+			auto tmp = 
+				3.0f*(
+					(interpolatedPoints.at(k + 1) - interpolatedPoints.at(k)) / TakePointDelta(interpolatedPoints, k) -
+					(interpolatedPoints.at(k) - interpolatedPoints.at(k - 1)) / TakePointDelta(interpolatedPoints, k - 1)
+				) / (TakePointDelta(interpolatedPoints, k - 1) + TakePointDelta(interpolatedPoints, k));
+			beizer_c_values[k] = tmp;
+		}
+
+		for (int i = 1; i < n; i++) {
+			belowDiagonal[i] = TakePointDelta(interpolatedPoints, i - 1) /
+				(TakePointDelta(interpolatedPoints, i - 1) + TakePointDelta(interpolatedPoints, i));
+			diagonal[i] = 2.0f ;
+			aboveDiagonal[i - 1] = TakePointDelta(interpolatedPoints, i) /
+				(TakePointDelta(interpolatedPoints, i - 1) + TakePointDelta(interpolatedPoints, i));
+		}
+		diagonal[0] = 2.0f;
+
+		MathOperations::InversThreeDiagonalMatrix(
+			n, &beizer_c_values[1], belowDiagonal, diagonal, aboveDiagonal, scratch);
+		beizer_c_values[n + 1] = glm::vec3{ 0, 0 , 0 };
+		beizer_c_values[0] = glm::vec3{ 0, 0 , 0 };
+
+		AddPoint(innerBezierC0, interpolatedPoints.at(0));
+		for (int i = 0; i < n + 1; i++) {
+
+			float functionRange = TakePointDelta(interpolatedPoints, i);
+			glm::vec3 Pi = interpolatedPoints.at(i );
+			glm::vec3 Pi_1 = interpolatedPoints.at(i + 1);
+			glm::vec3 a = Pi;
+			glm::vec3 c = beizer_c_values[i];
+			//glm::vec3 d = (beizer_c_values[i + 1] - beizer_c_values[i]) / (3.0f * functionRange);
+			glm::vec3 b = (Pi_1 - Pi - beizer_c_values[i] * functionRange * functionRange
+				- (beizer_c_values[i + 1] - beizer_c_values[i]) / 3.0f  * functionRange * functionRange);
+
+			c *= functionRange * functionRange;
+			//d *= functionRange * functionRange * functionRange;
+
+			AddPoint(innerBezierC0, a + b / 3.0f);
+			AddPoint(innerBezierC0, a + (2.0f * b + c) / 3.0f);
+			AddPoint(innerBezierC0, Pi_1);
+		}
+
+		delete[] belowDiagonal;
+		belowDiagonal = 0;
+		delete[] diagonal;
+		diagonal = 0;
+		delete[] aboveDiagonal;
+		aboveDiagonal = 0;
+		delete[] beizer_c_values;
+		beizer_c_values = 0;
+		delete[] scratch;
+		scratch = 0;
+	}
 }
 
 void BezierInterpolated::ChangeShowBezierC0()
 {
-	innerBezierC2.ChangeShowBezierC0();
+	innerBezierC0.ChangeShowBezierC0();
 }
 
 void BezierInterpolated::ChangeShowBezierPol()
 {
-	innerBezierC2.ChangeShowBezierPol();
+	innerBezierC0.ChangeShowBezierPol();
+}
+
+float BezierInterpolated::TakePointDelta(int i)
+{
+	glm::vec3 tmp = At(i + 1)->transpose->GetPosition() - At(i)->transpose->GetPosition();
+	return sqrtf(glm::dot(tmp, tmp));
+}
+
+float BezierInterpolated::TakePointDelta(std::vector<glm::vec3> points, int i)
+{
+	glm::vec3 tmp = points.at(i + 1) - points.at(i);
+	return sqrtf(glm::dot(tmp, tmp));
+}
+
+void BezierInterpolated::AddPoint(BezierC0& bezier, glm::vec3 pos)
+{
+	VirtualPoint* p = virtualPoints.at(virtualPointsNumber);
+	virtualPointsNumber++;
+	p->connectedPoints.clear();
+	p->transpose->SetObjectPosition(pos);
+
+	bezier.Add(p);
 }
 

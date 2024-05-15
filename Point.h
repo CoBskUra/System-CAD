@@ -36,6 +36,7 @@ protected:
 private:
 	VAO vao_point;
 	Shader* pointShader = StaticShaders::GetPointerToPoint();
+
 	void CreatePoint() {
 		vao_point.Bind();
 		std::vector<float> vs = {0, 0, 0};

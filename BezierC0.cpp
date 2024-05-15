@@ -97,7 +97,7 @@ void BezierC0::CreateBezier() {
 	{
 		pos = (*iter)->transpose->GetPosition();
 		OpenGLHelper::AddVecToVector(vs, pos);
-		if (i == 4) {
+		if (i == 4 && ContainerSize() > 4) {
 			OpenGLHelper::AddVecToVector(vs, pos);
 			i = 1;
 		}
