@@ -118,8 +118,7 @@ void BezierInterpolated::CreateBezier()
 			glm::vec3 a = Pi;
 			glm::vec3 c = beizer_c_values[i];
 			//glm::vec3 d = (beizer_c_values[i + 1] - beizer_c_values[i]) / (3.0f * functionRange);
-			glm::vec3 b = (Pi_1 - Pi - beizer_c_values[i] * functionRange * functionRange
-				- (beizer_c_values[i + 1] - beizer_c_values[i]) / 3.0f  * functionRange * functionRange);
+			glm::vec3 b = (Pi_1 - Pi - ((beizer_c_values[i + 1] + 2.0f * beizer_c_values[i]) / 3.0f  )* functionRange * functionRange);
 
 			c *= functionRange * functionRange;
 			//d *= functionRange * functionRange * functionRange;
