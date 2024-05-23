@@ -143,11 +143,13 @@ void BezierInterpolated::CreateBezier()
 
 void BezierInterpolated::ChangeShowBezierC0()
 {
+	BezierBase::ChangeShowBezierC0();
 	innerBezierC0.ChangeShowBezierC0();
 }
 
 void BezierInterpolated::ChangeShowBezierPol()
 {
+	BezierBase::ChangeShowBezierPol();
 	innerBezierC0.ChangeShowBezierPol();
 }
 

@@ -12,7 +12,8 @@
 #include "BezierC2.h"
 #include "FiguresVector.h"
 #include "BezierInterpolated.h"
-//#include <GLFW/glcorearb.h>
+#include "StaticShaders.h"
+#include "BezierSurfaceC0.h"
 
 class Manager {
 	FiguresVector figuresVector;

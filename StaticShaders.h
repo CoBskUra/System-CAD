@@ -15,6 +15,8 @@ static struct StaticShaders{
 
 	static Shader* 	GetPointerToInfinityGrid();
 	static Shader* 	GetPointerToTorus();
+
+	static Shader* GetPointerToBezierSurfaceC0();
 private:
 	static bool haseBeenInit;
 	static Shader bezier2D;
@@ -29,4 +31,6 @@ private:
 		   
 	static Shader infinityGrid;
 	static Shader Torus;
+
+	static Shader BezierSurfaceC0;
 };

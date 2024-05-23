@@ -13,41 +13,10 @@ void VirtualPoint::SetObjectPosition(float x, float y, float z)
 
 bool VirtualPoint::Inputs(GLFWwindow* window, const Camera& camera)
 {
-	ImGuiIO& io = ImGui::GetIO();
-
-	if (io.WantCaptureMouse)
-		return false;
-
-	if (firstClick && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-		if (OpenGLHelper::QuadraticDistanceFromMouse(window, camera, *transpose) > 0.001f)
-			return false;
-		firstClick = false;
-	}
-	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-		auto castToScreen = camera.GetCameraMatrix() * glm::vec4(transpose->GetPosition(), 1);
-		castToScreen /= castToScreen.w;
-
-		glm::vec4 mousePos{
-			OpenGLHelper::MousePositionOnScreen(window),
-			castToScreen.z,
-			1.0f
-		};
-
-
-		mousePos = camera.GetCameraMatrixInvers() * mousePos;
-		mousePos /= mousePos.w;
-		transpose->SetObjectPosition(mousePos);
-		return true;
-	}
-	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE)
-	{
-		firstClick = true;
-	}
-	return false;
-	return false;
+	return figureController.Move(window, camera, this);
 }
 
-VirtualPoint::VirtualPoint() : Point("##VirtualPoint", FigureType::Point)
+VirtualPoint::VirtualPoint() : Point("##VirtualPoint", FigureType::VirtualPoint)
 {
 	SetName("VirtualPoint");
 }

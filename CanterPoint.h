@@ -7,7 +7,7 @@
 
 class CenterPoint: public Point, public FigureContainer {
 protected:
-	CenterPoint(const char* name, const char* uniqueName, FigureType type):Point("##CenterPoint", FigureType::CenterPoint) {
+	CenterPoint(const char* name, const char* uniqueName, FigureType type):Point("##CenterPoint", type) {
 		SetName(name);
 		mouseLastPosition = glm::vec2{ 0 };
 	}

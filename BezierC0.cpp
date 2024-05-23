@@ -119,20 +119,6 @@ void BezierC0::CreateBezier() {
 	}
 
 	if (vs.size() / 3 % 4 == 3) {
-		/*glm::vec3 p2 = OpenGLHelper::TakeLastVecFromVector(vs);
-		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
-		glm::vec3 p0 = OpenGLHelper::TakeLastVecFromVector(vs);
-		glm::vec3 pMid_1 = (p0 + 2.0f * p1) / 3.0f;
-		glm::vec3 pMid_2 = (2.0f * p1 + p2) / 3.0f;
-
-		OpenGLHelper::AddVecToVector(vs, p0);
-		OpenGLHelper::AddVecToVector(vs, pMid_1);
-		OpenGLHelper::AddVecToVector(vs, pMid_2);
-		OpenGLHelper::AddVecToVector(vs, p2);*/
-
-		//glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);
-		//OpenGLHelper::AddVecToVector(vs, p1);
-		//OpenGLHelper::AddVecToVector(vs, p1);
 
 		glm::vec3 p2 = OpenGLHelper::TakeLastVecFromVector(vs);
 		glm::vec3 p1 = OpenGLHelper::TakeLastVecFromVector(vs);

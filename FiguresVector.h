@@ -46,7 +46,18 @@ public:
 		auto toDelete = figures[id];
 		figures.erase(std::next(figures.begin(), id));
 		names.erase(std::next(names.begin(), id));
-		delete toDelete;
+		if (toDelete->GetType() == FigureType::BezierSurfaceC0)
+		{
+			FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
+			while (Size() > 0 && fc->Contain(at(id)))
+				DeleteFigure(id);
+		}
+
+		if (toDelete->GetType() != FigureType::VirtualPoint)
+		{
+			delete toDelete;
+			toDelete = NULL;
+		}
 	}
 
 	bool ChangeActiveState(int i) {

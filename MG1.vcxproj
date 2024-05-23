@@ -158,6 +158,8 @@
     <ClCompile Include="BezierBase.cpp" />
     <ClCompile Include="BezierC0.cpp" />
     <ClCompile Include="BezierC2.cpp" />
+    <ClCompile Include="BezierSurfaceC0.cpp" />
+    <ClCompile Include="BezierSurfaceC0Point.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Figure3D.cpp" />
@@ -173,6 +175,7 @@
     <ClCompile Include="Libraries\include\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="MoveMeWithMouse.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="QuaternionRotationImGui.cpp" />
     <ClCompile Include="Rotation.cpp" />
@@ -186,6 +189,8 @@
     <ClInclude Include="BezierBase.h" />
     <ClInclude Include="BezierC0.h" />
     <ClInclude Include="BezierC2.h" />
+    <ClInclude Include="BezierSurfaceC0.h" />
+    <ClInclude Include="BezierSurfaceC0Point.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CanterPoint.h" />
     <ClInclude Include="Constants.h" />
@@ -210,6 +215,7 @@
     <ClInclude Include="Libraries\include\ImGui\imstb_truetype.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="MathOperations.h" />
+    <ClInclude Include="MoveMeWithMouse.h" />
     <ClInclude Include="OpenGLHelper.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="Quaternion.h" />
@@ -238,6 +244,8 @@
     <None Include="bezier3d_vert.glsl" />
     <None Include="bezierCurve_frag.glsl" />
     <None Include="bezierCurve_vert.glsl" />
+    <None Include="bezierSurfaceC0_tc.glsl" />
+    <None Include="bezierSurfaceC0_te.glsl" />
     <None Include="infinityGrid_vert.glsl" />
     <None Include="cursor_frag.glsl" />
     <None Include="cursor_vert.glsl" />

@@ -19,6 +19,8 @@ Shader StaticShaders::infinityGrid;
 
 Shader StaticShaders::Torus;
 
+Shader StaticShaders::BezierSurfaceC0;
+
 Shader* StaticShaders::GetPointerToBezier2D() {
 	return &bezier2D;
 }
@@ -49,6 +51,11 @@ Shader* StaticShaders::GetPointerToTorus() {
 	return &Torus;
 }
 
+Shader* StaticShaders::GetPointerToBezierSurfaceC0()
+{
+	return &BezierSurfaceC0;
+}
+
 void StaticShaders::Init()
 {
 	if (haseBeenInit)
@@ -60,7 +67,7 @@ void StaticShaders::Init()
 		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
 		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
 		{"bezier2d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"bezier2d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}
+		{"bezier2d_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
 	};
 
@@ -69,7 +76,7 @@ void StaticShaders::Init()
 		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
 		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
 		{"bezier3d_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"bezier3d_te.glsl", "TESELATION_CONTROL", GL_TESS_EVALUATION_SHADER}
+		{"bezier3d_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
 	};
 
@@ -87,6 +94,15 @@ void StaticShaders::Init()
 	{
 		{"simple_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
 		{"simple_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER}
+	}
+	};
+
+	BezierSurfaceC0 = {
+	{
+		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		{"bezierSurfaceC0_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"bezierSurfaceC0_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
 	};
 }
