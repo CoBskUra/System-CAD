@@ -53,9 +53,7 @@ public:
 				DeleteFigure(id);
 		}
 
-		if (toDelete->GetType() != FigureType::VirtualPoint &&
-			toDelete->GetType() != FigureType::BezierSurfaceC0Point
-			)
+		if ( !toDelete->HaveOwner() )
 		{
 			delete toDelete;
 			toDelete = NULL;

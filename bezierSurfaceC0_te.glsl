@@ -23,7 +23,7 @@ vec3 Bernstain(float t, vec3 p0, vec3 p1, vec3 p2, vec3 p3){
 void main()
 {
     float u = gl_TessCoord.x;
-    float v = gl_TessCoord.y * PATCH_DIV / (PATCH_DIV - 1) ; 
+    float v = gl_TessCoord.y * PATCH_DIV / (PATCH_DIV - 1); 
 
     if(VERTICAL_DRAW > 0)
     {

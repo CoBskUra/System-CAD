@@ -56,7 +56,9 @@ void Figure::SetColor(glm::vec4 newColor)
 Figure::~Figure()
 {
 	Delete();
+#ifdef _DEBUG
 	printf("\nDestroyed %s", name);
+#endif
 }
 
 void  Figure::Draw(GLFWwindow* window, const Camera& camera) {
@@ -145,6 +147,20 @@ void Figure::InformContainers()
 		iter != containIn.end(); iter++) {
 		(*iter)->SomethingHasChange();
 	}
+}
+
+bool Figure::SetObjectOwner(Figure* parent)
+{
+	if (haveOwner)
+		return false;
+	haveOwner = true;
+	this->owner = parent;
+	return true;
+}
+
+bool Figure::HaveOwner()
+{
+	return haveOwner;
 }
 
 

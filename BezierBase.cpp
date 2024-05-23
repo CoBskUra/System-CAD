@@ -42,7 +42,9 @@ bool BezierBase::Inputs(GLFWwindow* window, const Camera& camera) {
 }
 
 bool BezierBase::IsValid(Figure* figure) {
-	return figure->GetType() == FigureType::Point;
+	return figure->GetType() == FigureType::Point ||
+		figure->GetType() == FigureType::VirtualPoint ||
+		figure->GetType() == FigureType::BezierSurfaceC0Point;
 }
 
 void BezierBase::Update() {

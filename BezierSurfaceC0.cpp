@@ -131,6 +131,7 @@ void BezierSurfaceC0::CreateBezier()
 		{
 			BezierSurfaceC0Point* p = new BezierSurfaceC0Point();
 			controlPoints.push_back(p);
+			p->SetObjectOwner(this);
 		}
 
 		for (int i = 0; i < verticalNum; i++) {
@@ -294,6 +295,7 @@ glm::vec3 BezierSurfaceC0::GeneratePosForVertexInPatch(int verticalID, int horiz
 {
 	float width = (  horizontalNum * 3);
 	float patchNumVertical = ( verticalNum * 3);
+	float alfa;
 	float scalar = 1;
 
 	glm::vec3 surPos = glm::vec3{ horizontalID * 3, 0,  verticalID * 3 } + glm::vec3{ k2, 0, k1 } - glm::vec3{ width / 2.0f, 0, patchNumVertical / 2.0f };
@@ -304,13 +306,36 @@ glm::vec3 BezierSurfaceC0::GeneratePosForVertexInPatch(int verticalID, int horiz
 		break;
 	case BezierSurfaceC0::CreationType::cylinder:
 		surPos.z *= 1.0f / patchNumVertical * this->height;
-		if (surPos.x < 0)
-			scalar = -1;
-		surPos.x *= scalar;
-		surPos.x *= 1.0f / width * 2 * radius;
-		surPos.x -= radius * 0.5f;
-		surPos.x *= 2;
-		surPos.y = scalar * sqrtf(powf(radius, 2.0f) - powf(surPos.x, 2));
+		//surPos.x *= 1.0f / width * 2 * radius;
+		
+		if (horizontalNum > 2) {
+			alfa = M_PI * 2 / (float)horizontalNum;
+
+			surPos.x = radius;
+			if (k2 == 1) {
+				surPos.y = 2.0f / 3.0f * tanf(alfa * 0.5f) * radius;
+			}
+			else if (k2 == 2) {
+				surPos.y = -2.0f / 3.0f * tanf(alfa * 0.5f) * radius;
+				surPos = MathOperations::RotationAlongAxis(surPos, alfa, glm::vec3{ 0, 0, 1 });
+			}
+			else if (k2 == 3) {
+				surPos = MathOperations::RotationAlongAxis(surPos, alfa, glm::vec3{ 0, 0, 1 });
+			}
+
+			surPos = MathOperations::RotationAlongAxis(surPos, alfa * horizontalID, glm::vec3{ 0, 0, 1 });
+		}
+		else {
+			surPos.z *= 1.0f / patchNumVertical * this->height;
+			if (surPos.x < 0)
+				scalar = -1;
+			surPos.x *= scalar;
+			surPos.x *= 1.0f / width * 2 * radius;
+			surPos.x -= radius * 0.5f;
+			surPos.x *= 2;
+			surPos.y = scalar * sqrtf(powf(radius, 2.0f) - powf(surPos.x, 2));
+			
+		}
 		return surPos;
 		break;
 	default:

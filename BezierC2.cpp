@@ -89,6 +89,7 @@ void BezierC2::CreateBezier()
 			p->SetColor(virtualPointColor);
 			virtualPoints.push_back(p);
 			p->SetName(std::to_string(i).c_str());
+			p->SetObjectOwner(this);
 		}
 	}
 	
