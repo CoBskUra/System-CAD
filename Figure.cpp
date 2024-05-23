@@ -160,6 +160,7 @@ bool Figure::SetObjectOwner(Figure* parent)
 		return false;
 	haveOwner = true;
 	this->owner = parent;
+	parent->haveSubjects = true;
 	return true;
 }
 
@@ -172,6 +173,16 @@ void Figure::RemoveOwner()
 {
 	haveOwner = false;
 	owner = nullptr;
+}
+
+bool Figure::IsMyOwner(Figure* possibleOwner)
+{
+	return possibleOwner == owner;
+}
+
+bool Figure::IsOwner()
+{
+	return haveSubjects;
 }
 
 

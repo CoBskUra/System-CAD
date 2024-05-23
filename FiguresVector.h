@@ -46,10 +46,18 @@ public:
 		auto toDelete = figures[id];
 		figures.erase(std::next(figures.begin(), id));
 		names.erase(std::next(names.begin(), id));
-		if (toDelete->GetType() == FigureType::BezierSurfaceC0)
+
+		if (dynamic_cast<FigureContainer*>(toDelete))
 		{
 			FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
-			while (Size() > id && fc->Contain(at(id)))
+			activeFigureContainers.erase(fc);
+			figureContainers.erase(fc);
+		}
+
+		if (toDelete->IsOwner())
+		{
+			FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
+			while (Size() > id && at(id)->IsMyOwner(toDelete) )
 				if (at(id)->NumberOfContainers() == 1)
 					DeleteFigure(id);
 				else
