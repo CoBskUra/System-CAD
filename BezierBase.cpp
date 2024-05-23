@@ -26,7 +26,7 @@ void BezierBase::ActiveImGui() {
 		RotationInterfers();
 		ScaleInterfers();
 
-		if (ImGui::RadioButton("Show Bezier's Curve", showBezierC0))
+		if (ImGui::RadioButton("Show Bezier's Curve", showBezierCurve))
 			ChangeShowBezierC0();
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Show Bezier's polynomial", showBezierPol))
@@ -86,7 +86,7 @@ void BezierBase::SelectedPoints()
 
 void BezierBase::ChangeShowBezierC0()
 {
-	showBezierC0 = !showBezierC0;
+	showBezierCurve = !showBezierCurve;
 }
 
 void BezierBase::ChangeShowBezierPol()

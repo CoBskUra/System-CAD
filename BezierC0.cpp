@@ -61,7 +61,7 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 		vao_bezier2D.Unbind();
 	}
 
-	if (showBezierC0) {
+	if (showBezierCurve) {
 		lineDrawing->Activate();
 		vao_bezier3D.Bind();
 		{

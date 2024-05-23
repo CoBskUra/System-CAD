@@ -53,7 +53,9 @@ public:
 				DeleteFigure(id);
 		}
 
-		if (toDelete->GetType() != FigureType::VirtualPoint)
+		if (toDelete->GetType() != FigureType::VirtualPoint &&
+			toDelete->GetType() != FigureType::BezierSurfaceC0Point
+			)
 		{
 			delete toDelete;
 			toDelete = NULL;
@@ -87,11 +89,8 @@ public:
 	}
 
 	void Delete() {
-		figureContainers.erase(figureContainers.begin(), figureContainers.end());
-		activeFigureContainers.erase(activeFigureContainers.begin(), activeFigureContainers.end());
-
-		for (int i = 0; i < figures.size(); i++)
-			delete figures[i];
+		while (Size() > 0)
+			DeleteFigure(0);
 	}
 private:
 	int activeCount;

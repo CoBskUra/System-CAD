@@ -130,7 +130,8 @@ void Manager::SelectableList()
 	{
 		ImGui::PushID(i);
 		// delete figure
-		if (figuresVector.at(i)->GetType() != FigureType::VirtualPoint) {
+		if (figuresVector.at(i)->GetType() != FigureType::VirtualPoint && 
+			figuresVector.at(i)->GetType() != FigureType::BezierSurfaceC0Point) {
 			if (ImGui::Button("X", ImVec2(20, 20))) {
 				figuresVector.DeleteFigure(i);
 				ImGui::PopID();

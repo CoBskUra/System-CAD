@@ -2,6 +2,7 @@
 #include "BezierBase.h"
 #include "VirtualPoint.h"
 #include "FiguresVector.h"
+#include "BezierSurfaceC0Point.h"
 
 
 
@@ -34,9 +35,15 @@ class BezierSurfaceC0: public BezierBase
 
 	VAO vao;
 	Shader* shader = StaticShaders::GetPointerToBezierSurfaceC0();
-	std::vector<VirtualPoint*> virtualPoints;
+
+	VAO vao_curve;
+	Shader* shader_curve = StaticShaders::GetPointerToBezierCurve();
+	glm::vec4 curveColor{ 1, 0, 1, 1 };
+	int numberOfIndes;
+
+	std::vector<BezierSurfaceC0Point*> controlPoints;
 	int numberOfVertexes;
-	int patch_div = 40;
+	int patch_div = 4;
 
 	CreationType creationType = CreationType::surface;
 	int verticalNum = 1, horizontalNum = 1;
@@ -61,5 +68,6 @@ protected:
 private:
 	bool CreationWindowInterfers(GLFWwindow* window);
 	glm::vec3 GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2);
+	void DeleteRangeControlPoints(int start, int end);
 };
 

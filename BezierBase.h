@@ -12,7 +12,7 @@
 
 class BezierBase : public CenterPoint {
 public:
-	bool showBezierC0 = true;
+	bool showBezierCurve = true;
 	bool showBezierPol = true;
 
 	BezierBase( const char* name);

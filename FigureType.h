@@ -10,5 +10,6 @@ enum class FigureType {
 	BezierInterpolated,
 	BezierSurfaceC0,
 	VirtualPoint,
+	BezierSurfaceC0Point,
 	COUNT
 };
