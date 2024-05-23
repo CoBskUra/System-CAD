@@ -64,9 +64,11 @@ public:
 	bool virtual AddContainer(FigureContainer* fc);
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
+	int NumberOfContainers();
 
 	bool SetObjectOwner(Figure* parent);
 	bool HaveOwner();
+	void RemoveOwner();
 
 protected:
 	void virtual SetObjectPosition(float x, float y, float z);

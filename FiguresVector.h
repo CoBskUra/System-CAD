@@ -49,8 +49,11 @@ public:
 		if (toDelete->GetType() == FigureType::BezierSurfaceC0)
 		{
 			FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
-			while (Size() > 0 && fc->Contain(at(id)))
-				DeleteFigure(id);
+			while (Size() > id && fc->Contain(at(id)))
+				if (at(id)->NumberOfContainers() == 1)
+					DeleteFigure(id);
+				else
+					id++;
 		}
 
 		if ( !toDelete->HaveOwner() )

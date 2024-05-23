@@ -159,7 +159,6 @@
     <ClCompile Include="BezierC0.cpp" />
     <ClCompile Include="BezierC2.cpp" />
     <ClCompile Include="BezierSurfaceC0.cpp" />
-    <ClCompile Include="BezierSurfaceC0Point.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Figure3D.cpp" />
@@ -190,7 +189,6 @@
     <ClInclude Include="BezierC0.h" />
     <ClInclude Include="BezierC2.h" />
     <ClInclude Include="BezierSurfaceC0.h" />
-    <ClInclude Include="BezierSurfaceC0Point.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CanterPoint.h" />
     <ClInclude Include="Constants.h" />

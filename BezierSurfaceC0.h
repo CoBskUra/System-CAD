@@ -2,7 +2,6 @@
 #include "BezierBase.h"
 #include "VirtualPoint.h"
 #include "FiguresVector.h"
-#include "BezierSurfaceC0Point.h"
 
 
 
@@ -41,7 +40,7 @@ class BezierSurfaceC0: public BezierBase
 	glm::vec4 curveColor{ 1, 0, 1, 1 };
 	int numberOfIndes;
 
-	std::vector<BezierSurfaceC0Point*> controlPoints;
+	std::vector<Point*> controlPoints;
 	int numberOfVertexes;
 	int patch_div = 4;
 
@@ -60,7 +59,6 @@ public:
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 	void virtual ActiveImGui();
-	bool virtual IsValid(Figure* figure);
 
 protected:
 	BezierSurfaceC0(const char* name, const char* uniqueName, FigureType type);

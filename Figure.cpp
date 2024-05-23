@@ -149,6 +149,11 @@ void Figure::InformContainers()
 	}
 }
 
+int Figure::NumberOfContainers()
+{
+	return containIn.size();;
+}
+
 bool Figure::SetObjectOwner(Figure* parent)
 {
 	if (haveOwner)
@@ -161,6 +166,12 @@ bool Figure::SetObjectOwner(Figure* parent)
 bool Figure::HaveOwner()
 {
 	return haveOwner;
+}
+
+void Figure::RemoveOwner()
+{
+	haveOwner = false;
+	owner = nullptr;
 }
 
 

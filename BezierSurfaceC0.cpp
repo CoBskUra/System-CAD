@@ -22,7 +22,13 @@ BezierSurfaceC0::~BezierSurfaceC0()
 {
 	for (int i = 0; i < controlPoints.size(); i++)
 	{
-		delete controlPoints[i];
+		if (controlPoints[i]->NumberOfContainers() > 1)
+		{
+			controlPoints[i]->RemoveOwner();
+			controlPoints[i]->EraseContainer(this);
+		}
+		else
+			delete controlPoints[i];
 	}
 }
 
@@ -112,11 +118,6 @@ void BezierSurfaceC0::ActiveImGui()
 	ImGui::EndGroup();
 }
 
-bool BezierSurfaceC0::IsValid(Figure* figure)
-{
-	return figure->GetType() == FigureType::BezierSurfaceC0Point;
-}
-
 void BezierSurfaceC0::CreateBezier()
 {
 	numberOfVertexes = 0;
@@ -129,7 +130,7 @@ void BezierSurfaceC0::CreateBezier()
 		int tmp = width * height;
 		while ((int)controlPoints.size() < tmp)
 		{
-			BezierSurfaceC0Point* p = new BezierSurfaceC0Point();
+			Point* p = new Point();
 			controlPoints.push_back(p);
 			p->SetObjectOwner(this);
 		}

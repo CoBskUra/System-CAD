@@ -186,9 +186,6 @@
     <ClCompile Include="MoveMeWithMouse.cpp">
       <Filter>Source Files\Figures\FigureFunctions</Filter>
     </ClCompile>
-    <ClCompile Include="BezierSurfaceC0Point.cpp">
-      <Filter>Source Files\Figures\Bezier</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -331,9 +328,6 @@
     </ClInclude>
     <ClInclude Include="MoveMeWithMouse.h">
       <Filter>Header Files\Figures\FigureFunctions</Filter>
-    </ClInclude>
-    <ClInclude Include="BezierSurfaceC0Point.h">
-      <Filter>Header Files\Figures\Bezier</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
