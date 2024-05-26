@@ -1,9 +1,9 @@
 #pragma once
 #include "Point.h"
-#include "OpenGLHelper.h"
+#include "MoveMeWithMouse.h"
 
 class VirtualPoint: public Point {
-	bool firstClick = true;
+	MoveMeWithMouse figureController;
 public:
 	std::vector<Figure*> connectedPoints;
 	void virtual SetObjectPosition(float x, float y, float z);

@@ -91,6 +91,15 @@
     <Filter Include="Source Files\Figures\Bezier">
       <UniqueIdentifier>{e625c827-48dd-4ad1-ad1f-5ae399691ad5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\Shaders\Bezier\surface_C0">
+      <UniqueIdentifier>{5f79b4d4-14e7-4deb-a5fc-7ec3cdf03c2c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Figures\FigureFunctions">
+      <UniqueIdentifier>{1c73d572-92eb-40b6-acda-fed54543843c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Figures\FigureFunctions">
+      <UniqueIdentifier>{62a79977-3cba-45f0-9400-912d81534c2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -170,6 +179,12 @@
     </ClCompile>
     <ClCompile Include="BezierInterpolated.cpp">
       <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierSurfaceC0.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveMeWithMouse.cpp">
+      <Filter>Source Files\Figures\FigureFunctions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -308,6 +323,12 @@
     <ClInclude Include="BezierInterpolated.h">
       <Filter>Header Files\Figures\Bezier</Filter>
     </ClInclude>
+    <ClInclude Include="BezierSurfaceC0.h">
+      <Filter>Header Files\Figures\Bezier</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveMeWithMouse.h">
+      <Filter>Header Files\Figures\FigureFunctions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cursor_frag.glsl">
@@ -363,6 +384,12 @@
     </None>
     <None Include="cursor_vert.glsl">
       <Filter>Resource Files\Shaders\cursorShader</Filter>
+    </None>
+    <None Include="bezierSurfaceC0_tc.glsl">
+      <Filter>Resource Files\Shaders\Bezier\surface_C0</Filter>
+    </None>
+    <None Include="bezierSurfaceC0_te.glsl">
+      <Filter>Resource Files\Shaders\Bezier\surface_C0</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

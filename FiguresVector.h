@@ -46,7 +46,29 @@ public:
 		auto toDelete = figures[id];
 		figures.erase(std::next(figures.begin(), id));
 		names.erase(std::next(names.begin(), id));
-		delete toDelete;
+
+		if (dynamic_cast<FigureContainer*>(toDelete))
+		{
+			FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
+			activeFigureContainers.erase(fc);
+			figureContainers.erase(fc);
+		}
+
+		if (toDelete->IsOwner())
+		{
+			FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
+			while (Size() > id && at(id)->IsMyOwner(toDelete) )
+				if (at(id)->NumberOfContainers() == 1)
+					DeleteFigure(id);
+				else
+					id++;
+		}
+
+		if ( !toDelete->HaveOwner() )
+		{
+			delete toDelete;
+			toDelete = NULL;
+		}
 	}
 
 	bool ChangeActiveState(int i) {
@@ -76,11 +98,8 @@ public:
 	}
 
 	void Delete() {
-		figureContainers.erase(figureContainers.begin(), figureContainers.end());
-		activeFigureContainers.erase(activeFigureContainers.begin(), activeFigureContainers.end());
-
-		for (int i = 0; i < figures.size(); i++)
-			delete figures[i];
+		while (Size() > 0)
+			DeleteFigure(0);
 	}
 private:
 	int activeCount;

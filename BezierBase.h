@@ -12,7 +12,7 @@
 
 class BezierBase : public CenterPoint {
 public:
-	bool showBezierC0 = true;
+	bool showBezierCurve = true;
 	bool showBezierPol = true;
 
 	BezierBase( const char* name);
@@ -27,7 +27,7 @@ public:
 	bool virtual AddContainer(FigureContainer* fc);
 	void MarkFigure(Figure* f) override;
 
-	void virtual ChangeShowBezierC0();
+	void virtual ChangeShowBezierCurve();
 	void virtual ChangeShowBezierPol();
 protected:
 	BezierBase(const char* name, const char* uniqueName, FigureType type);

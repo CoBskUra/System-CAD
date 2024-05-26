@@ -1,5 +1,4 @@
 #include "Manager.h"
-#include "StaticShaders.h"
 
 Manager::Manager(Camera* camera, GLFWwindow* window):
 	window(window)
@@ -114,6 +113,14 @@ void Manager::CreateFiguresInterfers()
 		figuresVector.AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Bezier surfec C0", ImVec2(100, 20))) {
+		BezierSurfaceC0* Bezier = new BezierSurfaceC0();
+		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
+		Bezier->figureVector = &figuresVector;
+		figuresVector.AddFigure(Bezier);
+	}
 }
 
 void Manager::SelectableList()
@@ -122,12 +129,15 @@ void Manager::SelectableList()
 	for (int i = 0; i < figuresVector.Size(); i++)
 	{
 		ImGui::PushID(i);
-		if (ImGui::Button("X", ImVec2(20, 20))) {
-			figuresVector.DeleteFigure(i);
-			ImGui::PopID();
-			return;
+		// delete figure
+		if (!figuresVector.at(i)->HaveOwner()) {
+			if (ImGui::Button("X", ImVec2(20, 20))) {
+				figuresVector.DeleteFigure(i);
+				ImGui::PopID();
+				return;
+			}
+			ImGui::SameLine();
 		}
-		ImGui::SameLine();
 
 
 		if (ImGui::RadioButton("", figuresVector.active[i])) {

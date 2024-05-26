@@ -26,8 +26,8 @@ void BezierBase::ActiveImGui() {
 		RotationInterfers();
 		ScaleInterfers();
 
-		if (ImGui::RadioButton("Show Bezier's Curve", showBezierC0))
-			ChangeShowBezierC0();
+		if (ImGui::RadioButton("Show Bezier's Curve", showBezierCurve))
+			ChangeShowBezierCurve();
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Show Bezier's polynomial", showBezierPol))
 			ChangeShowBezierPol();
@@ -42,7 +42,8 @@ bool BezierBase::Inputs(GLFWwindow* window, const Camera& camera) {
 }
 
 bool BezierBase::IsValid(Figure* figure) {
-	return figure->GetType() == FigureType::Point;
+	return figure->GetType() == FigureType::Point ||
+		figure->GetType() == FigureType::VirtualPoint;
 }
 
 void BezierBase::Update() {
@@ -84,9 +85,9 @@ void BezierBase::SelectedPoints()
 	}
 }
 
-void BezierBase::ChangeShowBezierC0()
+void BezierBase::ChangeShowBezierCurve()
 {
-	showBezierC0 = !showBezierC0;
+	showBezierCurve = !showBezierCurve;
 }
 
 void BezierBase::ChangeShowBezierPol()

@@ -15,7 +15,7 @@ public:
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 
 	void virtual CreateBezier();
-	void virtual ChangeShowBezierC0();
+	void virtual ChangeShowBezierCurve();
 
 protected:
 	BezierInterpolated(const char* name, const char* uniqueName, FigureType type);

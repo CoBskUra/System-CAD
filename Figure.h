@@ -26,6 +26,10 @@ private:
 	std::string UniqueName = "#Figura";
 	std::set<FigureContainer*> containIn;
 	bool mark = false;
+
+	bool haveOwner;
+	Figure* owner;
+	bool haveSubjects;
 public:
 	char name[100] = "Figura";
 	TransposeImGui* transpose;
@@ -62,6 +66,13 @@ public:
 	bool virtual AddContainer(FigureContainer* fc);
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
+	int NumberOfContainers();
+
+	bool SetObjectOwner(Figure* parent);
+	bool HaveOwner();
+	void RemoveOwner();
+	bool IsMyOwner(Figure* possibleOwner);
+	bool IsOwner();
 
 protected:
 	void virtual SetObjectPosition(float x, float y, float z);
