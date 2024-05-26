@@ -27,7 +27,7 @@ public:
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
 
 	void virtual CreateBezier();
-	void virtual ChangeShowBezierC0();
+	void virtual ChangeShowBezierCurve();
 	void virtual ChangeShowBezierPol();
 
 protected:

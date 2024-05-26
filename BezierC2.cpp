@@ -144,7 +144,7 @@ void BezierC2::CreateBezier()
 	innerBezierC0.Update();
 }
 
-void BezierC2::ChangeShowBezierC0()
+void BezierC2::ChangeShowBezierCurve()
 {
-	innerBezierC0.ChangeShowBezierC0();
+	innerBezierC0.ChangeShowBezierCurve();
 }

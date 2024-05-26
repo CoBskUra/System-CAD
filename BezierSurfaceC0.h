@@ -67,5 +67,6 @@ private:
 	bool CreationWindowInterfers(GLFWwindow* window);
 	glm::vec3 GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2);
 	void DeleteRangeControlPoints(int start, int end);
+	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2);
 };
 

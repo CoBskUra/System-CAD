@@ -141,10 +141,10 @@ void BezierInterpolated::CreateBezier()
 	}
 }
 
-void BezierInterpolated::ChangeShowBezierC0()
+void BezierInterpolated::ChangeShowBezierCurve()
 {
-	BezierBase::ChangeShowBezierC0();
-	innerBezierC0.ChangeShowBezierC0();
+	BezierBase::ChangeShowBezierCurve();
+	innerBezierC0.ChangeShowBezierCurve();
 }
 
 void BezierInterpolated::ChangeShowBezierPol()

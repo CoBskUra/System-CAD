@@ -34,16 +34,6 @@ BezierSurfaceC0::~BezierSurfaceC0()
 
 bool BezierSurfaceC0::Inputs(GLFWwindow* window, const Camera& camera)
 {
-
-	/*bool any = false;
-	for (int i = 0; i < virtualPoints.size(); i++)
-	{
-		if (virtualPoints.at(i)->Inputs(window, camera)) {
-			any = true;
-			break;
-		}
-	}*/
-
 	return false;
 }
 
@@ -97,6 +87,9 @@ void BezierSurfaceC0::Draw(GLFWwindow* window, const Camera& camera)
 		vao_curve.Unbind();
 	}
 
+	/*for (int i = 0; i < controlPoints.size(); i++) {
+		controlPoints[i]->Draw(window, camera);
+	}*/
 }
 
 
@@ -112,7 +105,7 @@ void BezierSurfaceC0::ActiveImGui()
 			ChangeShowBezierPol();
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Show Bezier's Curve", showBezierCurve))
-			ChangeShowBezierC0();
+			ChangeShowBezierCurve();
 
 	}
 	ImGui::EndGroup();
@@ -126,6 +119,9 @@ void BezierSurfaceC0::CreateBezier()
 
 	int width = (4 + (horizontalNum - 1 )* 3);
 	int height = (4 + (verticalNum - 1) * 3);
+
+	
+
 	if (openWindow) {
 		int tmp = width * height;
 		while ((int)controlPoints.size() < tmp)
@@ -140,9 +136,7 @@ void BezierSurfaceC0::CreateBezier()
 				for (int k1 = 0; k1 < 4; k1++) {
 					for (int k2 = 0; k2 < 4; k2++) {
 						glm::vec3 pos = GeneratePosForVertexInPatch(i, j, k1, k2);
-
-						int id = (i * 3 + k1) * width +  k2 + j * 3;
-						auto p = controlPoints[id];
+						auto p = TakePoint(i, j, k1, k2);
 						p->transpose->SetObjectPosition(pos);
 						Add(p);
 						OpenGLHelper::AddVecToVector(vs, pos);
@@ -152,45 +146,80 @@ void BezierSurfaceC0::CreateBezier()
 
 			}
 		}
+
+		if (creationType == CreationType::cylinder) {
+			for (int i = 0; i < verticalNum; i++)
+			{
+				for (int k1 = 0; k1 < 4; k1++)
+				{
+					auto p = TakePoint(i, horizontalNum - 1, k1, 3);
+					Erase(p);
+				}
+			}
+		}
 	}
 	else {
-		DeleteRangeControlPoints(ContainerSize(), controlPoints.size());
-		for (int i = 0; i < verticalNum; i++) {
-			for (int j = 0; j < horizontalNum; j++) {
+		DeleteRangeControlPoints(width * height, controlPoints.size());
+		if (creationType == CreationType::surface) 
+		{
+			for (int i = 0; i < verticalNum; i++) {
+				for (int j = 0; j < horizontalNum; j++) {
 
-				for (int k1 = 0; k1 < 4; k1++) {
-					for (int k2 = 0; k2 < 4; k2++) {
-						int id = (i * 3 + k1) * width + k2 + j * 3;
-						auto p = controlPoints[id];
-						OpenGLHelper::AddVecToVector(vs, p->transpose->GetPosition());
-						
-						if (k2 != 0)
-						{
-							ies.push_back(numberOfVertexes - 1);
-							ies.push_back(numberOfVertexes);
-
-						}
-						if (k1 != 0)
-						{
-							ies.push_back(numberOfVertexes - 4);
-							ies.push_back(numberOfVertexes);
-						}
-
-						numberOfVertexes++;
-					}
-					/*if(k1 != 4)
-						fories.push_back(numberOfVertexes - 4);*/
-				}
-
-				/*idVertexCurve -= 15;
-				for (int k2 = 0; k2 < 4; k2++) {
 					for (int k1 = 0; k1 < 4; k1++) {
-						ies.push_back(idVertexCurve + k2*4 + k1);
-						idVertexCurve++;
+						for (int k2 = 0; k2 < 4; k2++) {
+							auto p = TakePoint(i, j, k1, k2);
+							OpenGLHelper::AddVecToVector(vs, p->transpose->GetPosition());
+
+							if (k2 != 0)
+							{
+								ies.push_back(numberOfVertexes - 1);
+								ies.push_back(numberOfVertexes);
+
+							}
+							if (k1 != 0)
+							{
+								ies.push_back(numberOfVertexes - 4);
+								ies.push_back(numberOfVertexes);
+							}
+
+							numberOfVertexes++;
+						}
 					}
-					ies.push_back(idVertexCurve + 4 * k2);
 				}
-				idVertexCurve = numberOfVertexes;*/
+			}
+		}
+
+		if (creationType == CreationType::cylinder) {
+			for (int i = 0; i < verticalNum; i++) {
+				for (int j = 0; j < horizontalNum; j++) {
+
+					for (int k1 = 0; k1 < 4; k1++) {
+						for (int k2 = 0; k2 < 4; k2++) {
+							Figure* p;
+							if (j == horizontalNum - 1 && k2 == 3) {
+								p = TakePoint(i, 0, k1, 0);
+
+							}
+							else
+								p = TakePoint(i, j, k1, k2);
+							OpenGLHelper::AddVecToVector(vs, p->transpose->GetPosition());
+
+							if (k2 != 0)
+							{
+								ies.push_back(numberOfVertexes - 1);
+								ies.push_back(numberOfVertexes);
+
+							}
+							if (k1 != 0)
+							{
+								ies.push_back(numberOfVertexes - 4);
+								ies.push_back(numberOfVertexes);
+							}
+
+							numberOfVertexes++;
+						}
+					}
+				}
 			}
 		}
 	}
@@ -350,9 +379,19 @@ void BezierSurfaceC0::DeleteRangeControlPoints(int start, int end)
 {
 	for (int i = start; i < end; i++)
 	{
-		delete controlPoints[i];
+		if(controlPoints[i] != nullptr)
+			delete controlPoints[i];
 	}
 
 	auto iter = controlPoints.begin();
 	controlPoints.erase(std::next(iter, start), std::next(iter, end));
+}
+
+Figure* BezierSurfaceC0::TakePoint(int verticalID, int horizontalID, int k1, int k2)
+{
+	int width = (4 + (horizontalNum - 1) * 3);
+	int id = (verticalID * 3 + k1) * width + k2 + horizontalID * 3;
+	std::cout << id << std::endl;
+	auto p = controlPoints[id];
+	return p;
 }
