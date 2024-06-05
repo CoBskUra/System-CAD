@@ -17,6 +17,7 @@ static struct StaticShaders{
 	static Shader* 	GetPointerToTorus();
 
 	static Shader* GetPointerToBezierSurfaceC0();
+	static Shader* GetPointerToBezierSurfaceC2();
 private:
 	static bool haseBeenInit;
 	static Shader bezier2D;
@@ -33,4 +34,5 @@ private:
 	static Shader Torus;
 
 	static Shader BezierSurfaceC0;
+	static Shader BezierSurfaceC2;
 };

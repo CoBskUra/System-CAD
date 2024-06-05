@@ -186,6 +186,9 @@
     <ClCompile Include="MoveMeWithMouse.cpp">
       <Filter>Source Files\Figures\FigureFunctions</Filter>
     </ClCompile>
+    <ClCompile Include="BezierSurfaceC2.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -329,6 +332,9 @@
     <ClInclude Include="MoveMeWithMouse.h">
       <Filter>Header Files\Figures\FigureFunctions</Filter>
     </ClInclude>
+    <ClInclude Include="BezierSurfaceC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="cursor_frag.glsl">
@@ -391,6 +397,8 @@
     <None Include="bezierSurfaceC0_te.glsl">
       <Filter>Resource Files\Shaders\Bezier\surface_C0</Filter>
     </None>
+    <None Include="bezierSurfaceC2_tc.glsl" />
+    <None Include="bezierSurfaceC2_te.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MG1.rc">
