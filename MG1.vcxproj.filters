@@ -165,9 +165,6 @@
     <ClCompile Include="VirtualPoint.cpp">
       <Filter>Source Files\Figures</Filter>
     </ClCompile>
-    <ClCompile Include="StaticShaders.cpp">
-      <Filter>Source Files\StaticShaders</Filter>
-    </ClCompile>
     <ClCompile Include="BezierBase.cpp">
       <Filter>Source Files\Figures\Bezier</Filter>
     </ClCompile>
@@ -185,6 +182,15 @@
     </ClCompile>
     <ClCompile Include="MoveMeWithMouse.cpp">
       <Filter>Source Files\Figures\FigureFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoscoicView.cpp">
+      <Filter>Source Files\Figures\FigureFunctions</Filter>
+    </ClCompile>
+    <ClCompile Include="InfinityGrid.cpp">
+      <Filter>Source Files\Figures\Bezier</Filter>
+    </ClCompile>
+    <ClCompile Include="StaticShaders.cpp">
+      <Filter>Source Files\StaticShaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -328,6 +334,12 @@
     </ClInclude>
     <ClInclude Include="MoveMeWithMouse.h">
       <Filter>Header Files\Figures\FigureFunctions</Filter>
+    </ClInclude>
+    <ClInclude Include="InfinityGrid.h">
+      <Filter>Header Files\Figures</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoscoicView.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -14,17 +14,22 @@
 #include "BezierInterpolated.h"
 #include "StaticShaders.h"
 #include "BezierSurfaceC0.h"
+#include "StereoscoicView.h"
+#include "InfinityGrid.h"
 
 class Manager {
 	FiguresVector figuresVector;
 	Camera* currentCamera;
 
 	CenterPoint centerPoint;
-
 	Cursor cursor;
+	InfinityGrid infinityGrid;
+
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
 	glm::vec2 mouseLastPosition;
+
+	StereoscopicView stereoscopicView;
 
 	float minLengthFromMouse = 0.001f;
 	int TheClosetFigureToMouse(FigureType figureType);

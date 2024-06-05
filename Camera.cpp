@@ -8,12 +8,47 @@ Camera::Camera(int width, int height, glm::vec3 position)
 	updateMatrixes();
 }
 
+Camera::Camera(const Camera& camera)
+{
+	hasBeenUpdated = false;
+	Position = camera.Position;
+	Orientation = camera.Orientation;
+	Up = camera.Up;
+
+	cameraMatrix = camera.cameraMatrix;
+	view = camera.view;
+	projection = camera.projection;
+
+	firstClick = camera.firstClick;
+	lastMousePosition = camera.lastMousePosition;
+
+	keyboardSpeed = camera.keyboardSpeed;
+	mouseSensitivity = camera.mouseSensitivity;
+
+	deltaTime = camera.deltaTime;
+	lastFrame = camera.lastFrame;
+
+	FOVRad = camera.FOVRad;
+	ctg_FOVRad_0dot5 = camera.ctg_FOVRad_0dot5;
+
+	nearPlane = camera.nearPlane;
+	farPlane = camera.farPlane;
+	farPlane_minus_nearPlane_Invers = camera.farPlane_minus_nearPlane_Invers;
+
+	aspect = camera.aspect;
+	aspect_invers = camera.aspect_invers;
+
+	ScaleVec = camera.ScaleVec;
+	Scale = camera.Scale;
+	Scale_invers = camera.Scale_invers;
+}
+
 void Camera::updateMatrixes()
 {
 	UpdateViewMatrix();
 	updateProjectionMatrix();
 
-	cameraMatrix = projection * view * Scale;
+	//cameraMatrix = projection * view * Scale;
 	hasBeenUpdated = true;
 }
 
@@ -311,7 +346,8 @@ void Camera::ActiveInterferes()
 				ImGui::DragFloat("Far Plane", &farPlane, 0.1f, nearPlane, M_FLOAT_MAX) 
 				)
 			{
-				farPlane_minus_nearPlane_Invers = 1 / (farPlane - nearPlane);
+				SetNearPlane(nearPlane);
+				SetFarPlane(farPlane);
 				updateMatrixes();
 			}
 			if (ImGui::DragFloat("Aspect", &aspect, 0.1f, M_ESP, M_FLOAT_MAX))
@@ -334,6 +370,14 @@ glm::vec3 Camera::GetPosition() const
 	return Position;
 }
 
+glm::vec3 Camera::SetPosition(glm::vec3 newPos)
+{
+	glm::vec3 oldPos = Position;
+	Position = newPos;
+
+	return glm::vec3();
+}
+
 glm::vec3 Camera::GetOrientation() const
 {
 	return Orientation;
@@ -346,7 +390,7 @@ glm::vec3 Camera::GetUp() const
 
 glm::mat4 Camera::GetCameraMatrix() const
 {
-	return cameraMatrix;
+	return projection * view * Scale;
 }
 
 float Camera::GetNearPlane() const {
@@ -357,10 +401,57 @@ float Camera::GetFarPlane() const {
 	return farPlane;
 }
 
+void Camera::SetNearPlane(float newNearPlane)
+{
+	nearPlane = newNearPlane;
+	farPlane_minus_nearPlane_Invers = 1 / (farPlane - nearPlane);
+}
+
+void Camera::SetFarPlane(float newFarPlane)
+{
+	farPlane = newFarPlane;
+	farPlane_minus_nearPlane_Invers = 1 / (farPlane - nearPlane);
+}
+
 void Camera::SetAspect(float newAspect)
 {
 	hasBeenUpdated = true;
 	aspect = newAspect;
 	aspect_invers = 1/newAspect;
 	updateMatrixes();
+}
+
+void Camera::operator=(const Camera camera)
+{
+	hasBeenUpdated = false;
+	Position = camera.Position;
+	Orientation = camera.Orientation;
+	Up = camera.Up;
+
+	cameraMatrix = camera.cameraMatrix;
+	view = camera.view;
+	projection = camera.projection;
+
+	firstClick = camera.firstClick;
+	lastMousePosition = camera.lastMousePosition;
+
+	keyboardSpeed = camera.keyboardSpeed;
+	mouseSensitivity = camera.mouseSensitivity;
+
+	deltaTime = camera.deltaTime;
+	lastFrame = camera.lastFrame;
+
+	FOVRad = camera.FOVRad;
+	ctg_FOVRad_0dot5 = camera.ctg_FOVRad_0dot5;
+
+	nearPlane = camera.nearPlane;
+	farPlane = camera.farPlane;
+	farPlane_minus_nearPlane_Invers = camera.farPlane_minus_nearPlane_Invers;
+
+	aspect = camera.aspect;
+	aspect_invers = camera.aspect_invers;
+
+	ScaleVec = camera.ScaleVec;
+	Scale = camera.Scale;
+	Scale_invers = camera.Scale_invers;
 }

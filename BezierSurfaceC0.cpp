@@ -15,7 +15,7 @@ BezierSurfaceC0::BezierSurfaceC0(const char* name, const char* uniqueName, Figur
 {
 	showBezierCurve = false;
 	CreateBezier();
-	SetColor(glm::vec4(1, 0, 0, 1));
+	SetUnmarkColor(glm::vec4(1, 0, 0, 1));
 }
 
 BezierSurfaceC0::~BezierSurfaceC0()

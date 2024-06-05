@@ -14,11 +14,13 @@
 #include"Shader.h"
 #include "MathOperations.h"
 #include "Constants.h"
+//#include "StereoscoicView.h"
 
 class Camera
 {
 public:
 	Camera(int width, int height, glm::vec3 position);
+	Camera(const Camera& camera);
 	glm::mat4 GetCameraMatrix() const;
 	glm::mat4 GetCameraMatrixInvers() const;
 
@@ -28,11 +30,33 @@ public:
 	void SaveMatrixToShader(const GLuint& ShaderID) const;
 
 	glm::vec3 GetPosition() const;
+	glm::vec3 SetPosition(glm::vec3 newPos);
 	glm::vec3 GetOrientation() const;
 	glm::vec3 GetUp() const;
+
 	float GetNearPlane() const;
 	float GetFarPlane() const;
+
+	void SetNearPlane(float newNearPlane);
+	void SetFarPlane(float newFarPlane);
+
+	void SetScale(glm::vec3 vec);
+	void SetScale(float x, float y, float z);
+
+	glm::mat4 RotationMatrix() const;
+	
+	glm::mat4 TransformMatrix() const;
+	glm::mat4 TransformMatrixInvers() const;
+
+	virtual glm::mat4 ProjectionMatrix() const;
+	virtual glm::mat4 ProjectionMatrixInvers() const;
+
 	void SetAspect(float newAspect);
+	void operator=(const Camera camera);
+
+	void updateMatrixes();
+	void UpdateViewMatrix();
+	void updateProjectionMatrix();
 
 private:
 	bool hasBeenUpdated = true;
@@ -67,24 +91,9 @@ private:
 	glm::mat4 Scale = glm::mat4(1.0f);
 	glm::mat4 Scale_invers = glm::mat4(1.0f);
 
-	void updateMatrixes();
-	void UpdateViewMatrix();
-	void updateProjectionMatrix();
 
-	glm::mat4 RotationMatrix() const;
-	glm::mat4 TransformMatrix() const;
-	glm::mat4 TransformMatrixInvers() const;
-	glm::mat4 ProjectionMatrix() const;
-	glm::mat4 ProjectionMatrixInvers() const;
-
-
-
-	void SetScale(glm::vec3 vec);
-	void SetScale(float x, float y, float z);
 
 	bool handelKeyboardInput(GLFWwindow* window);
 	bool handelMouseInput(GLFWwindow* window);
-
-
 };
 #endif

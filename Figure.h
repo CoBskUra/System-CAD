@@ -21,7 +21,8 @@ class Figure: protected TransposeImGui
 {
 private:
 	glm::vec4 showColor;
-	glm::vec4 color{ 1,1,1,1 };
+	glm::vec4 unmarkColor{ 1,1,1,1 };
+	glm::vec4 markColor{ 1, 0.8f, 0, 1 };
 	static int count;
 	std::string UniqueName = "#Figura";
 	std::set<FigureContainer*> containIn;
@@ -41,7 +42,9 @@ public:
 	glm::mat4x4 virtual GetModelMatrixInvers();
 	FigureType GetType() const;
 	glm::vec4 GetShowColor() const;
-	void SetColor(glm::vec4 newColor);
+	void SetUnmarkColor(glm::vec4 newColor);
+	void SetMarkColor(glm::vec4 newColor);
+	void SetShowColor(glm::vec4 newColor);
 
 	virtual ~Figure();
 

@@ -5,7 +5,7 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 {
 	StaticShaders::Init();
 	currentCamera = camera;
-	centerPoint.SetColor( glm::vec4(1, 0, 0, 1));
+	centerPoint.SetUnmarkColor( glm::vec4(1, 0, 0, 1));
 	cursor.transpose->SetObjectPosition(0.5f, 1.2f, -1.0f);
 }
 
@@ -13,35 +13,55 @@ void Manager::MenuInterferes()
 {
 	ImGui::Begin("Menu");
 	{
+		if (ImGui::RadioButton("Turn on stereoscopic view", stereoscopicView.turnOn))
+			stereoscopicView.turnOn = !stereoscopicView.turnOn;
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
 		SelectableList();
 	}
 	ImGui::End();
+
+	if (figuresVector.NumberOfActive() > 0) {
+		ImGui::Begin("Objects");
+		for (int i = 0; i < figuresVector.Size(); i++)
+		{
+			if (figuresVector.active[i])
+			{
+				ImGui::PushID(i);
+				figuresVector.figures[i]->ActiveImGui(); // prze¿uæ do interfersu ale najpierw lepsze baza na figury
+				// taka bym mia³ dostêp do aktywnych w czasie O(1) 
+				ImGui::PopID();
+
+				ImGui::Separator();
+				ImGui::NewLine();
+				ImGui::Separator();
+			}
+		}
+		ImGui::End();
+	}
+
+	stereoscopicView.Interferes();
 }
 
 void Manager::Draw()
 {
 	for (int i = 0; i < figuresVector.Size(); i++)
 	{
-		if (figuresVector.active[i])
-		{
-			ImGui::PushID(i);
-			figuresVector.figures[i]->ActiveImGui(); // prze¿uæ do interfersu ale najpierw lepsze baza na figury
-														// taka bym mia³ dostêp do aktywnych w czasie O(1) 
-			ImGui::PopID();
-
-			ImGui::Separator();
-			ImGui::NewLine();
-			ImGui::Separator();
-		}
-
-		figuresVector.figures[i]->Draw(window, *currentCamera);
+		//figuresVector.figures[i]->Draw(window, *currentCamera);
+		stereoscopicView.Draw(window, *currentCamera, figuresVector.figures[i]);
 	}
 
-	centerPoint.Draw(window, *currentCamera);
+	/*centerPoint.Draw(window, *currentCamera);
 	cursor.Draw(window, *currentCamera);
+	infinityGrid.Draw(window, *currentCamera);
+	*/
+
+	stereoscopicView.Draw(window, *currentCamera, &centerPoint);
+	stereoscopicView.Draw(window, *currentCamera, &cursor);
+
+	cursor.Draw(window, *currentCamera);
+	stereoscopicView.Draw(window, *currentCamera, &infinityGrid);
 }
 
 Manager::~Manager()
