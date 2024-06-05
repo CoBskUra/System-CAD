@@ -159,6 +159,7 @@
     <ClCompile Include="BezierC0.cpp" />
     <ClCompile Include="BezierC2.cpp" />
     <ClCompile Include="BezierSurfaceC0.cpp" />
+    <ClCompile Include="BezierSurfaceC2.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Figure.cpp" />
     <ClCompile Include="Figure3D.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="BezierC0.h" />
     <ClInclude Include="BezierC2.h" />
     <ClInclude Include="BezierSurfaceC0.h" />
+    <ClInclude Include="BezierSurfaceC2.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CanterPoint.h" />
     <ClInclude Include="Constants.h" />
@@ -244,6 +246,8 @@
     <None Include="bezierCurve_vert.glsl" />
     <None Include="bezierSurfaceC0_tc.glsl" />
     <None Include="bezierSurfaceC0_te.glsl" />
+    <None Include="bezierSurfaceC2_tc.glsl" />
+    <None Include="bezierSurfaceC2_te.glsl" />
     <None Include="infinityGrid_vert.glsl" />
     <None Include="cursor_frag.glsl" />
     <None Include="cursor_vert.glsl" />

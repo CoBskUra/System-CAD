@@ -1,24 +1,24 @@
-#include "BezierSurfaceC0.h"
+#include "BezierSurfaceC2.h"
 #include <ImGui/imgui_impl_opengl3.h>
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name, "##BezierSurfaceC0", 
-	FigureType::BezierSurfaceC0)
+BezierSurfaceC2::BezierSurfaceC2(const char* name) : BezierSurfaceC2(name, "##BezierSurfaceC2", 
+	FigureType::BezierSurfaceC2)
 {
 }
 
-BezierSurfaceC0::BezierSurfaceC0() : BezierSurfaceC0("BezierSurfaceC0")
+BezierSurfaceC2::BezierSurfaceC2() : BezierSurfaceC2("BezierSurfaceC2")
 {
 }
 
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name, const char* uniqueName, FigureType type): BezierBase(name, uniqueName, type)
+BezierSurfaceC2::BezierSurfaceC2(const char* name, const char* uniqueName, FigureType type): BezierBase(name, uniqueName, type)
 {
 	showBezierCurve = false;
 	CreateBezier();
 	SetColor(glm::vec4(1, 0, 0, 1));
 }
 
-BezierSurfaceC0::~BezierSurfaceC0()
+BezierSurfaceC2::~BezierSurfaceC2()
 {
 	for (int i = 0; i < controlPoints.size(); i++)
 	{
@@ -32,12 +32,12 @@ BezierSurfaceC0::~BezierSurfaceC0()
 	}
 }
 
-bool BezierSurfaceC0::Inputs(GLFWwindow* window, const Camera& camera)
+bool BezierSurfaceC2::Inputs(GLFWwindow* window, const Camera& camera)
 {
 	return false;
 }
 
-void BezierSurfaceC0::Draw(GLFWwindow* window, const Camera& camera)
+void BezierSurfaceC2::Draw(GLFWwindow* window, const Camera& camera)
 {
 	if (CreationWindowInterfers(window)) {
 		if (!accepted)
@@ -93,7 +93,7 @@ void BezierSurfaceC0::Draw(GLFWwindow* window, const Camera& camera)
 }
 
 
-void BezierSurfaceC0::ActiveImGui()
+void BezierSurfaceC2::ActiveImGui()
 {
 	ImGui::BeginGroup();
 	{
@@ -111,7 +111,7 @@ void BezierSurfaceC0::ActiveImGui()
 	ImGui::EndGroup();
 }
 
-void BezierSurfaceC0::CreateBezier()
+void BezierSurfaceC2::CreateBezier()
 {
 	numberOfVertexes = 0;
 	std::vector<float> vs;
@@ -150,10 +150,13 @@ void BezierSurfaceC0::CreateBezier()
 		if (creationType == CreationType::cylinder) {
 			for (int i = 0; i < verticalNum; i++)
 			{
-				for (int k1 = 0; k1 < 4; k1++)
+				for (int k2 = 1; k2 < 4; k2++)
 				{
-					auto p = TakePoint(i, horizontalNum - 1, k1, 3);
-					Erase(p);
+					for (int k1 = 0; k1 < 4; k1++)
+					{
+						auto p = TakePoint(i, horizontalNum - 1, k1, k2);
+						Erase(p);
+					}
 				}
 			}
 		}
@@ -196,9 +199,9 @@ void BezierSurfaceC0::CreateBezier()
 					for (int k1 = 0; k1 < 4; k1++) {
 						for (int k2 = 0; k2 < 4; k2++) {
 							Figure* p;
-							if (j == horizontalNum - 1 && k2 == 3) {
-								p = TakePoint(i, 0, k1, 0);
-
+							if (j >= horizontalNum - 3 && k2 >= horizontalNum - j)
+							{
+								p = TakePoint(i, 0, k1, k2 - (horizontalNum - j));
 							}
 							else
 								p = TakePoint(i, j, k1, k2);
@@ -249,7 +252,7 @@ void BezierSurfaceC0::CreateBezier()
 	numberOfIndes = ies.size();
 }
 
-bool BezierSurfaceC0::CreationWindowInterfers(GLFWwindow* window)
+bool BezierSurfaceC2::CreationWindowInterfers(GLFWwindow* window)
 {
 	if (!openWindow)
 		return false;
@@ -259,7 +262,7 @@ bool BezierSurfaceC0::CreationWindowInterfers(GLFWwindow* window)
 	ImGui::GetWindowSize();
 	bool receivedInput = false;
 	ImGui::SetNextWindowFocus();
-	ImGui::PushID("BezierSurfaceC0");
+	ImGui::PushID("BezierSurfaceC2");
 	if (!ImGui::Begin("Generate C0 surface", &openWindow, 1)) {
 		openWindow = false;
 	}
@@ -290,8 +293,10 @@ bool BezierSurfaceC0::CreationWindowInterfers(GLFWwindow* window)
 					receivedInput = true;
 				break;
 			case CreationType::cylinder:
+				if (horizontalNum < 3)
+					horizontalNum = 3;
 				if (ImGui::DragInt("Vertical num:", &verticalNum, 1.0f, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp) ||
-					ImGui::DragInt("Horizontal num:", &horizontalNum, 1.0f, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp)
+					ImGui::DragInt("Horizontal num:", &horizontalNum, 3.0f, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp)
 					)
 					receivedInput = true;
 				if (ImGui::DragFloat("Radius:", &radius, 1.0f, M_ESP, M_FLOAT_MAX, "%f", ImGuiSliderFlags_AlwaysClamp) ||
@@ -321,20 +326,20 @@ bool BezierSurfaceC0::CreationWindowInterfers(GLFWwindow* window)
 	return receivedInput;
 }
 
-glm::vec3 BezierSurfaceC0::GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2)
+glm::vec3 BezierSurfaceC2::GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2)
 {
-	float width = (  horizontalNum * 3);
-	float patchNumVertical = ( verticalNum * 3);
+	float width = ( 2 + horizontalNum );
+	float patchNumVertical = (2 +  verticalNum );
 	float alfa;
 	float scalar = 1;
 
-	glm::vec3 surPos = glm::vec3{ horizontalID * 3, 0,  verticalID * 3 } + glm::vec3{ k2, 0, k1 } - glm::vec3{ width / 2.0f, 0, patchNumVertical / 2.0f };
+	glm::vec3 surPos = glm::vec3{ horizontalID , 0,  verticalID  } + glm::vec3{ k2, 0, k1 } - glm::vec3{ width / 2.0f, 0, patchNumVertical / 2.0f };
 	switch (creationType)
 	{
-	case BezierSurfaceC0::CreationType::surface:
+	case BezierSurfaceC2::CreationType::surface:
 		return surPos;
 		break;
-	case BezierSurfaceC0::CreationType::cylinder:
+	case BezierSurfaceC2::CreationType::cylinder:
 		surPos.z *= 1.0f / patchNumVertical * this->height;
 		//surPos.x *= 1.0f / width * 2 * radius;
 		
@@ -375,7 +380,7 @@ glm::vec3 BezierSurfaceC0::GeneratePosForVertexInPatch(int verticalID, int horiz
 	return glm::vec3{ horizontalID * 3, 0,  verticalID * 3 } + glm::vec3{ k2, 0, k1 };;
 }
 
-void BezierSurfaceC0::DeleteRangeControlPoints(int start, int end)
+void BezierSurfaceC2::DeleteRangeControlPoints(int start, int end)
 {
 	for (int i = start; i < end; i++)
 	{
@@ -387,10 +392,10 @@ void BezierSurfaceC0::DeleteRangeControlPoints(int start, int end)
 	controlPoints.erase(std::next(iter, start), std::next(iter, end));
 }
 
-Figure* BezierSurfaceC0::TakePoint(int verticalID, int horizontalID, int k1, int k2)
+Figure* BezierSurfaceC2::TakePoint(int verticalID, int horizontalID, int k1, int k2)
 {
-	int width = (4 + (horizontalNum - 1) * 3);
-	int id = (verticalID * 3 + k1) * width + k2 + horizontalID * 3;
+	int width = (3 + horizontalNum );
+	int id = (verticalID  + k1) * width + k2 + horizontalID ;
 	//std::cout << id << std::endl;
 	auto p = controlPoints[id];
 	return p;

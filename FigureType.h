@@ -8,7 +8,8 @@ enum class FigureType {
 	BezierC0,
 	BezierC2,
 	BezierInterpolated,
-	BezierSurfaceC0,
+	BezierSurfaceC0, 
+	BezierSurfaceC2,
 	VirtualPoint,
 	COUNT
 };

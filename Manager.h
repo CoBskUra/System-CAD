@@ -14,6 +14,7 @@
 #include "BezierInterpolated.h"
 #include "StaticShaders.h"
 #include "BezierSurfaceC0.h"
+#include "BezierSurfaceC2.h"
 
 class Manager {
 	FiguresVector figuresVector;
