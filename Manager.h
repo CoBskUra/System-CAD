@@ -22,6 +22,8 @@ class Manager {
 	FiguresVector figuresVector;
 	Camera* currentCamera;
 
+	Camera* mainCamera;
+
 	CenterPoint centerPoint;
 	Cursor cursor;
 	InfinityGrid infinityGrid;

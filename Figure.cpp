@@ -43,14 +43,16 @@ glm::vec4 Figure::GetShowColor() const
 	return showColor;
 }
 
-void Figure::SetUnmarkColor(glm::vec4 newColor)
+glm::vec4 Figure::SetUnmarkColor(glm::vec4 newColor)
 {
+	glm::vec4 oldColor = unmarkColor;
 	unmarkColor = newColor;
 	if (!mark)
 	{
 		showColor = unmarkColor;
 		//InformContainers();
 	}
+	return oldColor;
 }
 
 void Figure::SetMarkColor(glm::vec4 newColor)

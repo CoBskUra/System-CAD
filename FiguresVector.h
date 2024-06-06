@@ -101,6 +101,10 @@ public:
 		while (Size() > 0)
 			DeleteFigure(0);
 	}
+
+	void DeleteLastFigure() {
+		DeleteFigure(Size() - 1);
+	}
 private:
 	int activeCount;
 };

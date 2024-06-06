@@ -15,7 +15,7 @@ BezierSurfaceC0::BezierSurfaceC0(const char* name, const char* uniqueName, Figur
 {
 	showBezierCurve = false;
 	CreateBezier();
-	SetUnmarkColor(glm::vec4(1, 0, 0, 1));
+	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
 BezierSurfaceC0::~BezierSurfaceC0()
@@ -39,10 +39,8 @@ bool BezierSurfaceC0::Inputs(GLFWwindow* window, const Camera& camera)
 
 void BezierSurfaceC0::Draw(GLFWwindow* window, const Camera& camera)
 {
-	if (CreationWindowInterfers(window)) {
-		if (!accepted)
-			Clear();
-		CreateBezier();
+	if (openWindow) {
+		glfwGetWindowSize(window, &windowSize.x, &windowSize.y);
 	}
 
 	if (!showBezierPol && !showBezierCurve) {
@@ -95,6 +93,20 @@ void BezierSurfaceC0::Draw(GLFWwindow* window, const Camera& camera)
 
 void BezierSurfaceC0::ActiveImGui()
 {
+	if (CreationWindowInterfers(windowSize)) {
+		if (!accepted)
+			Clear();
+		CreateBezier();
+		if (!openWindow && !accepted)
+		{
+			figureVector->DeleteLastFigure();
+			return;
+		}
+	}
+
+	if (openWindow)
+		return;
+
 	ImGui::BeginGroup();
 	{
 		Figure::ActiveImGui();
@@ -249,20 +261,20 @@ void BezierSurfaceC0::CreateBezier()
 	numberOfIndes = ies.size();
 }
 
-bool BezierSurfaceC0::CreationWindowInterfers(GLFWwindow* window)
+bool BezierSurfaceC0::CreationWindowInterfers(glm::ivec2 appWindowSize)
 {
 	if (!openWindow)
 		return false;
 
-	glm::ivec2 appWindowSize;
-	glfwGetWindowSize(window, &appWindowSize.x, &appWindowSize.y);
 	ImGui::GetWindowSize();
 	bool receivedInput = false;
 	ImGui::SetNextWindowFocus();
 	ImGui::PushID("BezierSurfaceC0");
-	if (!ImGui::Begin("Generate C0 surface", &openWindow, 1)) {
+	if (ImGui::Begin("Generate C0 surface", &openWindow) && !openWindow) {
 		openWindow = false;
+		receivedInput = true;
 	}
+
 	{
 		appWindowSize /= 2;
 		ImVec2 windowSize = ImGui::GetWindowSize();
@@ -317,6 +329,8 @@ bool BezierSurfaceC0::CreationWindowInterfers(GLFWwindow* window)
 	}
 	ImGui::End();
 	ImGui::PopID();
+	if (!openWindow)
+		float aaaa = 1;
 
 	return receivedInput;
 }

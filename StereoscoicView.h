@@ -4,11 +4,14 @@
 #include "Camera.h"
 #include "Figure.h"
 
-class StereoscopicView
+class StereoscopicView : public Camera
 {
-	float nearPlane = 0.1f;
-	float farPlane = 100.0f;
-
+	enum class EyeSetings
+	{
+		monoEye,
+		leftEye,
+		righteEye
+	};
 	float rightPlane = 0.3f;
 	float leftPlane = 0.1f;
 
@@ -16,14 +19,28 @@ class StereoscopicView
 	float topPlane = 0.2f;
 	float bottomPlane = 0.1f;
 
-	float eyesDistance = 1.0f;
-	glm::mat4 ProjectionMatrix();
+	float convergence = 10;
 
-	void SetParams(Camera& camera);
+	EyeSetings currentSettings;
+	float eyesDistance = 1.0f;
+	glm::vec3 monoEye;
+
+	glm::mat4 ProjectionMatrix() const override;
+	glm::mat4 ProjectionMatrixInvers() const override;
+	void updateMatrixes() override;
+
+	void SetParams(EyeSetings typeOfEye);
 public:
 	bool turnOn = false;
 
-	void Draw(GLFWwindow* window, Camera& camera, Figure* figure);
-	bool Interferes();
+
+	StereoscopicView(const Camera& camera);
+	Camera GetStereoCam(Camera& camera, bool leftEye);
+	void ActiveInterferes() override;
+	void operator=(const Camera& camera);
+	void LeftEyeSeting();
+	void RighteEyeSeting();
+	void MonoEyeSetting();
+	glm::vec3 SetMonoEye(glm::vec3 newPos);
 };
 

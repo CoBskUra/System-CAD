@@ -1,10 +1,11 @@
 #include "Manager.h"
 
 Manager::Manager(Camera* camera, GLFWwindow* window):
-	window(window)
+	window(window), stereoscopicView(*camera)
 {
 	StaticShaders::Init();
 	currentCamera = camera;
+	mainCamera = camera;
 	centerPoint.SetUnmarkColor( glm::vec4(1, 0, 0, 1));
 	cursor.transpose->SetObjectPosition(0.5f, 1.2f, -1.0f);
 }
@@ -14,7 +15,19 @@ void Manager::MenuInterferes()
 	ImGui::Begin("Menu");
 	{
 		if (ImGui::RadioButton("Turn on stereoscopic view", stereoscopicView.turnOn))
+		{
 			stereoscopicView.turnOn = !stereoscopicView.turnOn;
+			if (stereoscopicView.turnOn) {
+				stereoscopicView = *currentCamera;
+				currentCamera = &stereoscopicView;
+				currentCamera->updateMatrixes();
+			}
+			else {
+				*mainCamera = *currentCamera;
+				currentCamera = mainCamera;
+				currentCamera->updateMatrixes();
+			}
+		}
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
@@ -41,27 +54,54 @@ void Manager::MenuInterferes()
 		ImGui::End();
 	}
 
-	stereoscopicView.Interferes();
+	ImGui::Begin("Camera Control");
+	currentCamera->ActiveInterferes();
+	ImGui::End();
 }
 
 void Manager::Draw()
 {
-	for (int i = 0; i < figuresVector.Size(); i++)
-	{
-		//figuresVector.figures[i]->Draw(window, *currentCamera);
-		stereoscopicView.Draw(window, *currentCamera, figuresVector.figures[i]);
+	if (!stereoscopicView.turnOn) {
+
+		for (int i = 0; i < figuresVector.Size(); i++)
+		{
+			figuresVector.figures[i]->Draw(window, *currentCamera);
+			//stereoscopicView.Draw(window, *currentCamera, figuresVector.figures[i]);
+		}
+
+		centerPoint.Draw(window, *currentCamera);
+		cursor.Draw(window, *currentCamera);
+		infinityGrid.Draw(window, *currentCamera);
 	}
+	else {
+		//stereoscopicView = (*mainCamera);
+		stereoscopicView.LeftEyeSeting();
+		for (int i = 0; i < 2; i++) {
+			if(i == 0)
+				glColorMask(true, false, false, false);
+			else
+				glColorMask(false, false, true, false);
 
-	/*centerPoint.Draw(window, *currentCamera);
-	cursor.Draw(window, *currentCamera);
-	infinityGrid.Draw(window, *currentCamera);
-	*/
+			for (int i = 0; i < figuresVector.Size(); i++)
+			{
+				glm::vec4 oldColor = figuresVector.figures[i]->SetUnmarkColor({ 1, 1, 1, 1 });
+				figuresVector.figures[i]->Draw(window, *currentCamera);
+				figuresVector.figures[i]->SetUnmarkColor(oldColor);
+				//stereoscopicView.Draw(window, *currentCamera, figuresVector.figures[i]);
+			}
 
-	stereoscopicView.Draw(window, *currentCamera, &centerPoint);
-	stereoscopicView.Draw(window, *currentCamera, &cursor);
+			centerPoint.Draw(window, *currentCamera);
+			cursor.Draw(window, *currentCamera);
+			infinityGrid.Draw(window, *currentCamera);
 
-	cursor.Draw(window, *currentCamera);
-	stereoscopicView.Draw(window, *currentCamera, &infinityGrid);
+			glClear(GL_DEPTH_BUFFER_BIT);
+			stereoscopicView.RighteEyeSeting();
+		}
+		glColorMask(true, true, true, true);
+		stereoscopicView.MonoEyeSetting();
+		//currentCamera = mainCamera;
+	}
+	
 }
 
 Manager::~Manager()
@@ -140,6 +180,7 @@ void Manager::CreateFiguresInterfers()
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		Bezier->figureVector = &figuresVector;
 		figuresVector.AddFigure(Bezier);
+		figuresVector.ChangeActiveState(figuresVector.Size() - 1);
 	}
 
 
@@ -149,6 +190,7 @@ void Manager::CreateFiguresInterfers()
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		Bezier->figureVector = &figuresVector;
 		figuresVector.AddFigure(Bezier);
+		figuresVector.ChangeActiveState(figuresVector.Size() - 1);
 	}
 }
 
@@ -227,6 +269,7 @@ void Manager::ProcesInput()
 
 	centerPoint.Inputs(window, *currentCamera);
 	cursor.Inputs(window, *currentCamera);
+	currentCamera->Inputs(window);
 }
 
 

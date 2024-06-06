@@ -31,6 +31,7 @@ class BezierSurfaceC2: public BezierBase
 	
 
 
+	glm::ivec2 windowSize;
 
 	VAO vao;
 	Shader* shader = StaticShaders::GetPointerToBezierSurfaceC2();
@@ -64,7 +65,7 @@ protected:
 	BezierSurfaceC2(const char* name, const char* uniqueName, FigureType type);
 	void virtual CreateBezier();
 private:
-	bool CreationWindowInterfers(GLFWwindow* window);
+	bool CreationWindowInterfers(glm::ivec2 appWindowSize);
 	glm::vec3 GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2);
 	void DeleteRangeControlPoints(int start, int end);
 	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2);

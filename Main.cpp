@@ -76,8 +76,8 @@ int main()
 		manader.Draw();
 		manader.ProcesInput();
 
-		camera.Inputs(window);
-		camera.ActiveInterferes();
+	/*	camera.Inputs(window);
+		camera.ActiveInterferes();*/
 
 
 		// inifinity Grid

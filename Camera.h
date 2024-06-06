@@ -25,13 +25,14 @@ public:
 	glm::mat4 GetCameraMatrixInvers() const;
 
 	bool Inputs(GLFWwindow* window);
-	void ActiveInterferes();
+	virtual void ActiveInterferes();
 	bool HasBeenUpdated();
 	void SaveMatrixToShader(const GLuint& ShaderID) const;
 
 	glm::vec3 GetPosition() const;
-	glm::vec3 SetPosition(glm::vec3 newPos);
+	virtual glm::vec3 SetPosition(glm::vec3 newPos);
 	glm::vec3 GetOrientation() const;
+	void SetOrientation(glm::vec3 newOrientation);
 	glm::vec3 GetUp() const;
 
 	float GetNearPlane() const;
@@ -40,6 +41,7 @@ public:
 	void SetNearPlane(float newNearPlane);
 	void SetFarPlane(float newFarPlane);
 
+	glm::vec3 GetScale() const;
 	void SetScale(glm::vec3 vec);
 	void SetScale(float x, float y, float z);
 
@@ -51,14 +53,18 @@ public:
 	virtual glm::mat4 ProjectionMatrix() const;
 	virtual glm::mat4 ProjectionMatrixInvers() const;
 
+	float GetAspect() const;
 	void SetAspect(float newAspect);
+	float GetFov() const;
+	void SetFov(float newFov);
 	void operator=(const Camera camera);
 
-	void updateMatrixes();
+	virtual void updateMatrixes();
 	void UpdateViewMatrix();
 	void updateProjectionMatrix();
 
-private:
+
+protected:
 	bool hasBeenUpdated = true;
 	glm::vec3 Position;
 	glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -95,5 +101,10 @@ private:
 
 	bool handelKeyboardInput(GLFWwindow* window);
 	bool handelMouseInput(GLFWwindow* window);
+
+	void OrientationImgui();
+	void PositionImgui();
+	void ScaleImgui();
+	void MoveSettingsImgui();
 };
 #endif

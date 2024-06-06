@@ -1,15 +1,18 @@
 #include "StereoscoicView.h"
 
-glm::mat4 StereoscopicView::ProjectionMatrix()
+glm::mat4 StereoscopicView::ProjectionMatrix() const
 {
+	if (currentSettings == EyeSetings::monoEye)
+		return Camera::ProjectionMatrix();
+
 	glm::mat4 proj{ 1.0f };
 
-	proj[0][0] = 2* nearPlane / (rightPlane - leftPlane);
+	proj[0][0] = 2 * nearPlane / (rightPlane - leftPlane);
 	proj[1][1] = 2 * nearPlane / (topPlane - bottomPlane);
 	proj[3][3] = 0;
 
-	//proj[2][0] = (rightPlane + leftPlane) / (rightPlane - leftPlane);
-	//proj[2][1] = (topPlane + bottomPlane) / (topPlane - bottomPlane);
+	proj[2][0] = (rightPlane + leftPlane) / (rightPlane - leftPlane);
+	proj[2][1] = (topPlane + bottomPlane) / (topPlane - bottomPlane);
 	proj[2][2] = (farPlane + nearPlane) / (farPlane - nearPlane);
 	proj[2][3] = 1;
 
@@ -18,77 +21,163 @@ glm::mat4 StereoscopicView::ProjectionMatrix()
 	return proj;
 }
 
-void StereoscopicView::SetParams(Camera& camera)
+glm::mat4 StereoscopicView::ProjectionMatrixInvers() const
 {
-	/*nearPlane = camera.GetNearPlane();
-	farPlane = camera.GetFarPlane();
+	return glm::inverse(ProjectionMatrix());
+}
 
-	topPlane = tan(camera.FOVRad) * nearPlane;
+void StereoscopicView::updateMatrixes()
+{
+	if (currentSettings == EyeSetings::monoEye)
+		SetMonoEye(GetPosition());
+
+	SetParams(currentSettings);
+	Camera::updateMatrixes();
+}
+
+void StereoscopicView::SetParams(EyeSetings typeOfEye)
+{
+	topPlane = tanf(FOVRad * 0.5f) * nearPlane;
 	bottomPlane = -topPlane;
 
-	rightPlane = topPlane * camera.aspect;
-	leftPlane = -rightPlane;*/
+	float a = aspect * tanf(FOVRad * 0.5f) * convergence;;
+
+	float b = a - eyesDistance * 0.5f;
+	float c = a + eyesDistance * 0.5f;
+
+
+	switch (typeOfEye)
+	{
+	case StereoscopicView::EyeSetings::monoEye:
+		rightPlane = tanf(FOVRad * 0.5f) / aspect;
+		leftPlane = -rightPlane;
+		break;
+	case StereoscopicView::EyeSetings::leftEye:
+
+		leftPlane = -c * nearPlane / convergence;
+		rightPlane = b * nearPlane / convergence;
+		break;
+	case StereoscopicView::EyeSetings::righteEye:
+
+		leftPlane = -b * nearPlane / convergence;
+		rightPlane = c * nearPlane / convergence;
+		break;
+	default:
+		break;
+	}
+
+	switch (typeOfEye)
+	{
+	default:
+		break;
+	}
 }
 
-void StereoscopicView::Draw(GLFWwindow* window, Camera& camera, Figure* figure)
+StereoscopicView::StereoscopicView(const Camera& camera): Camera(camera)
+{
+	SetParams(currentSettings);
+	updateMatrixes();
+	monoEye = camera.GetPosition();
+}
+
+Camera StereoscopicView::GetStereoCam(Camera& camera, bool leftEye)
 {
 	Camera tmp = camera;
-	if (turnOn)
-	{
-		//save camera setings
+	if (leftEye) {
 		glm::vec3 oldPos = camera.GetPosition();
-		//glm::mat4 oldProj = camera.projection;
-
-		//// new projection
-		//SetParams(camera);
-		//camera.projection = proj;
-		float blend = 0.8;
-		// left eye
-		glm::vec4 color = figure->GetShowColor();
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		figure->SetShowColor(glm::vec4(0.8f, 0, 0, 1) * blend + color * (1 - blend));
 		tmp.SetPosition(oldPos - glm::vec3(eyesDistance * 0.5f, 0, 0));
 		tmp.updateMatrixes();
-		figure->Draw(window, tmp);
-
-		// right eye
-		figure->SetShowColor(glm::vec4(0, 0, 0.8f, 1) * blend + color * (1 - blend));
+	}
+	else {
+		glm::vec3 oldPos = camera.GetPosition();
 		tmp.SetPosition(oldPos + glm::vec3(eyesDistance * 0.5f, 0, 0));
 		tmp.updateMatrixes();
-		figure->Draw(window, tmp);
-		glDisable(GL_BLEND);
-		// revers changes
-		//camera.Position = oldPos;
-		////camera.projection = oldProj;
-		//camera.updateMatrixes();
 	}
-	else
-		figure->Draw(window, camera);
+	return tmp;
 }
 
-bool StereoscopicView::Interferes()
+void StereoscopicView::ActiveInterferes()
 {
 	if (!turnOn)
-		return false;
+		return;
 	ImGui::PushID("StereoscopicView");
-	ImGui::Begin("Stereoscopy", &turnOn);
+	ImGui::BeginGroup();
 	{
-		/*ImGui::DragFloat("Far Plane", &farPlane, 0.1f, nearPlane, M_FLOAT_MAX);
-		ImGui::DragFloat("Near Plane", &nearPlane, 0.1f, -M_FLOAT_MAX, farPlane);
-		ImGui::Separator();
+		/*OrientationImgui();
+		PositionImgui();
+		ScaleImgui();
+		MoveSettingsImgui();*/
+
+	/*	ImGui::Text("Projection");
+		ImGui::DragFloat("Near Plane", &nearPlane, 0.1f, M_ESP, farPlane);
+		ImGui::DragFloat("Far Plane", &farPlane, 0.1f, nearPlane, M_FLOAT_MAX);
 
 		ImGui::DragFloat("Top Plane", &topPlane, 0.1f, bottomPlane, M_FLOAT_MAX);
-		ImGui::DragFloat("Bottom Plane", &bottomPlane, 0.1f, -M_FLOAT_MAX, topPlane);
-		ImGui::Separator();
+		ImGui::DragFloat("Botton Plane", &bottomPlane, 0.1f, M_ESP, topPlane);
 
-		ImGui::DragFloat("Right Plane", &rightPlane, 0.1f, leftPlane, M_FLOAT_MAX);
-		ImGui::DragFloat("Left Plane", &leftPlane, 0.1f, -M_FLOAT_MAX, rightPlane);
-		ImGui::Separator();*/
+		ImGui::DragFloat("Rigth Plane", &rightPlane, 0.1f, leftPlane, M_FLOAT_MAX);
+		ImGui::DragFloat("Left Plane", &leftPlane, 0.1f, M_ESP, rightPlane);*/
 
-		ImGui::DragFloat("Eyes distance", &eyesDistance, 0.1f, -M_FLOAT_MAX, M_FLOAT_MAX);
+		Camera::ActiveInterferes();
+
+		ImGui::Text("Steroscopy");
+		if (ImGui::DragFloat("Eyes distance", &eyesDistance, 0.01f, M_ESP, M_FLOAT_MAX))
+			updateMatrixes();
+
+		if(ImGui::DragFloat("Covered", &convergence, 0.1f, M_ESP, M_FLOAT_MAX))
+			updateMatrixes();
+
 	}
-	ImGui::End();
+	ImGui::EndGroup();
 	ImGui::PopID();
-	return false;
+}
+
+void StereoscopicView::operator=(const Camera& camera)
+{
+	hasBeenUpdated = false;
+	Position = camera.GetPosition();
+	SetOrientation( camera.GetOrientation());
+	Up = camera.GetUp();
+
+	SetFov(camera.GetFov());
+
+	SetNearPlane(camera.GetNearPlane());
+	SetFarPlane(camera.GetFarPlane());
+
+	SetAspect(camera.GetAspect());
+
+	SetScale(camera.GetScale());
+
+	SetParams(currentSettings);
+	updateMatrixes();
+
+	monoEye = camera.GetPosition();
+}
+
+void StereoscopicView::LeftEyeSeting()
+{
+	SetPosition(monoEye - glm::vec3(eyesDistance * 0.5f, 0, 0));
+	currentSettings = EyeSetings::leftEye;
+	updateMatrixes();
+}
+
+void StereoscopicView::RighteEyeSeting()
+{
+	SetPosition(monoEye + glm::vec3(eyesDistance * 0.5f, 0, 0));
+	currentSettings = EyeSetings::righteEye;
+	updateMatrixes();
+}
+
+void StereoscopicView::MonoEyeSetting()
+{
+	SetPosition(monoEye);
+	currentSettings = EyeSetings::monoEye;
+	updateMatrixes();
+}
+
+glm::vec3 StereoscopicView::SetMonoEye(glm::vec3 newPos)
+{
+	auto tmp = monoEye;
+	monoEye = newPos;
+	return tmp;
 }

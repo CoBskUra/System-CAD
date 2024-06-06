@@ -10,7 +10,7 @@ BezierBase::BezierBase() : BezierBase("BezierBase")
 BezierBase::BezierBase(const char* name, const char* uniqueName, FigureType type) : CenterPoint(name, uniqueName, type)
 {
 	CreateBezier();
-	SetUnmarkColor(glm::vec4(1, 0, 0, 1));
+	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
 void BezierBase::Draw(GLFWwindow* window, const Camera& camera) {
