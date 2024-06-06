@@ -43,7 +43,7 @@ void BezierInterpolated::CreateBezier()
 	while (virtualPoints.size() < 4 * ContainerSize() ) {
 		VirtualPoint* p = new VirtualPoint();
 		virtualPoints.push_back(p);
-		p->SetColor({ 0, 0, 0, 1 });
+		p->SetUnmarkColor({ 0, 0, 0, 1 });
 		p->SetName(std::to_string(id).c_str());
 		id++;
 	}

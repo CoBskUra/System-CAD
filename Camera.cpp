@@ -8,12 +8,47 @@ Camera::Camera(int width, int height, glm::vec3 position)
 	updateMatrixes();
 }
 
+Camera::Camera(const Camera& camera)
+{
+	hasBeenUpdated = false;
+	Position = camera.Position;
+	Orientation = camera.Orientation;
+	Up = camera.Up;
+
+	cameraMatrix = camera.cameraMatrix;
+	view = camera.view;
+	projection = camera.projection;
+
+	firstClick = camera.firstClick;
+	lastMousePosition = camera.lastMousePosition;
+
+	keyboardSpeed = camera.keyboardSpeed;
+	mouseSensitivity = camera.mouseSensitivity;
+
+	deltaTime = camera.deltaTime;
+	lastFrame = camera.lastFrame;
+
+	FOVRad = camera.FOVRad;
+	ctg_FOVRad_0dot5 = camera.ctg_FOVRad_0dot5;
+
+	nearPlane = camera.nearPlane;
+	farPlane = camera.farPlane;
+	farPlane_minus_nearPlane_Invers = camera.farPlane_minus_nearPlane_Invers;
+
+	aspect = camera.aspect;
+	aspect_invers = camera.aspect_invers;
+
+	ScaleVec = camera.ScaleVec;
+	Scale = camera.Scale;
+	Scale_invers = camera.Scale_invers;
+}
+
 void Camera::updateMatrixes()
 {
 	UpdateViewMatrix();
 	updateProjectionMatrix();
 
-	cameraMatrix = projection * view * Scale;
+	//cameraMatrix = projection * view * Scale;
 	hasBeenUpdated = true;
 }
 
@@ -78,39 +113,48 @@ bool Camera::handelKeyboardInput(GLFWwindow* window)
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
+	glm::vec3 newPos = Position;
 	// Handles key inputs
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		Position += deltaTime * keyboardSpeed * -Orientation;
+		newPos += deltaTime * keyboardSpeed * -Orientation;
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		Position += deltaTime * keyboardSpeed * -glm::normalize(glm::cross(Orientation, Up));
+		newPos += deltaTime * keyboardSpeed * -glm::normalize(glm::cross(Orientation, Up));
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		Position += deltaTime * keyboardSpeed * +Orientation;
+		newPos += deltaTime * keyboardSpeed * +Orientation;
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		Position += deltaTime * keyboardSpeed * glm::normalize(glm::cross(Orientation, Up));
+		newPos += deltaTime * keyboardSpeed * glm::normalize(glm::cross(Orientation, Up));
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		Position += deltaTime * keyboardSpeed * Up;
+		newPos += deltaTime * keyboardSpeed * Up;
 		updatePosition = true;
 	}
 	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
 	{
-		Position += deltaTime * keyboardSpeed * -Up;
+		newPos += deltaTime * keyboardSpeed * -Up;
 		updatePosition = true;
 	}
 
+	if (updatePosition)
+		SetPosition(newPos);
+
 	return updatePosition;
+}
+
+glm::vec3 Camera::GetScale() const
+{
+	return ScaleVec;
 }
 
 void Camera::SetScale(glm::vec3 vec)
@@ -224,6 +268,66 @@ bool Camera::handelMouseInput(GLFWwindow* window)
 	return false;
 }
 
+void Camera::OrientationImgui()
+{
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Orientation");
+		if (ImGui::DragFloat("x", &Orientation.x, 0.1f) ||
+			ImGui::DragFloat("y", &Orientation.y, 0.1f) ||
+			ImGui::DragFloat("z", &Orientation.z, 0.1f))
+		{
+			SetOrientation(Orientation);
+			updateMatrixes();
+		}
+	}
+	ImGui::EndGroup();
+}
+
+void Camera::PositionImgui()
+{
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Position");
+		if (ImGui::DragFloat("x:", &Position.x, 0.1f) ||
+			ImGui::DragFloat("y:", &Position.y, 0.1f) ||
+			ImGui::DragFloat("z:", &Position.z, 0.1f))
+		{
+			updateMatrixes();
+		}
+	}
+	ImGui::EndGroup();
+}
+
+void Camera::ScaleImgui()
+{
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Scale");
+		if (ImGui::DragFloat("Scale x", &ScaleVec.x, 0.1f) ||
+			ImGui::DragFloat("Scale y", &ScaleVec.y, 0.1f) ||
+			ImGui::DragFloat("Scale z", &ScaleVec.z, 0.1f))
+		{
+			SetScale(ScaleVec);
+		}
+	}
+	ImGui::EndGroup();
+}
+
+void Camera::MoveSettingsImgui()
+{
+	ImGui::BeginGroup();
+	{
+		ImGui::Text("Properties");
+		if (ImGui::DragFloat("Keyboard speed", &keyboardSpeed, 0.2f) ||
+			ImGui::DragFloat("Mouse sensitivity", &mouseSensitivity, 10.0f))
+		{
+			updateMatrixes();
+		}
+	}
+	ImGui::EndGroup();
+}
+
 
 bool Camera::HasBeenUpdated()
 {
@@ -251,57 +355,15 @@ bool Camera::Inputs(GLFWwindow* window)
 
 void Camera::ActiveInterferes()
 {
-	ImGui::Begin("Camera Control");
+	ImGui::PushID("Camera");
+	ImGui::BeginGroup();
 	{
-		ImGui::BeginGroup();
-		{
-			ImGui::Text("Orientation");
-			if (ImGui::DragFloat("x", &Orientation.x, 0.1f) ||
-				ImGui::DragFloat("y", &Orientation.y, 0.1f) ||
-				ImGui::DragFloat("z", &Orientation.z, 0.1f)) 
-			{
-				if (abs(Orientation.x) + abs(Orientation.y) + abs(Orientation.z) < M_ESP)
-					Orientation.x = Orientation.y = Orientation.z = 1;
-				Orientation = glm::normalize(Orientation);
-				updateMatrixes();
-			}
-		}
-		ImGui::EndGroup();
+		
 
-		ImGui::BeginGroup();
-		{
-			ImGui::Text("Position");
-			if (ImGui::DragFloat("x:", &Position.x, 0.1f) ||
-				ImGui::DragFloat("y:", &Position.y, 0.1f) ||
-				ImGui::DragFloat("z:", &Position.z, 0.1f))
-			{
-				updateMatrixes();
-			}
-		}
-		ImGui::EndGroup();
-
-		ImGui::BeginGroup();
-		{
-			ImGui::Text("Scale");
-			if (ImGui::DragFloat("Scale x", &ScaleVec.x, 0.1f) ||
-				ImGui::DragFloat("Scale y", &ScaleVec.y, 0.1f) ||
-				ImGui::DragFloat("Scale z", &ScaleVec.z, 0.1f))
-			{
-				SetScale(ScaleVec);
-			}
-		}
-		ImGui::EndGroup();
-
-		ImGui::BeginGroup();
-		{
-			ImGui::Text("Properties");
-			if (ImGui::DragFloat("Keyboard speed", &keyboardSpeed, 0.2f) ||
-				ImGui::DragFloat("Mouse sensitivity", &mouseSensitivity, 10.0f) )
-			{
-				updateMatrixes();
-			}
-		}
-		ImGui::EndGroup();
+		OrientationImgui();
+		PositionImgui();
+		ScaleImgui();
+		MoveSettingsImgui();		
 
 		ImGui::BeginGroup();
 		{
@@ -311,7 +373,8 @@ void Camera::ActiveInterferes()
 				ImGui::DragFloat("Far Plane", &farPlane, 0.1f, nearPlane, M_FLOAT_MAX) 
 				)
 			{
-				farPlane_minus_nearPlane_Invers = 1 / (farPlane - nearPlane);
+				SetNearPlane(nearPlane);
+				SetFarPlane(farPlane);
 				updateMatrixes();
 			}
 			if (ImGui::DragFloat("Aspect", &aspect, 0.1f, M_ESP, M_FLOAT_MAX))
@@ -320,13 +383,14 @@ void Camera::ActiveInterferes()
 			}
 			if (ImGui::DragFloat("FOV Rad", &FOVRad, 0.1f, M_ESP, M_PI))
 			{
-				ctg_FOVRad_0dot5 = 1 / tanf(FOVRad * 0.5f);
+				SetFov(FOVRad);
 				updateMatrixes();
 			}
 		}
 		ImGui::EndGroup();
 	}
-	ImGui::End();
+	ImGui::EndGroup();
+	ImGui::PopID();
 }
 
 glm::vec3 Camera::GetPosition() const
@@ -334,9 +398,24 @@ glm::vec3 Camera::GetPosition() const
 	return Position;
 }
 
+glm::vec3 Camera::SetPosition(glm::vec3 newPos)
+{
+	glm::vec3 oldPos = Position;
+	Position = newPos;
+
+	return glm::vec3();
+}
+
 glm::vec3 Camera::GetOrientation() const
 {
 	return Orientation;
+}
+
+void Camera::SetOrientation(glm::vec3 newOrientation)
+{
+	if (abs(newOrientation.x) + abs(newOrientation.y) + abs(newOrientation.z) < M_ESP)
+		newOrientation.x = newOrientation.y = newOrientation.z = 1;
+	Orientation = glm::normalize(newOrientation);
 }
 
 glm::vec3 Camera::GetUp() const
@@ -346,7 +425,7 @@ glm::vec3 Camera::GetUp() const
 
 glm::mat4 Camera::GetCameraMatrix() const
 {
-	return cameraMatrix;
+	return projection * view * Scale;
 }
 
 float Camera::GetNearPlane() const {
@@ -357,10 +436,74 @@ float Camera::GetFarPlane() const {
 	return farPlane;
 }
 
+void Camera::SetNearPlane(float newNearPlane)
+{
+	nearPlane = newNearPlane;
+	farPlane_minus_nearPlane_Invers = 1 / (farPlane - nearPlane);
+}
+
+void Camera::SetFarPlane(float newFarPlane)
+{
+	farPlane = newFarPlane;
+	farPlane_minus_nearPlane_Invers = 1 / (farPlane - nearPlane);
+}
+
+float Camera::GetAspect() const
+{
+	return aspect;
+}
+
 void Camera::SetAspect(float newAspect)
 {
 	hasBeenUpdated = true;
 	aspect = newAspect;
 	aspect_invers = 1/newAspect;
 	updateMatrixes();
+}
+
+float Camera::GetFov() const
+{
+	return FOVRad;
+}
+
+void Camera::SetFov(float newFov)
+{
+	FOVRad = newFov;
+	ctg_FOVRad_0dot5 = 1 / tanf(FOVRad * 0.5f);
+}
+
+
+void Camera::operator=(const Camera camera)
+{
+	hasBeenUpdated = false;
+	Position = camera.Position;
+	Orientation = camera.Orientation;
+	Up = camera.Up;
+
+	cameraMatrix = camera.cameraMatrix;
+	view = camera.view;
+	projection = camera.projection;
+
+	firstClick = camera.firstClick;
+	lastMousePosition = camera.lastMousePosition;
+
+	keyboardSpeed = camera.keyboardSpeed;
+	mouseSensitivity = camera.mouseSensitivity;
+
+	deltaTime = camera.deltaTime;
+	lastFrame = camera.lastFrame;
+
+	FOVRad = camera.FOVRad;
+	ctg_FOVRad_0dot5 = camera.ctg_FOVRad_0dot5;
+
+	nearPlane = camera.nearPlane;
+	farPlane = camera.farPlane;
+	farPlane_minus_nearPlane_Invers = camera.farPlane_minus_nearPlane_Invers;
+
+	aspect = camera.aspect;
+	aspect_invers = camera.aspect_invers;
+
+	ScaleVec = camera.ScaleVec;
+	Scale = camera.Scale;
+	Scale_invers = camera.Scale_invers;
 }

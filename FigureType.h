@@ -1,5 +1,6 @@
 enum class FigureType {
 	Any,
+	UnchangeObject,
 	Figure,
 	Point,
 	Torus,

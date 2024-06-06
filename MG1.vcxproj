@@ -166,6 +166,7 @@
     <ClCompile Include="FigureContainer.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="BezierInterpolated.cpp" />
+    <ClCompile Include="InfinityGrid.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui_draw.cpp" />
     <ClCompile Include="Libraries\include\ImGui\imgui_impl_glfw.cpp" />
@@ -182,6 +183,7 @@
     <ClCompile Include="Scale.cpp" />
     <ClCompile Include="shaderClass.cpp" />
     <ClCompile Include="StaticShaders.cpp" />
+    <ClCompile Include="StereoscoicView.cpp" />
     <ClCompile Include="Transpose.cpp" />
     <ClCompile Include="VirtualPoint.cpp" />
   </ItemGroup>
@@ -203,6 +205,7 @@
     <ClInclude Include="FiguresVector.h" />
     <ClInclude Include="Figure_ControlSelected.h" />
     <ClInclude Include="BezierInterpolated.h" />
+    <ClInclude Include="InfinityGrid.h" />
     <ClInclude Include="Libraries\include\ImGui\imconfig.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui.h" />
     <ClInclude Include="Libraries\include\ImGui\imgui_impl_glfw.h" />
@@ -228,6 +231,7 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderCreator.h" />
     <ClInclude Include="StaticShaders.h" />
+    <ClInclude Include="StereoscoicView.h" />
     <ClInclude Include="Torus.h" />
     <ClInclude Include="TransposeImGui.h" />
     <ClInclude Include="Transpose.h" />

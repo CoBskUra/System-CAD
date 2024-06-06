@@ -6,7 +6,7 @@ class Cursor : public Figure {
 public:
 	Cursor(const char* name) : Figure("##Cursor", FigureType::Cursor)
 	{
-		SetColor( glm::vec4(0.8, 0.8, 0.8, 0.6));
+		SetUnmarkColor( glm::vec4(0.8, 0.8, 0.8, 0.6));
 		CreatePoint();
 		SetName(name);
 		editAbleName = false;

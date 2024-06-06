@@ -14,27 +14,57 @@
 #include"Shader.h"
 #include "MathOperations.h"
 #include "Constants.h"
+//#include "StereoscoicView.h"
 
 class Camera
 {
 public:
 	Camera(int width, int height, glm::vec3 position);
+	Camera(const Camera& camera);
 	glm::mat4 GetCameraMatrix() const;
 	glm::mat4 GetCameraMatrixInvers() const;
 
 	bool Inputs(GLFWwindow* window);
-	void ActiveInterferes();
+	virtual void ActiveInterferes();
 	bool HasBeenUpdated();
 	void SaveMatrixToShader(const GLuint& ShaderID) const;
 
 	glm::vec3 GetPosition() const;
+	virtual glm::vec3 SetPosition(glm::vec3 newPos);
 	glm::vec3 GetOrientation() const;
+	void SetOrientation(glm::vec3 newOrientation);
 	glm::vec3 GetUp() const;
+
 	float GetNearPlane() const;
 	float GetFarPlane() const;
-	void SetAspect(float newAspect);
 
-private:
+	void SetNearPlane(float newNearPlane);
+	void SetFarPlane(float newFarPlane);
+
+	glm::vec3 GetScale() const;
+	void SetScale(glm::vec3 vec);
+	void SetScale(float x, float y, float z);
+
+	glm::mat4 RotationMatrix() const;
+	
+	glm::mat4 TransformMatrix() const;
+	glm::mat4 TransformMatrixInvers() const;
+
+	virtual glm::mat4 ProjectionMatrix() const;
+	virtual glm::mat4 ProjectionMatrixInvers() const;
+
+	float GetAspect() const;
+	void SetAspect(float newAspect);
+	float GetFov() const;
+	void SetFov(float newFov);
+	void operator=(const Camera camera);
+
+	virtual void updateMatrixes();
+	void UpdateViewMatrix();
+	void updateProjectionMatrix();
+
+
+protected:
 	bool hasBeenUpdated = true;
 	glm::vec3 Position;
 	glm::vec3 Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -67,24 +97,14 @@ private:
 	glm::mat4 Scale = glm::mat4(1.0f);
 	glm::mat4 Scale_invers = glm::mat4(1.0f);
 
-	void updateMatrixes();
-	void UpdateViewMatrix();
-	void updateProjectionMatrix();
 
-	glm::mat4 RotationMatrix() const;
-	glm::mat4 TransformMatrix() const;
-	glm::mat4 TransformMatrixInvers() const;
-	glm::mat4 ProjectionMatrix() const;
-	glm::mat4 ProjectionMatrixInvers() const;
-
-
-
-	void SetScale(glm::vec3 vec);
-	void SetScale(float x, float y, float z);
 
 	bool handelKeyboardInput(GLFWwindow* window);
 	bool handelMouseInput(GLFWwindow* window);
 
-
+	void OrientationImgui();
+	void PositionImgui();
+	void ScaleImgui();
+	void MoveSettingsImgui();
 };
 #endif

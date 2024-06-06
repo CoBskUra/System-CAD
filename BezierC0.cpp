@@ -11,7 +11,7 @@ BezierC0::BezierC0() : BezierC0("BezierC0")
 BezierC0::BezierC0(const char* name, const char* uniqueName, FigureType type) : BezierBase( name, uniqueName, type)
 {
 	CreateBezier();
-	SetColor(glm::vec4(1, 0, 0, 1));
+	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
 void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {

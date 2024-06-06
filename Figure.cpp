@@ -7,7 +7,7 @@ int Figure::count = 0;
 Figure::Figure( const char* uniqueName, FigureType type) :  Figure() {
 	UniqueName = uniqueName + std::to_string(id);
 	Type = type;
-	showColor = color;
+	showColor = unmarkColor;
 }
 
 Figure::Figure() : id(count), transpose(this) {
@@ -16,7 +16,7 @@ Figure::Figure() : id(count), transpose(this) {
 	count++;
 	UniqueName += std::to_string(id);
 	Type = FigureType::Figure;
-	showColor = color;
+	showColor = unmarkColor;
 }
 
 std::string Figure::GetUniqueName() {
@@ -43,14 +43,31 @@ glm::vec4 Figure::GetShowColor() const
 	return showColor;
 }
 
-void Figure::SetColor(glm::vec4 newColor)
+glm::vec4 Figure::SetUnmarkColor(glm::vec4 newColor)
 {
-	color = newColor;
+	glm::vec4 oldColor = unmarkColor;
+	unmarkColor = newColor;
 	if (!mark)
 	{
-		showColor = color;
-		InformContainers();
+		showColor = unmarkColor;
+		//InformContainers();
 	}
+	return oldColor;
+}
+
+void Figure::SetMarkColor(glm::vec4 newColor)
+{
+	markColor = newColor;
+	if (mark)
+	{
+		showColor = markColor;
+		//InformContainers();
+	}
+}
+
+void Figure::SetShowColor(glm::vec4 newColor)
+{
+	showColor = newColor;
 }
 
 Figure::~Figure()
@@ -116,11 +133,11 @@ void Figure::SetName(const char* newName) {
 }
 
 void Figure::UnMark() {
-	this->showColor = color;
+	this->showColor = unmarkColor;
 }
 
 void Figure::Mark() {
-	this->showColor = glm::vec4(1, 0.8f, 0, 1);
+	this->showColor = markColor;
 }
 
 void  Figure::Delete() {

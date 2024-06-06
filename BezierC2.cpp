@@ -31,7 +31,7 @@ void BezierC2::ActiveImGui()
 {
 	ImGui::PushID(id);
 
-	if (ImGui::RadioButton("Virtual Points Interfers", showVirtualPointsInterfers))
+	if (ImGui::RadioButton("Virtual Points Interferes", showVirtualPointsInterfers))
 		showVirtualPointsInterfers = !showVirtualPointsInterfers;
 	ImGui::SameLine();
 	if (ImGui::RadioButton("Show Virtual Points on sccene", showVirtualPoints))
@@ -86,7 +86,7 @@ void BezierC2::CreateBezier()
 	{
 		for (int i = virtualPoints.size(); virtualPoints.size() < (ContainerSize() - 3) * 3 + 4; i++) {
 			VirtualPoint* p = new VirtualPoint();
-			p->SetColor(virtualPointColor);
+			p->SetUnmarkColor(virtualPointColor);
 			virtualPoints.push_back(p);
 			p->SetName(std::to_string(i).c_str());
 			p->SetObjectOwner(this);
