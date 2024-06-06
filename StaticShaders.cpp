@@ -20,6 +20,7 @@ Shader StaticShaders::infinityGrid;
 Shader StaticShaders::Torus;
 
 Shader StaticShaders::BezierSurfaceC0;
+Shader StaticShaders::BezierSurfaceC2;
 
 Shader* StaticShaders::GetPointerToBezier2D() {
 	return &bezier2D;
@@ -54,6 +55,11 @@ Shader* StaticShaders::GetPointerToTorus() {
 Shader* StaticShaders::GetPointerToBezierSurfaceC0()
 {
 	return &BezierSurfaceC0;
+}
+
+Shader* StaticShaders::GetPointerToBezierSurfaceC2()
+{
+	return &BezierSurfaceC2;
 }
 
 void StaticShaders::Init()
@@ -103,6 +109,15 @@ void StaticShaders::Init()
 		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
 		{"bezierSurfaceC0_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
 		{"bezierSurfaceC0_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
+	}
+	};
+
+	BezierSurfaceC2 = {
+	{
+		{"bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		{"bezierSurfaceC2_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"bezierSurfaceC2_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
 	};
 }

@@ -32,34 +32,18 @@ void main()
         v = tmp;
     }
 
-    vec3 p0 = Bernstain(u, 
-        gl_in[0].gl_Position.xyz,
-        gl_in[1].gl_Position.xyz,
-        gl_in[2].gl_Position.xyz,
-        gl_in[3].gl_Position.xyz
-    );
-    vec3 p1 = Bernstain(u, 
-        gl_in[4].gl_Position.xyz,
-        gl_in[5].gl_Position.xyz,
-        gl_in[6].gl_Position.xyz,
-        gl_in[7].gl_Position.xyz
-    );
-    
-    vec3 p2 = Bernstain(u, 
-        gl_in[8].gl_Position.xyz,
-        gl_in[9].gl_Position.xyz,
-        gl_in[10].gl_Position.xyz,
-        gl_in[11].gl_Position.xyz
-    );
+    vec3 ps[4];
 
-    vec3 p3 = Bernstain(u, 
-        gl_in[12].gl_Position.xyz,
-        gl_in[13].gl_Position.xyz,
-        gl_in[14].gl_Position.xyz,
-        gl_in[15].gl_Position.xyz
-    );
+    for(int i = 0; i < 4; i++){
+        ps[i] = Bernstain(u, 
+        gl_in[0 + i*4].gl_Position.xyz,
+        gl_in[1 + i*4].gl_Position.xyz,
+        gl_in[2 + i*4].gl_Position.xyz,
+        gl_in[3 + i*4].gl_Position.xyz
+        );
+    }
 
-    vec3 p = Bernstain(v, p0, p1, p2, p3);
+    vec3 p = Bernstain(v, ps[0], ps[1], ps[2], ps[3]);
 
     gl_Position = CAM_MATRIX * vec4(p, 1.0);
 }

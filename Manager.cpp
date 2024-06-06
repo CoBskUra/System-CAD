@@ -134,9 +134,18 @@ void Manager::CreateFiguresInterfers()
 		Bezier->Add(centerPoint);
 	}
 
-	ImGui::SameLine();
-	if (ImGui::Button("Bezier surfec C0", ImVec2(100, 20))) {
+	//ImGui::SameLine();
+	if (ImGui::Button("Bezier surfec C0", ImVec2(150, 20))) {
 		BezierSurfaceC0* Bezier = new BezierSurfaceC0();
+		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
+		Bezier->figureVector = &figuresVector;
+		figuresVector.AddFigure(Bezier);
+	}
+
+
+	ImGui::SameLine();
+	if (ImGui::Button("Bezier surfec C2", ImVec2(150, 20))) {
+		BezierSurfaceC2* Bezier = new BezierSurfaceC2();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
 		Bezier->figureVector = &figuresVector;
 		figuresVector.AddFigure(Bezier);
