@@ -1,0 +1,36 @@
+{
+  "name": "surykatka2",
+  "version-string": "1.0.0",
+  "builtin-baseline": "136a0d8b8c4584e07e5b394d69e492f679d81737",
+  "dependencies": [
+    {
+      "name": "glm",
+      "version>=": "1.0.1#3"
+    },
+    {
+      "name": "imgui",
+      "version>=": "1.90.7#1",
+      "features": [
+        "glfw-binding",
+        "opengl3-binding",
+        "docking-experimental"
+      ]
+    },
+    {
+      "name": "implot",
+      "version>=": "0.16"
+    },
+    {
+      "name": "glad",
+      "version>=": "0.1.36"
+    },
+    {
+      "name": "glfw3",
+      "version>=": "3.4"
+    },
+    {
+      "name": "imguizmo",
+      "version>=": "2024-05-29"
+    }
+  ]
+}
