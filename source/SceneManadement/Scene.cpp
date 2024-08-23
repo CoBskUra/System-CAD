@@ -4,58 +4,71 @@ int Scene::NumberOfActive() {
 	return activeCount;
 }
 
-Figure* Scene::at(int i) { return figures[i]; }
+std::shared_ptr<Figure> Scene::at(int i) const { return  figures.at(insertionOrder[i]); }
 
-void Scene::AddFigure(Figure* figure) {
-	figures.push_back(figure);
+std::shared_ptr<Figure> Scene::byID(uint32_t id) const
+{
+	if (figures.contains(id))
+		return figures.at(id);
+	else
+		return nullptr;
+}
+
+void Scene::AddFigure(std::shared_ptr<Figure> figure) {
+	if(figures.contains(figure->GetId()))
+		return;
+
+	figures[figure->GetId()] =  figure;
 	names.push_back(figure->name);
+	insertionOrder.push_back(figure->GetId());
 
-	if (dynamic_cast<FigureContainer*>(figure))
+	if (dynamic_cast<FigureContainer*>(figure.get()))
 	{
-		figureContainers.insert({ dynamic_cast<FigureContainer*>(figure) });
+		figureContainers.insert({ dynamic_cast<FigureContainer*>(figure.get()) });
 	}
 	else {
 		std::set<FigureContainer*>::iterator iter;
 		for (iter = activeFigureContainers.begin(); iter != activeFigureContainers.end(); iter++) {
-			(*iter)->Add(figure);
+			(*iter)->Add(figure.get());
 		}
 	}
 	active.push_back(false);
 }
 
-void Scene::DeleteFigure(int id) {
-	if (active[id])
-		ChangeActiveState(id);
-	active.erase(std::next(active.begin(), id));
+void Scene::DeleteFigureAt(int place) {
+	if (active[place])
+		active[place] = false;
 
-	auto toDelete = figures[id];
-	figures.erase(std::next(figures.begin(), id));
-	names.erase(std::next(names.begin(), id));
+	auto toDelete = at( place);
 
-	if (dynamic_cast<FigureContainer*>(toDelete))
+	insertionOrder.erase(std::next(insertionOrder.begin(), place));
+	figures.erase(toDelete->GetId());
+	names.erase(std::next(names.begin(), place));
+	active.erase(std::next(active.begin(), place));
+
+	if (dynamic_cast<FigureContainer*>(toDelete.get()))
 	{
-		FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
+		FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete.get());
 		activeFigureContainers.erase(fc);
 		figureContainers.erase(fc);
 	}
 
 	if (toDelete->IsOwner())
 	{
-		FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete);
-		while (Size() > id && at(id)->IsMyOwner(toDelete))
-			if (at(id)->NumberOfContainers() == 1)
-				DeleteFigure(id);
+		FigureContainer* fc = dynamic_cast<FigureContainer*>(toDelete.get());
+		int i = 0;
+		while (Size() > i )
+			if (at(i)->NumberOfContainers() == 1 && at(i)->IsMyOwner(toDelete.get()))
+				DeleteFigureAt(i);
 			else
-				id++;
+				i++;
 	}
 
-	if (!toDelete->HaveOwner())
-	{
-		delete toDelete;
-		toDelete = NULL;
-	}
-
-
+	//if (!toDelete->HaveOwner())
+	//{
+	/*	toDelete.reset();
+		toDelete = NULL;*/
+	//}
 }
 
 bool Scene::ChangeActiveState(int i) {
@@ -63,32 +76,43 @@ bool Scene::ChangeActiveState(int i) {
 
 	if (active[i]) {
 		activeCount++;
-		auto castedFigureToContainer = dynamic_cast<FigureContainer*>(figures.at(i));
+		auto castedFigureToContainer = dynamic_cast<FigureContainer*>(at(i).get());
 		if (castedFigureToContainer)
 			activeFigureContainers.insert(castedFigureToContainer);
 	}
 	else {
 		activeCount--;
-		auto castedFigureToContainer = dynamic_cast<FigureContainer*>(figures.at(i));
+		auto castedFigureToContainer = dynamic_cast<FigureContainer*>(at(i).get());
 		if (castedFigureToContainer)
 			activeFigureContainers.erase(castedFigureToContainer);
 	}
 	return active[i];
 }
 
-int Scene::Size() {
+int Scene::Size() const {
 	return figures.size();
 }
 
+int Scene::SmalestIdOnScene() const
+{
+	int smalest = std::numeric_limits<int>::max();
+	for (auto f : figures) {
+		if (f.second->GetId() < smalest)
+			smalest = f.second->GetId();
+	}
+	return smalest;
+}
+
 Scene::~Scene() {
-	DeleteAll();
+	//DeleteAll();
 }
 
 void Scene::DeleteAll() {
+	
 	while (Size() > 0)
-		DeleteFigure(0);
+		DeleteFigureAt(0);
 }
 
 void Scene::DeleteLastFigure() {
-	DeleteFigure(Size() - 1);
+	DeleteFigureAt(Size() - 1);
 }

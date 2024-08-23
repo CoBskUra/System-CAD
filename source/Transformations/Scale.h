@@ -8,9 +8,9 @@ class Scale
 public:
 	Scale();
 
-	glm::vec3 GetScaleVec();
-	glm::mat4x4 Get();
-	glm::mat4x4 GetInvers();
+	glm::vec3 GetScaleVec() const;
+	glm::mat4x4 Get() const;
+	glm::mat4x4 GetInvers() const;
 
 	void SetScale(glm::vec3 vec);
 	void SetScale(float x, float y, float z);

@@ -73,7 +73,7 @@ void FigureContainer::Clear()
 	orderdFigures.clear();
 }
 
-int FigureContainer::ContainerSize()
+int FigureContainer::ContainerSize() const
 {
 	return selectedFigures.size();
 }
@@ -97,7 +97,7 @@ void FigureContainer::Update()
 {
 }
 
-Figure* FigureContainer::At(int i)
+Figure* FigureContainer::At(int i) const
 {
 	return orderdFigures.at(i);
 }

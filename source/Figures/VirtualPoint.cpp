@@ -16,7 +16,7 @@ bool VirtualPoint::Inputs(GLFWwindow* window, const Camera& camera)
 	return figureController.Move(window, camera, this);
 }
 
-VirtualPoint::VirtualPoint() : Point("##VirtualPoint", FigureType::VirtualPoint)
+VirtualPoint::VirtualPoint() : Point(FigureType::VirtualPoint)
 {
 	SetName("VirtualPoint");
 }

@@ -7,17 +7,17 @@ Scale::Scale()
     Matrix_invers = glm::mat4(1.0f);
 }
 
-glm::vec3 Scale::GetScaleVec()
+glm::vec3 Scale::GetScaleVec() const
 {
     return ScaleVec;
 }
 
-glm::mat4x4 Scale::Get()
+glm::mat4x4 Scale::Get() const
 {
     return Matrix;
 }
 
-glm::mat4x4 Scale::GetInvers()
+glm::mat4x4 Scale::GetInvers() const
 {
     return Matrix_invers;
 }

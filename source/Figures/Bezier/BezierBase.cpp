@@ -1,13 +1,13 @@
 #include "BezierBase.h"
 #include "Helper/OpenGLHelper.h"
 
-BezierBase::BezierBase( const char* name) : BezierBase( name, "##BezierBase", FigureType::CenterPoint)
+BezierBase::BezierBase( const char* name) : BezierBase( name, FigureType::CenterPoint)
 {}
 
 BezierBase::BezierBase() : BezierBase("BezierBase")
 {}
 
-BezierBase::BezierBase(const char* name, const char* uniqueName, FigureType type) : CenterPoint(name, uniqueName, type)
+BezierBase::BezierBase(const char* name, FigureType type) : CenterPoint(name, type)
 {
 	CreateBezier();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));

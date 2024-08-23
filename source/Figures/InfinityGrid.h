@@ -12,7 +12,7 @@ public:
 
 	bool Inputs(GLFWwindow* window, const Camera& camera) override;
 protected:
-	InfinityGrid(const char* uniqueName, FigureType type);
+	InfinityGrid(FigureType type);
 
 private:
 	VAO vaoInfinityGrid;

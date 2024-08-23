@@ -4,6 +4,8 @@
 #include "Figures/CanterPoint.h"
 #include "Figures/VirtualPoint.h"
 #include "ShaderRefrence/StaticShaders.h"
+#include "Models/Curves/BezierC2.h"
+#include "SceneManadement/Scene.h"
 
 class BezierC2: public BezierBase
 {
@@ -19,6 +21,9 @@ public:
 
 	BezierC2(const char* name);
 	BezierC2();
+	BezierC2(MG1::BezierC2 b0, const Scene* scene, int idOffset = 0);
+	MG1::BezierC2 Serialize(int idOffset) const;
+
 	virtual ~BezierC2();
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
@@ -30,6 +35,6 @@ public:
 	void virtual ChangeShowBezierPol();
 
 protected:
-	BezierC2( const char* name, const char* uniqueName, FigureType type);
+	BezierC2( const char* name,  FigureType type);
 };
 

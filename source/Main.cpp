@@ -31,8 +31,6 @@ int main()
 	//InfinityGrid ig;
 	////////////////////////////////
 	Manager manader(&camera, window);
-	MG1::SceneSerializer sceneSerializer;
-	MG1::Scene sceneFromFile = sceneSerializer.LoadScene("D:/fast_acess/Studia/MINI CAD-CAM/Modelowanie Geometryczne I/projekt/MG1_projekt/Scene-Serializer/cpp/Serializer/Sandbox/file_example.json");
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))

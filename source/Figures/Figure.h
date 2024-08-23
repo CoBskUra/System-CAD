@@ -14,6 +14,9 @@
 #include "Container/FigureContainer.h"
 #include <set>
 #include "FigureType.h"
+#include <stack>
+#include "Models/SceneObject.h"
+
 
 class FigureContainer;
 
@@ -23,21 +26,26 @@ private:
 	glm::vec4 showColor;
 	glm::vec4 unmarkColor{ 1,1,1,1 };
 	glm::vec4 markColor{ 1, 0.8f, 0, 1 };
-	static int count;
-	std::string UniqueName = "#Figura";
 	std::set<FigureContainer*> containIn;
 	bool mark = false;
 
 	bool haveOwner{ false };
 	Figure* owner;
 	bool haveSubjects{ false };
+
+	static uint32_t s_firstFreeId;
+	static std::set<uint32_t> s_takenIds;
+	static std::stack<uint32_t> s_freedIds;
+	uint32_t id;
+
+	void SetFirstFreeId();
+	void FreeId();
 public:
 	char name[100] = "Figura";
 	TransposeImGui* transpose;
 
 	Figure();
 
-	std::string GetUniqueName();
 	glm::mat4x4 virtual GetModelMatrix();
 	glm::mat4x4 virtual GetModelMatrixInvers();
 	FigureType GetType() const;
@@ -76,13 +84,15 @@ public:
 	void RemoveOwner();
 	bool IsMyOwner(Figure* possibleOwner);
 	bool IsOwner();
+	bool SetId(uint32_t id);
+	uint32_t GetId() const;
+	static uint32_t GetFirstFreeId();
 
 protected:
 	void virtual SetObjectPosition(float x, float y, float z);
 	bool editAbleName = true;
-	Figure(const char* uniqueName, FigureType type);
+	Figure(FigureType type);
 
 	FigureType Type = FigureType::Figure;
-	const int id;
 };
 #endif

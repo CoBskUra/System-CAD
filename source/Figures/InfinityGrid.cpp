@@ -1,6 +1,6 @@
 #include "InfinityGrid.h"
 
-InfinityGrid::InfinityGrid(const char* name) : InfinityGrid("##InfinityGrid", FigureType::UnchangeObject)
+InfinityGrid::InfinityGrid(const char* name) : InfinityGrid( FigureType::UnchangeObject)
 {
 	CreateInfinityGrid();
 	SetName(name);
@@ -29,7 +29,7 @@ bool InfinityGrid::Inputs(GLFWwindow* window, const Camera& camera) {
 	return false;
 }
 
-InfinityGrid::InfinityGrid(const char* uniqueName, FigureType type) : Figure(uniqueName, type) {
+InfinityGrid::InfinityGrid( FigureType type) : Figure( type) {
 }
 
 void InfinityGrid::CreateInfinityGrid()

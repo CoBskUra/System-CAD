@@ -10,6 +10,8 @@
 #include <iostream>
 #include <vector>
 #include "ShaderRefrence/StaticShaders.h"
+#include "Models/Curves/BezierC0.h"
+#include "SceneManadement/Scene.h"
 
 class BezierC0 : public BezierBase {
 	Shader* lineDrawing = StaticShaders::GetPointerToBezierCurve();
@@ -26,9 +28,11 @@ protected:
 public:
 	BezierC0(const char* name);
 	BezierC0();
+	BezierC0(MG1::BezierC0 b0, const Scene* scene, int idOffset = 0);
+	MG1::BezierC0 Serialize(int idOffset = 0) const;
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 protected:
-	BezierC0(const char* name, const char* uniqueName, FigureType type);
+	BezierC0(const char* name, FigureType type);
 	void virtual CreateBezier();
 };

@@ -9,11 +9,12 @@
 #include "Constants.h"
 #include "Figures/Figure3D.h"
 #include "ShaderRefrence/StaticShaders.h"
+#include "Models/Torus.h"
 
 class Torus: public Figure3D
 {
 public:
-	Torus( const char* name) : Figure3D("##Torus", FigureType::Torus)
+	Torus( const char* name) : Figure3D( FigureType::Torus)
 	{
 		CreateTorus();
 		SetName(name);
@@ -22,6 +23,38 @@ public:
 	Torus(): Torus("Torus")
 	{
 	}
+
+	Torus(MG1::Torus tori, int offsetId):Torus() {
+		this->transpose->SetObjectPosition(tori.position.x, tori.position.y, tori.position.z);
+		Rotation rotation{};
+		rotation.SetRotation_X(tori.rotation.x * M_PI / 180.0);
+		rotation.SetRotation_Y(tori.rotation.y * M_PI / 180.0);
+		rotation.SetRotation_Z(tori.rotation.z * M_PI / 180.0);
+		this->scale.SetScale(tori.scale.x, tori.scale.y, tori.scale.z);
+		this->quaternion.SetMainQuaternion((Quaternion)rotation.Get_R());
+		if (tori.name != "")
+			this->SetName(tori.name.c_str());
+		this->SetId(tori.GetId() + offsetId);
+	}
+
+	MG1::Torus Serialize(int idOffset) const {
+		MG1::Torus tori{};
+		tori.SetId(GetId() - idOffset);
+		tori.name = name;
+		tori.position.x = GetPosition().x;
+		tori.position.y = GetPosition().y;
+		tori.position.z = GetPosition().z;
+		auto angles = quaternion.GetEulerRadXYZ();
+		tori.rotation.x = (angles.x / M_PI * 180.0);
+		tori.rotation.y = (angles.y / M_PI * 180.0);
+		tori.rotation.z = (angles.z / M_PI * 180.0);
+		glm::vec3 scale = this->scale.GetScaleVec();
+		tori.scale.x = scale.x;
+		tori.scale.y = scale.y;
+		tori.scale.z = scale.z;
+		return tori;
+	}
+
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
 		torusShader->Activate();
@@ -51,10 +84,10 @@ public:
 		ImGui::BeginGroup();
 		{
 			ImGui::Text("Torus parameters");
-			if (ImGui::InputInt(("segment 1" + GetUniqueName()).c_str(), &segment1) ||
-				ImGui::InputInt(("segment 2" + GetUniqueName()).c_str(), &segment2) ||
-				ImGui::DragFloat(("R" + GetUniqueName()).c_str(), &R, 0.1f, M_ESP) ||
-				ImGui::DragFloat(("r" + GetUniqueName()).c_str(), &r, 0.1f, M_ESP))
+			if (ImGui::InputInt("segment 1" , &segment1) ||
+				ImGui::InputInt("segment 2", &segment2) ||
+				ImGui::DragFloat("R" , &R, 0.1f, M_ESP) ||
+				ImGui::DragFloat("r" , &r, 0.1f, M_ESP))
 				CreateTorus();
 		}
 		ImGui::EndGroup();

@@ -1,9 +1,75 @@
 #include "BezierSurfaceC0.h"
 #include <imgui_impl_opengl3.h>
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name, "##BezierSurfaceC0", 
+BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name, 
 	FigureType::BezierSurfaceC0)
 {
+}
+
+BezierSurfaceC0::BezierSurfaceC0(MG1::BezierSurfaceC0 bs2, Scene* scene, int idOffset) : BezierSurfaceC0()
+{
+	if (bs2.name != "")
+		this->SetName(bs2.name.c_str());
+	this->SetId(bs2.GetId() + idOffset);
+
+	refrenceScene = scene;
+	this->verticalNum = bs2.size.y;
+	this->horizontalNum = bs2.size.x;
+	/*if (verticalNum < horizontalNum) {
+		std::swap(verticalNum, horizontalNum);
+	}*/
+	this->creationType = bs2.vWrapped ? CreationType::cylinder : CreationType::surface;
+	controlPoints.resize(MaxSize());
+	TurnOffStartupInterfers();
+	numberOfVertexes = 0;
+
+	for (int i = 0; i < verticalNum; i++) {
+		for (int j = 0; j < horizontalNum; j++) {
+			for (int k1 = 0; k1 < 4; k1++) {
+				for (int k2 = 0; k2 < 4; k2++) {
+					int cosId = bs2.patches.at(i * horizontalNum + j).controlPoints.at(k1 * 4 + k2).GetId();
+					auto p = scene->byID(bs2.patches.at(i * horizontalNum + j).controlPoints.at(k1 * 4 + k2).GetId() + idOffset);
+					p->SetObjectOwner(this);
+					int id = TakeId(i, j, k1, k2);
+					controlPoints[id] = std::static_pointer_cast<Point>(p);
+					Add(p.get());
+					numberOfVertexes++;
+				}
+			}
+		}
+	}
+
+	//if (creationType == CreationType::cylinder) {
+	//	for (int i = 0; i < verticalNum; i++)
+	//	{
+	//		for (int k2 = 1; k2 < 4; k2++)
+	//		{
+	//			for (int k1 = 0; k1 < 4; k1++)
+	//			{
+	//				int id = TakeId(i, horizontalNum - 1, k1, k2);
+	//				if (controlPoints[id])
+	//					std::cout << controlPoints[id]->GetId() << " ";
+	//				controlPoints[id] = nullptr;
+	//				//Erase(p);
+	//			}
+	//		}
+	//	}
+	//}
+
+	if (creationType == CreationType::cylinder) {
+		for (int i = 0; i < verticalNum; i++)
+		{
+			for (int k1 = 0; k1 < 4; k1++)
+			{
+				int id = TakeId(i, horizontalNum - 1, k1, 3);
+				if (controlPoints[id])
+					std::cout << controlPoints[id]->GetId() << " ";
+				controlPoints[id] = nullptr;
+			}
+		}
+	}
+
+	CreateBezier();
 }
 
 BezierSurfaceC0::BezierSurfaceC0() : BezierSurfaceC0("BezierSurfaceC0")
@@ -11,7 +77,7 @@ BezierSurfaceC0::BezierSurfaceC0() : BezierSurfaceC0("BezierSurfaceC0")
 }
 
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name, const char* uniqueName, FigureType type): BezierBase(name, uniqueName, type)
+BezierSurfaceC0::BezierSurfaceC0(const char* name, FigureType type): BezierBase(name, type)
 {
 	showBezierCurve = false;
 	CreateBezier();
@@ -22,14 +88,35 @@ BezierSurfaceC0::~BezierSurfaceC0()
 {
 	for (int i = 0; i < controlPoints.size(); i++)
 	{
-		if (controlPoints[i]->NumberOfContainers() > 1)
-		{
-			controlPoints[i]->RemoveOwner();
-			controlPoints[i]->EraseContainer(this);
-		}
-		else
-			delete controlPoints[i];
+		if (!controlPoints[i].get())
+			continue;
+		controlPoints[i]->RemoveOwner();
+		controlPoints[i]->EraseContainer(this);
+		controlPoints[i].reset();
 	}
+}
+
+MG1::BezierSurfaceC0 BezierSurfaceC0::Serialize(int idOffset) const
+{
+	MG1::BezierSurfaceC0 bs0{};
+	bs0.size.x = horizontalNum; bs0.size.y = verticalNum;
+
+	bs0.vWrapped = creationType == CreationType::cylinder;
+
+	for (int i = 0; i < verticalNum; i++) {
+		for (int j = 0; j < horizontalNum; j++) {
+			MG1::BezierPatchC0 patch{};
+			for (int k1 = 0; k1 < 4; k1++) {
+				for (int k2 = 0; k2 < 4; k2++) {
+					MG1::PointRef pointRef{ TakePoint(i, j, k1, k2)->GetId() - idOffset };
+					patch.controlPoints.push_back(pointRef);
+				}
+			}
+			bs0.patches.push_back(patch);
+
+		}
+	}
+	return bs0;
 }
 
 bool BezierSurfaceC0::Inputs(GLFWwindow* window, const Camera& camera)
@@ -99,7 +186,8 @@ void BezierSurfaceC0::ActiveImGui()
 		CreateBezier();
 		if (!openWindow && !accepted)
 		{
-			figureVector->DeleteLastFigure();
+			if (nullptr != refrenceScene)
+				refrenceScene->DeleteLastFigure();
 			return;
 		}
 	}
@@ -123,22 +211,28 @@ void BezierSurfaceC0::ActiveImGui()
 	ImGui::EndGroup();
 }
 
+void BezierSurfaceC0::TurnOffStartupInterfers()
+{
+	openWindow = false;
+	accepted = true;
+	firstTime = false;
+}
+
 void BezierSurfaceC0::CreateBezier()
 {
 	numberOfVertexes = 0;
 	std::vector<float> vs;
 	std::vector<GLuint> ies;
 
-	int width = (4 + (horizontalNum - 1 )* 3);
-	int height = (4 + (verticalNum - 1) * 3);
+	
 
 	
 
 	if (openWindow) {
-		int tmp = width * height;
+		int tmp = MaxSize();
 		while ((int)controlPoints.size() < tmp)
 		{
-			Point* p = new Point();
+			std::shared_ptr<Point> p = std::make_shared<Point>();
 			controlPoints.push_back(p);
 			p->SetObjectOwner(this);
 		}
@@ -171,7 +265,7 @@ void BezierSurfaceC0::CreateBezier()
 		}
 	}
 	else {
-		DeleteRangeControlPoints(width * height, controlPoints.size());
+		DeleteRangeControlPoints(MaxSize(), controlPoints.size());
 		if (creationType == CreationType::surface) 
 		{
 			for (int i = 0; i < verticalNum; i++) {
@@ -320,8 +414,11 @@ bool BezierSurfaceC0::CreationWindowInterfers(glm::ivec2 appWindowSize)
 				accepted = true;
 				openWindow = false;
 				receivedInput = true;
-				for (int i = 0; i < ContainerSize(); i++) {
-					figureVector->AddFigure(At(i));
+				if (nullptr != refrenceScene) {
+					for (int i = 0; i < controlPoints.size(); i++) {
+						if(controlPoints.at(i).get() && Contain(controlPoints.at(i).get()))
+							refrenceScene->AddFigure(controlPoints.at(i));
+					}
 				}
 			}
 		}
@@ -394,18 +491,32 @@ void BezierSurfaceC0::DeleteRangeControlPoints(int start, int end)
 	for (int i = start; i < end; i++)
 	{
 		if(controlPoints[i] != nullptr)
-			delete controlPoints[i];
+			controlPoints[i].reset();
 	}
 
 	auto iter = controlPoints.begin();
 	controlPoints.erase(std::next(iter, start), std::next(iter, end));
 }
 
-Figure* BezierSurfaceC0::TakePoint(int verticalID, int horizontalID, int k1, int k2)
+Figure* BezierSurfaceC0::TakePoint(int verticalID, int horizontalID, int k1, int k2) const
+{
+	//int width = (4 + (horizontalNum - 1) * 3);
+	//int id = (verticalID * 3 + k1) * width + k2 + horizontalID * 3;
+	//std::cout << id << std::endl;
+	auto p = controlPoints[TakeId(verticalID, horizontalID, k1, k2)];
+	return p.get();
+}
+
+int BezierSurfaceC0::TakeId(int verticalID, int horizontalID, int k1, int k2) const
 {
 	int width = (4 + (horizontalNum - 1) * 3);
 	int id = (verticalID * 3 + k1) * width + k2 + horizontalID * 3;
-	//std::cout << id << std::endl;
-	auto p = controlPoints[id];
-	return p;
+	return id;
+}
+
+int BezierSurfaceC0::MaxSize()
+{
+	int width = (4 + (horizontalNum - 1) * 3);
+	int height = (4 + (verticalNum - 1) * 3);
+	return width * height;
 }

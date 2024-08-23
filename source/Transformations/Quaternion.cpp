@@ -115,6 +115,26 @@ Quaternion Quaternion::RotatedAlong(float angle, glm::vec3 axis) const
     return result;
 }
 
+glm::vec3 Quaternion::GetEulerRadXYZ() const
+{
+    glm::vec3 angles;
+    double sinr_cosp = 2 * (r() * i() + j() * k());
+    double cosr_cosp = 1 - 2 * (i() * i() + j() * j());
+    angles.x = std::atan2(sinr_cosp, cosr_cosp);
+
+    // pitch (y-axis rotation)
+    double sinp = std::sqrt(1 + 2 * (r() * j() - i() * k()));
+    double cosp = std::sqrt(1 - 2 * (r() * j() - i() * k()));
+    angles.y = 2 * std::atan2(sinp, cosp) - M_PI / 2;
+
+    // yaw (z-axis rotation)
+    double siny_cosp = 2 * (r() * k() + i() * j());
+    double cosy_cosp = 1 - 2 * (j() * j() + k() * k());
+    angles.z = std::atan2(siny_cosp, cosy_cosp);
+
+    return angles;
+}
+
 glm::mat4 Quaternion::GetEulerRotation() const
 {
     glm::mat4 R{ 0.0f };

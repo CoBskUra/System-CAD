@@ -18,15 +18,15 @@
 
 class Figure_ControlSelected : public Figure, public FigureContainer {
 protected:
-	Figure_ControlSelected(Shader* shader, const char* name, const char* uniqueName, FigureType type) :Figure(shader, "##CenterPoint", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader, const char* name, FigureType type) :Figure(shader, FigureType::CenterPoint) {
 		SetName(name);
 		mouseLastPosition = glm::vec2{ 0 };
 	}
 public:
-	Figure_ControlSelected(Shader* shader, const char* name) : Figure_ControlSelected(shader, name, "##Figure_ControlSelected", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader, const char* name) : Figure_ControlSelected(shader, name,  FigureType::CenterPoint) {
 	}
 
-	Figure_ControlSelected(Shader* shader) : Figure_ControlSelected(shader, "Figure_ControlSelected", "##Figure_ControlSelected", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader) : Figure_ControlSelected(shader, "Figure_ControlSelected",  FigureType::CenterPoint) {
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {

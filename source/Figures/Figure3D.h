@@ -27,7 +27,7 @@ public:
 
 protected:
 
-	Figure3D(const char* uniqueName, FigureType type);
+	Figure3D( FigureType type);
 };
 
 #endif

@@ -7,11 +7,11 @@ add_executable (MG1_projekt "Main.cpp" "Main.h" "Camera.cpp" "Camera.h"  "Consta
  "ShaderManadement/EBO.h" "ShaderManadement/Shader.h" "ShaderManadement/VAO.h" "ShaderManadement/VBO.h" 
  "ShaderManadement/shaderClass.cpp"  "ShaderRefrence/ShaderCreator.h" "ShaderRefrence/StaticShaders.cpp" "ShaderRefrence/StaticShaders.h" 
  "Container/FigureContainer.cpp" "Container/FigureContainer.h"
- "SceneManadement/Manager.cpp" "SceneManadement/Manager.h" "SceneManadement/Scene.cpp" "SceneManadement/Scene.h"
+ "SceneManadement/Manager.cpp" "SceneManadement/Manager.h" "SceneManadement/Scene.cpp" "SceneManadement/Scene.h" "SceneManadement/SceneSerializer.h" "SceneManadement/SceneSerializer.cpp"
  "Helper/MathOperations.h"  "Helper/OpenGLHelper.h"
   "Transformations/Quaternion.cpp" "Transformations/Transpose.cpp" "Transformations/Transpose.h" "Transformations/TransposeImGui.h" "Transformations/Quaternion.h" "Transformations/QuaternionRotationImGui.cpp" "Transformations/QuaternionRotationImGui.h"
   "Transformations/Rotation.cpp" "Transformations/Rotation.h" "Transformations/RotationImGui.h" "Transformations/Scale.cpp" "Transformations/Scale.h" "Transformations/ScaleImGui.h"
-  )
+   "Figures/Converter/Header1.h" "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp" "IdGiver/IdGiverTyped.h")
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(
@@ -41,6 +41,6 @@ target_link_libraries(MG1_projekt PRIVATE imgui::imgui)
 target_link_libraries(MG1_projekt PRIVATE MGSerializer)
 
 # add header files to include search path
-#target_include_directories(MG1_projekt PRIVATE ../Scene-Serializer/cpp/Serializer/Serializer)
+target_include_directories(MG1_projekt PRIVATE ../Scene-Serializer/cpp/Serializer/Serializer)
 
 

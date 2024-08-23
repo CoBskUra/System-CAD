@@ -1,12 +1,36 @@
 #include "BezierC2.h"
 
-BezierC2::BezierC2( const char* name):BezierC2(name, "##BezierC2", FigureType::BezierC2)
+BezierC2::BezierC2( const char* name):BezierC2(name, FigureType::BezierC2)
 {
 
 }
 
 BezierC2::BezierC2():BezierC2("BezierC2")
 {
+}
+
+BezierC2::BezierC2(MG1::BezierC2 b0, const Scene* scene, int idOffset) :BezierC2() {
+	for (auto refPoint : b0.controlPoints) {
+		uint32_t id = refPoint.GetId() + idOffset;
+		this->Add(scene->byID(id).get());
+	}
+	if (b0.name != "")
+		this->SetName(b0.name.c_str());
+	this->SetId(b0.GetId() + idOffset);
+}
+
+MG1::BezierC2 BezierC2::Serialize(int idOffset) const
+{
+	MG1::BezierC2 bezier{};
+	bezier.SetId(GetId());
+	bezier.name = name;
+	for (int i = 0; i < ContainerSize(); i++)
+	{
+		MG1::PointRef p{ At(i)->GetId() - idOffset };
+
+		bezier.controlPoints.push_back(p);
+	}
+	return bezier;
 }
 
 
@@ -29,7 +53,7 @@ void BezierC2::Draw(GLFWwindow* window, const Camera& camera)
 
 void BezierC2::ActiveImGui()
 {
-	ImGui::PushID(id);
+	ImGui::PushID(GetId());
 
 	if (ImGui::RadioButton("Virtual Points Interferes", showVirtualPointsInterfers))
 		showVirtualPointsInterfers = !showVirtualPointsInterfers;
@@ -66,8 +90,8 @@ bool BezierC2::Inputs(GLFWwindow* window, const Camera& camera)
 	return any;
 }
 
-BezierC2::BezierC2(const char* name, const char* uniqueName, FigureType type)
-	:BezierBase(name, uniqueName, type)
+BezierC2::BezierC2(const char* name,  FigureType type)
+	:BezierBase(name, type)
 {}
 
 void BezierC2::ChangeShowBezierPol()

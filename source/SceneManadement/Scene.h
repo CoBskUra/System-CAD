@@ -1,12 +1,15 @@
 #pragma once
 #include <vector>
+#include <map>
 #include <set>
 #include "Figures/Figure.h"
 #include "Container/FigureContainer.h";
 
 class Scene {
 public:
-	std::vector<Figure*> figures;
+	std::map<int, std::shared_ptr<Figure>> figures;
+	std::vector<int> insertionOrder;
+
 	std::set<FigureContainer*> activeFigureContainers;
 	std::set<FigureContainer*> figureContainers;
 
@@ -15,11 +18,13 @@ public:
 
 
 	int NumberOfActive();
-	Figure* at(int i) ;
-	void AddFigure(Figure* figure);
-	void DeleteFigure(int id);
+	std::shared_ptr<Figure> at(int i) const;
+	std::shared_ptr<Figure> byID(uint32_t id) const;
+	void AddFigure(std::shared_ptr<Figure> figure);
+	void DeleteFigureAt(int place);
 	bool ChangeActiveState(int i);
-	int Size();
+	int Size() const;
+	int SmalestIdOnScene() const;
 
 	~Scene();
 

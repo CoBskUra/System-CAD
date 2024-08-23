@@ -2,6 +2,9 @@
 #include "BezierBase.h"
 #include "Figures/VirtualPoint.h"
 #include "SceneManadement/Scene.h"
+#include <imgui_impl_opengl3.h>
+#include <Models/Surfaces/BezierSurfaceC2.h>
+
 
 
 
@@ -41,7 +44,7 @@ class BezierSurfaceC2: public BezierBase
 	glm::vec4 curveColor{ 1, 0, 1, 1 };
 	int numberOfIndes{};
 
-	std::vector<Point*> controlPoints;
+	std::vector<std::shared_ptr<Point>> controlPoints;
 	int numberOfVertexes{};
 	int patch_div = 4;
 
@@ -51,23 +54,29 @@ class BezierSurfaceC2: public BezierBase
 	bool accepted = false, openWindow = true, firstTime = true;
 
 public:
-	Scene* figureVector;
+	Scene *refrenceScene;
 
 	BezierSurfaceC2(const char* name);
+	BezierSurfaceC2(MG1::BezierSurfaceC2 bs2, Scene* scene, int idOffset);
 	BezierSurfaceC2();
 	~BezierSurfaceC2();
 
 	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 	void virtual ActiveImGui();
+	void TurnOffStartupInterfers();
+	MG1::BezierSurfaceC2 Serialize(int idOffset) const;
+
 
 protected:
-	BezierSurfaceC2(const char* name, const char* uniqueName, FigureType type);
+	BezierSurfaceC2(const char* name, FigureType type);
 	void virtual CreateBezier();
 private:
 	bool CreationWindowInterfers(glm::ivec2 appWindowSize);
 	glm::vec3 GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2);
 	void DeleteRangeControlPoints(int start, int end);
-	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2);
+	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2) const;
+	int TakeId(int verticalID, int horizontalID, int k1, int k2) const;
+	int MaxSize();
 };
 

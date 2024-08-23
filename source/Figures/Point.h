@@ -1,10 +1,12 @@
 #pragma once
 #include "Figures/Figure.h"
 #include "ShaderRefrence/StaticShaders.h"
+#include "Models/Point.h"
+#include "Models/SceneObject.h"
 
 class Point : public Figure {
 public:
-	Point( const char* name) : Point("##Point", FigureType::Point)
+	Point( const char* name) : Point( FigureType::Point)
 	{
 		CreatePoint();
 		SetName(name);
@@ -12,6 +14,24 @@ public:
 
 	Point( ): Point("Point")
 	{
+	}
+
+
+	Point(MG1::Point sceneObject, int offsetId = 0) :Point(){
+		this->transpose->SetObjectPosition(sceneObject.position.x, sceneObject.position.y, sceneObject.position.z);
+		if (sceneObject.name != "")
+			this->SetName(sceneObject.name.c_str());
+		this->SetId(sceneObject.GetId() + offsetId);
+	}
+
+	MG1::Point Serialize(int idOffset) const {
+		MG1::Point point{};
+		point.SetId(GetId() - idOffset);
+		point.name = name;
+		point.position.x = GetPosition().x;
+		point.position.y = GetPosition().y;
+		point.position.z = GetPosition().z;
+		return point;
 	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
@@ -30,7 +50,7 @@ public:
 		return false;
 	}
 protected:
-	Point( const char* uniqueName, FigureType type) : Figure(uniqueName, type){
+	Point( FigureType type) : Figure(type){
 	}
 
 private:

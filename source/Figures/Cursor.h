@@ -4,7 +4,7 @@
 
 class Cursor : public Figure {
 public:
-	Cursor(const char* name) : Figure("##Cursor", FigureType::Cursor)
+	Cursor(const char* name) : Figure(FigureType::Cursor)
 	{
 		SetUnmarkColor( glm::vec4(0.8, 0.8, 0.8, 0.6));
 		CreatePoint();

@@ -28,6 +28,8 @@ void Manager::MenuInterferes()
 				currentCamera->updateMatrixes();
 			}
 		}
+		LoadScene();
+		SaveScene();
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
@@ -35,14 +37,14 @@ void Manager::MenuInterferes()
 	}
 	ImGui::End();
 
-	if (scene.NumberOfActive() > 0) {
+	if (sher_ptrScene->NumberOfActive() > 0) {
 		ImGui::Begin("Objects");
-		for (int i = 0; i < scene.Size(); i++)
+		for (int i = 0; i < sher_ptrScene->Size(); i++)
 		{
-			if (scene.active[i])
+			if (sher_ptrScene->active[i])
 			{
 				ImGui::PushID(i);
-				scene.figures[i]->ActiveImGui(); // prze¿uæ do interfersu ale najpierw lepsze baza na figury
+				sher_ptrScene->at(i)->ActiveImGui(); // prze¿uæ do interfersu ale najpierw lepsze baza na figury
 				// taka bym mia³ dostêp do aktywnych w czasie O(1) 
 				ImGui::PopID();
 
@@ -63,10 +65,10 @@ void Manager::Draw()
 {
 	if (!stereoscopicView.turnOn) {
 
-		for (int i = 0; i < scene.Size(); i++)
+		for (int i = 0; i < sher_ptrScene->Size(); i++)
 		{
-			scene.figures[i]->Draw(window, *currentCamera);
-			//stereoscopicView.Draw(window, *currentCamera, scene.figures[i]);
+			sher_ptrScene->at(i)->Draw(window, *currentCamera);
+			//stereoscopicView.Draw(window, *currentCamera, sher_ptrScene->at(i));
 		}
 
 		centerPoint.Draw(window, *currentCamera);
@@ -82,12 +84,12 @@ void Manager::Draw()
 			else
 				glColorMask(false, false, true, false);
 
-			for (int i = 0; i < scene.Size(); i++)
+			for (int i = 0; i < sher_ptrScene->Size(); i++)
 			{
-				glm::vec4 oldColor = scene.figures[i]->SetUnmarkColor({ 1, 1, 1, 1 });
-				scene.figures[i]->Draw(window, *currentCamera);
-				scene.figures[i]->SetUnmarkColor(oldColor);
-				//stereoscopicView.Draw(window, *currentCamera, scene.figures[i]);
+				glm::vec4 oldColor = sher_ptrScene->at(i)->SetUnmarkColor({ 1, 1, 1, 1 });
+				sher_ptrScene->at(i)->Draw(window, *currentCamera);
+				sher_ptrScene->at(i)->SetUnmarkColor(oldColor);
+				//stereoscopicView.Draw(window, *currentCamera, sher_ptrScene->at(i));
 			}
 
 			centerPoint.Draw(window, *currentCamera);
@@ -115,12 +117,12 @@ int Manager::TheClosetFigureToMouse(FigureType figureType)
 	float minLength = M_FLOAT_MAX;
 	int id = -1;
 
-	for (int i = 0; i < scene.Size(); i++) {
-		if (dynamic_cast<FigureContainer*>(scene.figures[i]))
+	for (int i = 0; i < sher_ptrScene->Size(); i++) {
+		if (dynamic_cast<FigureContainer*>(sher_ptrScene->at(i).get()))
 			continue;
-		if (scene.figures[i]->GetType() == figureType || FigureType::Any == figureType) {
+		if (sher_ptrScene->at(i)->GetType() == figureType || FigureType::Any == figureType) {
 
-			auto posOnScreen = scene.figures[i]->PositionOnScreen(*currentCamera);
+			auto posOnScreen = sher_ptrScene->at(i)->PositionOnScreen(*currentCamera);
 			float length = powf(posOnScreen.x - castMousePos.x, 2) + powf(posOnScreen.y - castMousePos.y, 2);
 			if (minLength > length)
 			{
@@ -139,71 +141,70 @@ int Manager::TheClosetFigureToMouse(FigureType figureType)
 void Manager::CreateFiguresInterfers()
 {
 	if (ImGui::Button("Torus", ImVec2(100, 20))) {
-
-		Torus* torus = new Torus();
+		std::shared_ptr<Torus> torus = std::make_shared<Torus>();
 		torus->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		scene.AddFigure(torus);
+		sher_ptrScene->AddFigure(torus);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Point", ImVec2(100, 20))) {
 
-		Point* point = new Point();
+		std::shared_ptr <Point> point = std::make_shared<Point>();
 		point->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		scene.AddFigure(point);
+		sher_ptrScene->AddFigure(point);
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Bezier C0", ImVec2(100, 20))) {
-		BezierC0* Bezier = new BezierC0();
+		std::shared_ptr<BezierC0> Bezier = std::make_shared<BezierC0>();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		scene.AddFigure(Bezier);
+		sher_ptrScene->AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
 
 	if (ImGui::Button("Bezier C2", ImVec2(100, 20))) {
-		BezierC2* Bezier = new BezierC2();
+		std::shared_ptr<BezierC2> Bezier = std::make_shared<BezierC2>();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		scene.AddFigure(Bezier);
+		sher_ptrScene->AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
 
 	ImGui::SameLine();
 	if (ImGui::Button("Bezier Interpolated", ImVec2(100, 20))) {
-		BezierInterpolated* Bezier = new BezierInterpolated();
+		std::shared_ptr<BezierInterpolated> Bezier = std::make_shared<BezierInterpolated>();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		scene.AddFigure(Bezier);
+		sher_ptrScene->AddFigure(Bezier);
 		Bezier->Add(centerPoint);
 	}
 
-	//ImGui::SameLine();
+	ImGui::SameLine();
 	if (ImGui::Button("Bezier surfec C0", ImVec2(150, 20))) {
-		BezierSurfaceC0* Bezier = new BezierSurfaceC0();
+		std::shared_ptr<BezierSurfaceC0> Bezier = std::make_shared<BezierSurfaceC0>();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		Bezier->figureVector = &scene;
-		scene.AddFigure(Bezier);
-		scene.ChangeActiveState(scene.Size() - 1);
+		Bezier->refrenceScene = sher_ptrScene.get();
+		sher_ptrScene->AddFigure(Bezier);
+		sher_ptrScene->ChangeActiveState(sher_ptrScene->Size() - 1);
 	}
 
 
 	ImGui::SameLine();
 	if (ImGui::Button("Bezier surfec C2", ImVec2(150, 20))) {
-		BezierSurfaceC2* Bezier = new BezierSurfaceC2();
+		std::shared_ptr<BezierSurfaceC2> Bezier = std::make_shared<BezierSurfaceC2>();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
-		Bezier->figureVector = &scene;
-		scene.AddFigure(Bezier);
-		scene.ChangeActiveState(scene.Size() - 1);
+		Bezier->refrenceScene = sher_ptrScene.get();
+		sher_ptrScene->AddFigure(Bezier);
+		sher_ptrScene->ChangeActiveState(sher_ptrScene->Size() - 1);
 	}
 }
 
 void Manager::SelectableList()
 {
 	ImVec2 size(150, 20);
-	for (int i = 0; i < scene.Size(); i++)
+	for (int i = 0; i < sher_ptrScene->Size(); i++)
 	{
 		ImGui::PushID(i);
 		// delete figure
-		if (!scene.at(i)->HaveOwner()) {
+		if (!sher_ptrScene->at(i)->HaveOwner()) {
 			if (ImGui::Button("X", ImVec2(20, 20))) {
-				scene.DeleteFigure(i);
+				sher_ptrScene->DeleteFigureAt(i);
 				ImGui::PopID();
 				return;
 			}
@@ -211,16 +212,16 @@ void Manager::SelectableList()
 		}
 
 
-		if (ImGui::RadioButton("", scene.active[i])) {
-			scene.ChangeActiveState(i);
+		if (ImGui::RadioButton("", sher_ptrScene->active[i])) {
+			sher_ptrScene->ChangeActiveState(i);
 		}
 
 		ImGui::SameLine();
 
-		char buf[100];
-		sprintf_s(buf, "%d. %s", i, scene.names[i]);
+		char buf[200];
+		sprintf_s(buf, "%d. %s", i, sher_ptrScene->at(i)->name);
 
-		if (ImGui::Selectable(buf, centerPoint.Contain(scene.figures[i]))) {
+		if (ImGui::Selectable(buf, centerPoint.Contain(sher_ptrScene->at(i).get()))) {
 			Select(i);
 		}
 
@@ -233,14 +234,42 @@ void Manager::SelectableList()
 
 void Manager::Select(int i)
 {
-	if (!centerPoint.Contain(scene.figures[i])) {
-		centerPoint.Add(scene.figures[i]);
-		for (auto iter = scene.activeFigureContainers.begin(); iter != scene.activeFigureContainers.end(); iter++) {
-			(*iter)->Add(scene.figures[i]);
+	if (!centerPoint.Contain(sher_ptrScene->at(i).get())) {
+		centerPoint.Add(sher_ptrScene->at(i).get());
+		for (auto iter = sher_ptrScene->activeFigureContainers.begin(); iter != sher_ptrScene->activeFigureContainers.end(); iter++) {
+			(*iter)->Add(sher_ptrScene->at(i).get());
 		}
 	}
 	else {
-		centerPoint.Erase(scene.figures[i]);
+		centerPoint.Erase(sher_ptrScene->at(i).get());
+	}
+}
+
+void Manager::LoadScene()
+{
+	ImGui::InputText( "Load Scene name", pathSource, sizeof(pathSource));
+	SceneSerializer sceneSerializer{};
+	if (ImGui::Button("Acept##ManagerLoadScene")) {
+		try {
+			sher_ptrScene = sceneSerializer.LoadScene(pathSource, move(sher_ptrScene));
+		}
+		catch (...) {
+			std::cout << "Unable to loadScene";
+		}
+	}
+}
+
+void Manager::SaveScene()
+{
+	ImGui::InputText("Save Scene name", pathDestination, sizeof(pathDestination));
+	SceneSerializer sceneSerializer{};
+	if (ImGui::Button("Acept##ManagerSceneScene")) {
+		try {
+			sceneSerializer.SaveScene(*sher_ptrScene.get(), pathDestination);
+		}
+		catch (...) {
+			std::cout << "Unable to saveScene";
+		}
 	}
 }
 
@@ -264,8 +293,8 @@ void Manager::ProcesInput()
 		mouseLeftFirstClick = true;
 	}
 
-	for (int i = 0; i < scene.Size(); i++)
-		scene.at(i)->Inputs(window, *currentCamera);
+	for (int i = 0; i < sher_ptrScene->Size(); i++)
+		sher_ptrScene->at(i)->Inputs(window, *currentCamera);
 
 	centerPoint.Inputs(window, *currentCamera);
 	cursor.Inputs(window, *currentCamera);

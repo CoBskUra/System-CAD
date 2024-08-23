@@ -2,7 +2,7 @@
 
 Figure3D::Figure3D() : Figure() {}
 
-Figure3D::Figure3D(const char* uniqueName, FigureType type) : Figure(uniqueName, type) {}
+Figure3D::Figure3D(FigureType type) : Figure( type) {}
 
 void Figure3D::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
 {

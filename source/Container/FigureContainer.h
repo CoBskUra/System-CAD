@@ -21,12 +21,12 @@ public:
 	bool Erase(Figure* figure);
 	bool Contain(Figure* figure);
 	void Clear();
-	int ContainerSize();
+	int ContainerSize() const;
 	void SomethingHasChange();
 	bool IsSomethingChange();
 	void virtual MarkFigure(Figure* figure);
 	void virtual Update();
-	Figure* At(int i);
+	Figure* At(int i) const;
 
 	virtual ~FigureContainer();
 };

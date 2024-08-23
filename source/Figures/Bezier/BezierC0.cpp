@@ -1,14 +1,38 @@
 #include "BezierC0.h"
 #include "Helper/OpenGLHelper.h"
 
-BezierC0::BezierC0( const char* name) : BezierC0(name,"##BezierC0", FigureType::BezierC0)
+BezierC0::BezierC0( const char* name) : BezierC0(name, FigureType::BezierC0)
 {}
 
 BezierC0::BezierC0() : BezierC0("BezierC0")
 {}
 
+BezierC0::BezierC0(MG1::BezierC0 b0, const Scene * scene, int idOffset) :BezierC0() {
+	for (auto refPoint : b0.controlPoints) {
+		uint32_t id = refPoint.GetId() + idOffset;
+		this->Add(scene->byID(id).get());
+	}
+	if (b0.name != "")
+		this->SetName(b0.name.c_str());
+	this->SetId(b0.GetId() + idOffset);
+}
 
-BezierC0::BezierC0(const char* name, const char* uniqueName, FigureType type) : BezierBase( name, uniqueName, type)
+MG1::BezierC0 BezierC0::Serialize(int idOffset) const
+{
+	MG1::BezierC0 bezier{};
+	bezier.SetId(GetId());
+	bezier.name = name;
+	for (int i = 0; i < ContainerSize(); i++)
+	{
+		MG1::PointRef p{ At(i)->GetId() - idOffset };
+
+		bezier.controlPoints.push_back(p);
+	}
+	return bezier;
+}
+
+
+BezierC0::BezierC0(const char* name, FigureType type) : BezierBase( name, type)
 {
 	CreateBezier();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));

@@ -2,26 +2,51 @@
 
 
 
-int Figure::count = 0;
+uint32_t Figure::s_firstFreeId = 0;
+std::set<uint32_t> Figure::s_takenIds = {};
+std::stack<uint32_t> Figure::s_freedIds = {};
 
-Figure::Figure( const char* uniqueName, FigureType type) :  Figure() {
-	UniqueName = uniqueName + std::to_string(id);
+Figure::Figure(FigureType type) :  Figure() {
 	Type = type;
 	showColor = unmarkColor;
 }
 
-Figure::Figure() : id(count), transpose(this) {
+void Figure::SetFirstFreeId()
+{
+	while (s_takenIds.find(s_firstFreeId) != s_takenIds.end())
+	{
+		s_firstFreeId++;
+	}
+
+	if (s_freedIds.empty())
+	{
+		id = s_firstFreeId++;
+	}
+	else
+	{
+		id = s_freedIds.top();
+		s_freedIds.pop();
+	}
+
+	s_takenIds.insert(id);
+}
+
+void Figure::FreeId() {
+	s_takenIds.erase(id);
+	//s_freedIds.push(id);
+	if (id < s_firstFreeId)
+		s_firstFreeId = id;
+	id = -1;
+}
+
+Figure::Figure() : transpose(this) {
 	UnMark();
 
-	count++;
-	UniqueName += std::to_string(id);
 	Type = FigureType::Figure;
 	showColor = unmarkColor;
+	SetFirstFreeId();
 }
 
-std::string Figure::GetUniqueName() {
-	return UniqueName;
-}
 
 glm::mat4x4 Figure::GetModelMatrix()
 {
@@ -73,6 +98,7 @@ void Figure::SetShowColor(glm::vec4 newColor)
 Figure::~Figure()
 {
 	Delete();
+	FreeId();
 #ifdef _DEBUG
 	printf("\nDestroyed %s", name);
 #endif
@@ -155,6 +181,8 @@ bool Figure::AddContainer(FigureContainer* fc)
 bool Figure::EraseContainer(FigureContainer* fc)
 {
 	auto result = containIn.erase(fc);
+	if(result)
+		fc->Erase(this);
 	return result;
 }
 
@@ -200,6 +228,38 @@ bool Figure::IsMyOwner(Figure* possibleOwner)
 bool Figure::IsOwner()
 {
 	return haveSubjects;
+}
+
+uint32_t Figure::GetId() const
+{
+	return id;
+}
+
+uint32_t Figure::GetFirstFreeId()
+{
+	return s_firstFreeId;
+}
+
+bool Figure::SetId(uint32_t new_id)
+{
+	if (new_id == this->id)
+	{
+		return true;
+	}
+
+	auto searchResult = s_takenIds.find(new_id);
+
+	if (searchResult != s_takenIds.end())
+	{
+		return false;
+	}
+
+	s_takenIds.insert(new_id);
+	s_freedIds.push(this->id);
+
+	this->id = new_id;
+
+	return true;
 }
 
 

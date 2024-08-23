@@ -21,9 +21,13 @@
 #include "Figures/Bezier/BezierInterpolated.h"
 #include "Figures/Bezier/BezierSurfaceC0.h"
 #include "Figures/Bezier/BezierSurfaceC2.h"
+#include "SceneManadement/SceneSerializer.h"
 
 class Manager {
-	Scene scene;
+
+	char pathSource[200]{ "" };
+	char pathDestination[200]{ "" };
+	std::unique_ptr<Scene> sher_ptrScene = std::make_unique<Scene>();
 	Camera* currentCamera;
 
 	Camera* mainCamera;
@@ -34,7 +38,7 @@ class Manager {
 
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
-	glm::vec2 mouseLastPosition;
+	glm::vec2 mouseLastPosition{};
 
 	StereoscopicView stereoscopicView;
 
@@ -45,6 +49,9 @@ class Manager {
 	void SelectableList();
 
 	void Select(int i);
+	void LoadScene();
+	void SaveScene();
+
 public:
 	Manager(Camera* camera, GLFWwindow* window);
 	void MenuInterferes();
