@@ -78,11 +78,15 @@ public:
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
 	int NumberOfContainers();
+	bool Swap(Figure* to);
 
+	// mo¿na wsadziæ w interfers
 	bool SetObjectOwner(Figure* parent);
 	bool HaveOwner();
 	void RemoveOwner();
 	bool IsMyOwner(Figure* possibleOwner);
+
+	// mo¿na wsadziæ w interfers
 	bool IsOwner();
 	bool SetId(uint32_t id);
 	uint32_t GetId() const;

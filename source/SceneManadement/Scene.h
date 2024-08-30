@@ -13,7 +13,6 @@ public:
 	std::set<FigureContainer*> activeFigureContainers;
 	std::set<FigureContainer*> figureContainers;
 
-	std::vector< const char*> names;
 	std::vector<bool> active;
 
 
@@ -22,6 +21,7 @@ public:
 	std::shared_ptr<Figure> byID(uint32_t id) const;
 	void AddFigure(std::shared_ptr<Figure> figure);
 	void DeleteFigureAt(int place);
+	void DeleteFigureById(uint32_t id);
 	bool ChangeActiveState(int i);
 	int Size() const;
 	int SmalestIdOnScene() const;

@@ -8,6 +8,7 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 	mainCamera = camera;
 	centerPoint.SetUnmarkColor( glm::vec4(1, 0, 0, 1));
 	cursor.transpose->SetObjectPosition(0.5f, 1.2f, -1.0f);
+	fileDialog.SetTitle("File browser");
 }
 
 void Manager::MenuInterferes()
@@ -222,7 +223,7 @@ void Manager::SelectableList()
 		sprintf_s(buf, "%d. %s", i, sher_ptrScene->at(i)->name);
 
 		if (ImGui::Selectable(buf, centerPoint.Contain(sher_ptrScene->at(i).get()))) {
-			Select(i);
+			SelectUnselect(i);
 		}
 
 		ImGui::PopID();
@@ -232,7 +233,7 @@ void Manager::SelectableList()
 
 
 
-void Manager::Select(int i)
+void Manager::SelectUnselect(int i)
 {
 	if (!centerPoint.Contain(sher_ptrScene->at(i).get())) {
 		centerPoint.Add(sher_ptrScene->at(i).get());
@@ -247,15 +248,25 @@ void Manager::Select(int i)
 
 void Manager::LoadScene()
 {
-	ImGui::InputText( "Load Scene name", pathSource, sizeof(pathSource));
-	SceneSerializer sceneSerializer{};
-	if (ImGui::Button("Acept##ManagerLoadScene")) {
+	if (ImGui::Button("load scene##ManagerLoadScene"))
+	{
+		fileDialog.SetTypeFilters({ ".json" });
+		fileDialog.Open();
+	}
+	fileDialog.Display();
+
+	if (fileDialog.HasSelected())
+	{
 		try {
-			sher_ptrScene = sceneSerializer.LoadScene(pathSource, move(sher_ptrScene));
+			SceneSerializer sceneSerializer{};
+			sher_ptrScene = sceneSerializer.LoadScene(
+				fileDialog.GetSelected().string().c_str(),
+				move(sher_ptrScene));
 		}
 		catch (...) {
 			std::cout << "Unable to loadScene";
 		}
+		fileDialog.ClearSelected();
 	}
 }
 
@@ -263,7 +274,7 @@ void Manager::SaveScene()
 {
 	ImGui::InputText("Save Scene name", pathDestination, sizeof(pathDestination));
 	SceneSerializer sceneSerializer{};
-	if (ImGui::Button("Acept##ManagerSceneScene")) {
+	if (ImGui::Button("Save##ManagerSceneScene")) {
 		try {
 			sceneSerializer.SaveScene(*sher_ptrScene.get(), pathDestination);
 		}
@@ -273,8 +284,34 @@ void Manager::SaveScene()
 	}
 }
 
-void Manager::ProcesInput()
+bool Manager::UnselectAllShortCut()
 {
+	if (1 == glfwGetKey(window, GLFW_KEY_LEFT_ALT) && 1 == glfwGetKey(window, GLFW_KEY_U)) {
+		for (int i = 0; i < sher_ptrScene->Size(); i++)
+			if(centerPoint.Contain(sher_ptrScene->at(i).get()) ) {
+				SelectUnselect(i);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool Manager::MergeFigures()
+{
+	if (1 == glfwGetKey(window, GLFW_KEY_LEFT_ALT) && 1 == glfwGetKey(window, GLFW_KEY_M))
+	{
+		MergePoints merge{ sher_ptrScene.get() };
+		return merge.Merge(&centerPoint);
+	}
+	return false;
+}
+
+void Manager::ProcessInput()
+{
+
+	UnselectAllShortCut();
+	MergeFigures();
+	// Ignor if focus at imgui window
 	ImGuiIO& io = ImGui::GetIO();
 
 	if (io.WantCaptureKeyboard)
@@ -284,7 +321,7 @@ void Manager::ProcesInput()
 
 		int id = TheClosetFigureToMouse(FigureType::Any);
 		if (id >= 0) {
-			Select(id);
+			SelectUnselect(id);
 		}
 		mouseLastPosition = OpenGLHelper::MousePositionOnScreen(window);
 		mouseLeftFirstClick = false;

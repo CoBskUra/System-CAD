@@ -19,7 +19,6 @@ void Scene::AddFigure(std::shared_ptr<Figure> figure) {
 		return;
 
 	figures[figure->GetId()] =  figure;
-	names.push_back(figure->name);
 	insertionOrder.push_back(figure->GetId());
 
 	if (dynamic_cast<FigureContainer*>(figure.get()))
@@ -43,7 +42,6 @@ void Scene::DeleteFigureAt(int place) {
 
 	insertionOrder.erase(std::next(insertionOrder.begin(), place));
 	figures.erase(toDelete->GetId());
-	names.erase(std::next(names.begin(), place));
 	active.erase(std::next(active.begin(), place));
 
 	if (dynamic_cast<FigureContainer*>(toDelete.get()))
@@ -69,6 +67,16 @@ void Scene::DeleteFigureAt(int place) {
 	/*	toDelete.reset();
 		toDelete = NULL;*/
 	//}
+}
+
+void Scene::DeleteFigureById(uint32_t id)
+{
+	auto it = std::find(insertionOrder.begin(), insertionOrder.end(), id);
+	if (it == insertionOrder.end())
+		return;
+
+	int place = it - insertionOrder.begin();
+	DeleteFigureAt(place);
 }
 
 bool Scene::ChangeActiveState(int i) {

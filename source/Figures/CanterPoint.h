@@ -154,6 +154,7 @@ protected:
 		}
 	}
 
+
 private:
 	bool firstClick = true;
 	glm::vec2 mouseLastPosition;

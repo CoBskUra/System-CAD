@@ -3,6 +3,7 @@
 #include "SceneManadement/Scene.h"
 #include "ShaderManadement/Shader.h"
 #include "imgui.h"
+#include "Helper/ImGuiExtenstions/imfilebrowser.h"
 #include "Helper/OpenGLHelper.h"
 #include "Camera.h"
 #include "ShaderRefrence/StaticShaders.h"
@@ -19,12 +20,13 @@
 #include "Figures/Bezier/BezierC0.h"
 #include "Figures/Bezier/BezierC2.h"
 #include "Figures/Bezier/BezierInterpolated.h"
-#include "Figures/Bezier/BezierSurfaceC0.h"
-#include "Figures/Bezier/BezierSurfaceC2.h"
+#include "Figures/Bezier/Surface/BezierSurfaceC0.h"
+#include "Figures/Bezier/Surface/BezierSurfaceC2.h"
 #include "SceneManadement/SceneSerializer.h"
+#include <Figures/FigureFunctions/MergePoints.h>
 
 class Manager {
-
+	ImGui::FileBrowser fileDialog;
 	char pathSource[200]{ "" };
 	char pathDestination[200]{ "" };
 	std::unique_ptr<Scene> sher_ptrScene = std::make_unique<Scene>();
@@ -48,15 +50,17 @@ class Manager {
 	void CreateFiguresInterfers();
 	void SelectableList();
 
-	void Select(int i);
+	void SelectUnselect(int i);
 	void LoadScene();
 	void SaveScene();
+	bool UnselectAllShortCut();
+	bool MergeFigures();
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);
 	void MenuInterferes();
 	void Draw();
-	void ProcesInput();
+	void ProcessInput();
 
 	~Manager();
 };

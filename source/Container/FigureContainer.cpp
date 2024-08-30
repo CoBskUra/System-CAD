@@ -9,7 +9,7 @@ bool FigureContainer::Add(Figure* figure) {
 	if (!IsValid(figure))
 		return false;
 
-	auto pair = selectedFigures.insert(figure );
+	auto pair = selectedFigures.insert(figure);
 	MarkFigure(figure);
 	if (pair.second) {
 		orderdFigures.push_back(figure);
@@ -95,6 +95,41 @@ void FigureContainer::MarkFigure(Figure* figure)
 
 void FigureContainer::Update()
 {
+
+}
+
+bool FigureContainer::Swap(Figure* from, Figure* to)
+{
+	if (from->GetType() != to->GetType())
+		return false;
+
+	if (!Contain(from))
+		return false;
+
+	from->UnMark();
+	to->Mark();
+	if (!Contain(to))
+	{
+		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) {
+			if (from == *iter) {
+				(*iter) = to;
+				break;
+			}
+		}
+	}
+	else
+	{
+		Erase(from);
+	}
+
+	selectedFigures.erase(from);
+	selectedFigures.insert(to);
+
+	from->EraseContainer(this);
+	SomethingHasChange();
+	valueErased = true;
+	valueAdded = true;
+	return true;
 }
 
 Figure* FigureContainer::At(int i) const

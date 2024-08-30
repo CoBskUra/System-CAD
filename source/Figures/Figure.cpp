@@ -199,6 +199,22 @@ int Figure::NumberOfContainers()
 	return containIn.size();;
 }
 
+bool Figure::Swap(Figure* to)
+{
+	if (GetType() != to->GetType())
+		return false;
+	
+	while (containIn.size() > 0)
+	{
+		to->AddContainer((*containIn.begin()));
+		if (!(*containIn.begin())->Swap(this, to)) {
+			throw "Something go wrong during swap";
+		}
+	}
+	
+	return true;
+}
+
 bool Figure::SetObjectOwner(Figure* parent)
 {
 	if (haveOwner)

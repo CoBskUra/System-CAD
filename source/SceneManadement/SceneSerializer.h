@@ -10,8 +10,8 @@
 #include <Figures/Bezier/BezierInterpolated.h>
 #include "Scene/Scene.h"
 #include <iostream>
-#include "Figures/Bezier/BezierSurfaceC0.h"
-#include "Figures/Bezier/BezierSurfaceC2.h"
+#include "Figures/Bezier/Surface/BezierSurfaceC0.h"
+#include "Figures/Bezier/Surface/BezierSurfaceC2.h"
 
 #include <exception>
 #include <typeinfo>

@@ -7,7 +7,7 @@ class FigureContainer
 {
 protected:
 	std::vector<Figure*> orderdFigures;
-	std::set<Figure* > selectedFigures;
+	std::set<Figure*> selectedFigures;
 	bool somethingHasChange;
 	bool valueAdded;
 	bool valueErased;
@@ -26,6 +26,7 @@ public:
 	bool IsSomethingChange();
 	void virtual MarkFigure(Figure* figure);
 	void virtual Update();
+	bool virtual Swap(Figure* from, Figure* to);
 	Figure* At(int i) const;
 
 	virtual ~FigureContainer();

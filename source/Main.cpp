@@ -52,7 +52,7 @@ int main()
 
 		manader.MenuInterferes();
 		manader.Draw();
-		manader.ProcesInput();
+		manader.ProcessInput();
 
 	/*	camera.Inputs(window);
 		camera.ActiveInterferes();*/
