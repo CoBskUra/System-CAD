@@ -25,6 +25,7 @@ public:
 	bool ChangeActiveState(int i);
 	int Size() const;
 	int SmalestIdOnScene() const;
+	bool IsDeleteAble(int place);
 
 	~Scene();
 

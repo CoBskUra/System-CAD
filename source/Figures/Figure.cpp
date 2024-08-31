@@ -199,7 +199,7 @@ int Figure::NumberOfContainers()
 	return containIn.size();;
 }
 
-bool Figure::Swap(Figure* to)
+bool Figure::Swap(std::shared_ptr<Figure> to)
 {
 	if (GetType() != to->GetType())
 		return false;

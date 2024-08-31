@@ -4,7 +4,7 @@
 class Figure;
 
 class FigureContainer
-{
+{// todo rewrite to use smartPointers
 protected:
 	std::vector<Figure*> orderdFigures;
 	std::set<Figure*> selectedFigures;
@@ -26,7 +26,7 @@ public:
 	bool IsSomethingChange();
 	void virtual MarkFigure(Figure* figure);
 	void virtual Update();
-	bool virtual Swap(Figure* from, Figure* to);
+	bool virtual Swap(Figure* from, std::shared_ptr<Figure> to);
 	Figure* At(int i) const;
 
 	virtual ~FigureContainer();

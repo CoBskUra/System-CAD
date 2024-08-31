@@ -78,7 +78,7 @@ public:
 	bool EraseContainer(FigureContainer* fc);
 	void InformContainers();
 	int NumberOfContainers();
-	bool Swap(Figure* to);
+	bool Swap(std::shared_ptr<Figure> to);
 
 	// mo¿na wsadziæ w interfers
 	bool SetObjectOwner(Figure* parent);

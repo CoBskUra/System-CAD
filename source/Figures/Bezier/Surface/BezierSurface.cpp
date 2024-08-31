@@ -343,3 +343,18 @@ glm::vec3 BezierSurface::GeneratePosForVertexInPatch(int verticalID, int horizon
 	return glm::vec3{ horizontalID * 3, 0,  verticalID * 3 } + glm::vec3{ k2, 0, k1 };;
 }
 
+bool BezierSurface::Swap(Figure* from, std::shared_ptr<Figure>  to)
+{
+	if (!FigureContainer::Swap(from, to))
+		return false;
+
+	for (int i = 0; i < controlPoints.size(); i++) {
+		if (from == controlPoints[i].get())
+		{
+			controlPoints[i] = to;
+		}
+	}
+	SomethingHasChange();
+	return true;
+}
+

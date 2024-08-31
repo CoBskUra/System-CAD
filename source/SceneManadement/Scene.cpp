@@ -111,6 +111,11 @@ int Scene::SmalestIdOnScene() const
 	return smalest;
 }
 
+bool Scene::IsDeleteAble(int place)
+{
+	return at(place).use_count() > 2;
+}
+
 Scene::~Scene() {
 	//DeleteAll();
 }

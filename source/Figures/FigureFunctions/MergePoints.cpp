@@ -22,7 +22,7 @@ bool MergePoints::Merge(FigureContainer* figureContainer)
 	int i = 0;
 	for (i = 0; i < savePoints.size(); i++) {
 		avgPos += savePoints.at(i)->transpose->GetPosition();
-		if (!savePoints.at(i)->Swap(avgPoint.get()))
+		if (!savePoints.at(i)->Swap(avgPoint))
 			throw "Something go wrong during swap";
 		scene->DeleteFigureById(savePoints.at(i)->GetId());
 	}

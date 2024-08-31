@@ -37,7 +37,7 @@ protected:
 	glm::vec4 curveColor{ 1, 0, 1, 1 };
 	int numberOfIndes{};
 
-	std::vector<std::shared_ptr<Point>> controlPoints;
+	std::vector<std::shared_ptr<Figure>> controlPoints;
 	int numberOfVertexes{};
 	int patch_div = 4;
 
@@ -52,7 +52,7 @@ protected:
 	void CreateBezier() override;
 	void DeleteRangeControlPoints(int start, int end);
 	virtual glm::vec3 GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2);
-
+	bool Swap(Figure* from, std::shared_ptr<Figure> to) override;
 public:
 	Scene* refrenceScene;
 

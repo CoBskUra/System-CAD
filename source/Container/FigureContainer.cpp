@@ -98,7 +98,7 @@ void FigureContainer::Update()
 
 }
 
-bool FigureContainer::Swap(Figure* from, Figure* to)
+bool FigureContainer::Swap(Figure* from, std::shared_ptr<Figure> to)
 {
 	if (from->GetType() != to->GetType())
 		return false;
@@ -108,11 +108,11 @@ bool FigureContainer::Swap(Figure* from, Figure* to)
 
 	from->UnMark();
 	to->Mark();
-	if (!Contain(to))
+	if (!Contain(to.get()))
 	{
 		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) {
 			if (from == *iter) {
-				(*iter) = to;
+				(*iter) = to.get();
 				break;
 			}
 		}
@@ -123,7 +123,7 @@ bool FigureContainer::Swap(Figure* from, Figure* to)
 	}
 
 	selectedFigures.erase(from);
-	selectedFigures.insert(to);
+	selectedFigures.insert(to.get());
 
 	from->EraseContainer(this);
 	SomethingHasChange();

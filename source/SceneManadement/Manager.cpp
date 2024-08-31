@@ -203,7 +203,7 @@ void Manager::SelectableList()
 	{
 		ImGui::PushID(i);
 		// delete figure
-		if (!sher_ptrScene->at(i)->HaveOwner()) {
+		if (!sher_ptrScene->IsDeleteAble(i)) {
 			if (ImGui::Button("X", ImVec2(20, 20))) {
 				sher_ptrScene->DeleteFigureAt(i);
 				ImGui::PopID();
