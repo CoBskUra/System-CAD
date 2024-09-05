@@ -11,6 +11,11 @@ Figure::Figure(FigureType type) :  Figure() {
 	showColor = unmarkColor;
 }
 
+Figure::Figure(const char* name, FigureType type):Figure(type)
+{
+	SetName(name);
+}
+
 void Figure::SetFirstFreeId()
 {
 	while (s_takenIds.find(s_firstFreeId) != s_takenIds.end())
@@ -40,7 +45,7 @@ void Figure::FreeId() {
 }
 
 Figure::Figure() : transpose(this) {
-	UnMark();
+	Unmark();
 
 	Type = FigureType::Figure;
 	showColor = unmarkColor;
@@ -109,13 +114,16 @@ void  Figure::Draw(GLFWwindow* window, const Camera& camera) {
 
 void  Figure::ActiveImGui() {
 	ImGui::Text(name);
+	ImGui::SameLine();
+	ImGui::Text(std::to_string(id).c_str());
 	if(editAbleName)
 		ImGui::InputText("Name", name, sizeof(name));
-	transpose->ActiveInterferes();
+	FigureSpecificImGui();
 }
 
 void Figure::FigureSpecificImGui()
 {
+	transpose->ActiveInterferes();
 }
 
 void Figure::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
@@ -158,7 +166,7 @@ void Figure::SetName(const char* newName) {
 	sprintf_s(name, newName);
 }
 
-void Figure::UnMark() {
+void Figure::Unmark() {
 	this->showColor = unmarkColor;
 }
 
@@ -254,6 +262,11 @@ uint32_t Figure::GetId() const
 uint32_t Figure::GetFirstFreeId()
 {
 	return s_firstFreeId;
+}
+
+uint32_t Figure::LargestTakenId()
+{
+	return s_takenIds.empty()? 0 : *s_takenIds.rbegin();
 }
 
 bool Figure::SetId(uint32_t new_id)

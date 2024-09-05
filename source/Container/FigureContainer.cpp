@@ -2,6 +2,9 @@
 
 bool FigureContainer::IsValid(Figure* figure)
 {
+	auto figureContainer = dynamic_cast<FigureContainer*>(figure);
+	if (figureContainer != nullptr && figureContainer == this)
+		return false;
 	return true;
 }
 
@@ -38,7 +41,7 @@ bool FigureContainer::Add(const FigureContainer& figureCoatiner)
 
 bool FigureContainer:: Erase(Figure* figure) {
 	bool erased = selectedFigures.erase(figure);
-	figure->UnMark();
+	UnmarkFigure(figure);
 	if (erased) {
 		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) {
 			if (figure == *iter) {
@@ -63,7 +66,7 @@ void FigureContainer::Clear()
 	{
 		auto figure = *selectedFigures.begin();
 		selectedFigures.erase(selectedFigures.begin());
-		figure->UnMark();
+		UnmarkFigure(figure);
 		figure->EraseContainer(this);
 	}
 	SomethingHasChange();
@@ -93,9 +96,14 @@ void FigureContainer::MarkFigure(Figure* figure)
 {
 }
 
+void FigureContainer::UnmarkFigure(Figure* figure)
+{
+	figure->Unmark();
+}
+
 void FigureContainer::Update()
 {
-
+	valueErased = valueAdded = somethingHasChange = false;
 }
 
 bool FigureContainer::Swap(Figure* from, std::shared_ptr<Figure> to)
@@ -106,7 +114,7 @@ bool FigureContainer::Swap(Figure* from, std::shared_ptr<Figure> to)
 	if (!Contain(from))
 		return false;
 
-	from->UnMark();
+	from->Unmark();
 	to->Mark();
 	if (!Contain(to.get()))
 	{

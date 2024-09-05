@@ -6,8 +6,8 @@ std::unique_ptr<Scene> SceneSerializer::LoadScene(const char* source, std::uniqu
 	try {
 		MG1::SceneSerializer outsideSceneSerializer{};
 		MG1::Scene outsideScene = outsideSceneSerializer.LoadScene(source);
-		uniqe_ptr_scene = std::make_unique<Scene>();
-		int offsetId = Figure::GetFirstFreeId();
+		//uniqe_ptr_scene = std::make_unique<Scene>();
+		int offsetId = Figure::LargestTakenId() + 1;
 
 		for (MG1::Point mg1_point : outsideScene.points)
 		{

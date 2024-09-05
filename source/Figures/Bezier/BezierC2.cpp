@@ -22,7 +22,7 @@ BezierC2::BezierC2(MG1::BezierC2 b0, const Scene* scene, int idOffset) :BezierC2
 MG1::BezierC2 BezierC2::Serialize(int idOffset) const
 {
 	MG1::BezierC2 bezier{};
-	bezier.SetId(GetId());
+	bezier.SetId(GetId() - idOffset);
 	bezier.name = name;
 	for (int i = 0; i < ContainerSize(); i++)
 	{

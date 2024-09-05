@@ -24,6 +24,7 @@
 #include "Figures/Bezier/Surface/BezierSurfaceC2.h"
 #include "SceneManadement/SceneSerializer.h"
 #include <Figures/FigureFunctions/MergePoints.h>
+#include "Figures/GregoryPatch.h"
 
 class Manager {
 	ImGui::FileBrowser fileDialog;
@@ -48,13 +49,15 @@ class Manager {
 	int TheClosetFigureToMouse(FigureType figureType);
 	
 	void CreateFiguresInterfers();
-	void SelectableList();
+	FigureType FigureFilter();
+	void SelectableList(FigureType figureType = FigureType::Any);
 
 	void SelectUnselect(int i);
 	void LoadScene();
 	void SaveScene();
 	bool UnselectAllShortCut();
 	bool MergeFigures();
+	void ClearScene();
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);

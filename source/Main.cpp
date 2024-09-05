@@ -19,14 +19,14 @@ int main()
 		return -1;
 
 	//// infinity Grid
-	/*VAO vaoInfinityGrid;
-	vaoInfinityGrid.Bind();
+	/*VAO vao;
+	vao.Bind();
 	VBO vboInfinityGrid(infinityGrid, GL_STATIC_DRAW);
 
-	vaoInfinityGrid.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+	vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
-	vaoInfinityGrid.Unbind(); vboInfinityGrid.Unbind();
-	Shader infinityGridShader("infinityGrid_vert.glsl", "infinityGrid_frag.glsl");*/
+	vao.Unbind(); vboInfinityGrid.Unbind();
+	Shader shader("infinityGrid_vert.glsl", "infinityGrid_frag.glsl");*/
 
 	//InfinityGrid ig;
 	////////////////////////////////

@@ -70,7 +70,7 @@ public:
 	glm::vec4 PositionOnScreen(const Camera& camera);
 
 	void SetName(const char* newName);
-	void UnMark();
+	void Unmark();
 	void Mark();
 	void virtual Delete();
 
@@ -91,12 +91,13 @@ public:
 	bool SetId(uint32_t id);
 	uint32_t GetId() const;
 	static uint32_t GetFirstFreeId();
+	static uint32_t LargestTakenId();
 
 protected:
 	void virtual SetObjectPosition(float x, float y, float z);
 	bool editAbleName = true;
 	Figure(FigureType type);
-
+	Figure(const char* name, FigureType type);
 	FigureType Type = FigureType::Figure;
 };
 #endif

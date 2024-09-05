@@ -56,22 +56,22 @@ public:
 	}
 
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera) {
-		torusShader->Activate();
+	void  Draw(GLFWwindow* window, const Camera& camera)  override {
+		torusShader.Activate();
 		vao_torus.Bind();
 
 		auto showColor = GetShowColor();
 
-		glUniformMatrix4fv(glGetUniformLocation(torusShader->ID, "MODEL_MATRIX"),
+		glUniformMatrix4fv(glGetUniformLocation(torusShader.ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(torusShader->ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
-		camera.SaveMatrixToShader(torusShader->ID);
+		glUniform4f(glGetUniformLocation(torusShader.ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
+		camera.SaveMatrixToShader(torusShader.ID);
 
 		glDrawElements(GL_LINE_STRIP, 2*segment1*segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
 		vao_torus.Unbind();
 	}
 
-	void virtual ActiveImGui() {
+	void  ActiveImGui() override {
 		ImGui::BeginGroup();
 		{
 			Figure3D::ActiveImGui();
@@ -80,21 +80,27 @@ public:
 		ImGui::EndGroup();
 	}
 
-	void virtual FigureSpecificImGui() {
+	void  FigureSpecificImGui() override {
 		ImGui::BeginGroup();
 		{
 			ImGui::Text("Torus parameters");
-			if (ImGui::InputInt("segment 1" , &segment1) ||
-				ImGui::InputInt("segment 2", &segment2) ||
-				ImGui::DragFloat("R" , &R, 0.1f, M_ESP) ||
-				ImGui::DragFloat("r" , &r, 0.1f, M_ESP))
+			bool any = false;
+			if (ImGui::DragInt("segment 1##Torus", &segment1, 1))
+				any = true;
+			if (ImGui::DragInt("segment 2##Torus", &segment2, 1))
+				any = true;
+			if (ImGui::DragFloat("R##Torus", &R, 0.1f, M_ESP))
+				any = true;
+			if (ImGui::DragFloat("r##Torus", &r, 0.1f, M_ESP))
+				any = true;
+			if(any)
 				CreateTorus();
 		}
 		ImGui::EndGroup();
 	}
 
 private:
-	Shader* torusShader = StaticShaders::GetPointerToTorus();
+	const Shader& torusShader = StaticShaders::GetTorus();
 	VAO vao_torus;
 	int segment1 = 10;
 	int segment2 = 10;

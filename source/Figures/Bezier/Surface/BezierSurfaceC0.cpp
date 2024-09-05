@@ -39,7 +39,7 @@ BezierSurfaceC0::BezierSurfaceC0(MG1::BezierSurfaceC0 bs2, Scene* scene, int idO
 		}
 	}
 
-	CreateBezier();
+	CreateBezierVAO();
 }
 
 BezierSurfaceC0::BezierSurfaceC0() : BezierSurfaceC0("BezierSurfaceC0")
@@ -47,15 +47,26 @@ BezierSurfaceC0::BezierSurfaceC0() : BezierSurfaceC0("BezierSurfaceC0")
 }
 
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name, FigureType type): BezierSurface(name, type)
+BezierSurfaceC0::BezierSurfaceC0(const char* name, FigureType type):
+	BezierSurface(name, type, StaticShaders::GetBezierSurfaceC0(), StaticShaders::GetBezierCurve())
 {
 	showBezierCurve = false;
-	CreateBezier();
+	CreateBezierVAO();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
+}
 
-
-	shader = StaticShaders::GetPointerToBezierSurfaceC0();
-	shader_curve = StaticShaders::GetPointerToBezierCurve();
+std::vector<glm::mat<4, 4, float>> BezierSurfaceC0::ControlPointsMatrix(int patchV, int patchH)
+{
+	glm::mat<4, 4, float> points_x{}, points_y{}, points_z{};
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			glm::vec3 pos = TakePoint(patchV, patchH, i, j)->transpose->GetPosition();
+			points_x[j][i] = pos.x;
+			points_y[j][i] = pos.y;
+			points_z[j][i] = pos.z;
+		}
+	}
+	return { points_x, points_y, points_z };
 }
 
 BezierSurfaceC0::~BezierSurfaceC0()
@@ -73,6 +84,8 @@ BezierSurfaceC0::~BezierSurfaceC0()
 MG1::BezierSurfaceC0 BezierSurfaceC0::Serialize(int idOffset) const
 {
 	MG1::BezierSurfaceC0 bs0{};
+	bs0.SetId(GetId() - idOffset);
+	bs0.name = name;
 	bs0.size.x = horizontalNum; bs0.size.y = verticalNum;
 
 	bs0.vWrapped = creationType == CreationType::cylinder;
@@ -112,6 +125,81 @@ int BezierSurfaceC0::TakeId(int verticalID, int horizontalID, int k1, int k2) co
 	int width = (4 + (horizontalNum - 1) * 3);
 	int id = (verticalID * 3 + k1) * width + k2 + horizontalID * 3;
 	return id;
+}
+
+glm::vec4 BezierSurfaceC0::Bernstain3D(float t) {
+
+	glm::vec4 bernstain;
+	bernstain.x = powf(1 - t, 3);
+	bernstain.y = 3 * powf(1 - t, 2)*t;
+	bernstain.z = 3 * 1 - t*powf(t, 2);
+	bernstain.w = powf(t, 3);
+
+
+	return  bernstain;
+}
+
+glm::vec4 BezierSurfaceC0::Bernstain3DDerivative(float t)
+{
+	glm::vec3 bern2D = Bernstain2D(t);
+	 
+	return glm::vec4{-3* bern2D.x, 3 * (bern2D.x - bern2D.y), 3 * (bern2D.y - bern2D.z), 3* bern2D.z };
+}
+
+glm::vec3 BezierSurfaceC0::Bernstain2D(float t)
+{
+	glm::vec3 bernstain;
+	bernstain.x = powf(1 - t, 2);
+	bernstain.y = 2 * (1 - t )* t;
+	bernstain.z = powf(t, 2);
+
+
+	return  bernstain;
+}
+
+glm::vec3 BezierSurfaceC0::BernstainPolinomalDe(float t)
+{
+
+	return glm::vec3();
+}
+
+glm::vec3 BezierSurfaceC0::DerivativeV(int patchV, int patchH, float v, float u)
+{
+	auto controlPoints = ControlPointsMatrix(patchV, patchH);
+
+	auto berU = Bernstain3D(u);
+	auto berV = Bernstain3DDerivative(v);
+	glm::vec3 result;
+	for (int i = 0; i < 3; i++)
+		result[i] = glm::dot(berV, controlPoints[i] * berU);
+
+	return result;
+}
+
+glm::vec3 BezierSurfaceC0::DerivativeU(int patchV, int patchH, float v, float u)
+{
+	auto controlPoints = ControlPointsMatrix(patchV, patchH);
+
+	auto berU = Bernstain3DDerivative(u);
+	auto berV = Bernstain3D(v);
+	glm::vec3 result;
+	for (int i = 0; i < 3; i++)
+		result[i] = glm::dot(berV, controlPoints[i] * berU);
+
+	return result;
+}
+
+glm::vec3 BezierSurfaceC0::DerivativeVU(int patchV, int patchH, float v, float u)
+{
+	auto controlPoints = ControlPointsMatrix(patchV, patchH);
+
+	auto berU = Bernstain3DDerivative(u);
+	auto berV = Bernstain3DDerivative(v);
+	glm::vec3 result;
+	for (int i = 0; i < 3; i++)
+		result[i] = glm::dot(berV, controlPoints[i] * berU);
+
+	return result;
 }
 
 int BezierSurfaceC0::MaxSize()

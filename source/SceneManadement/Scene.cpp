@@ -1,5 +1,15 @@
 #include "Scene.h"
 
+std::vector<FigureType> Scene::GetTypeOfFiguresOnScene()
+{
+	std::vector<FigureType> figureTypesVector{ FigureType::Any };
+	for (auto item : numberOfFigureOfParticularType) {
+		if (item.second > 0 && item.first != FigureType::Any)
+			figureTypesVector.push_back(item.first);
+	}
+	return figureTypesVector;
+}
+
 int Scene::NumberOfActive() {
 	return activeCount;
 }
@@ -17,6 +27,11 @@ std::shared_ptr<Figure> Scene::byID(uint32_t id) const
 void Scene::AddFigure(std::shared_ptr<Figure> figure) {
 	if(figures.contains(figure->GetId()))
 		return;
+
+	if (!numberOfFigureOfParticularType.contains(figure->GetType()))
+		numberOfFigureOfParticularType[figure->GetType()] = 1;
+	else
+		numberOfFigureOfParticularType[figure->GetType()]++;
 
 	figures[figure->GetId()] =  figure;
 	insertionOrder.push_back(figure->GetId());
@@ -43,6 +58,7 @@ void Scene::DeleteFigureAt(int place) {
 	insertionOrder.erase(std::next(insertionOrder.begin(), place));
 	figures.erase(toDelete->GetId());
 	active.erase(std::next(active.begin(), place));
+	numberOfFigureOfParticularType[toDelete->GetType()]--;
 
 	if (dynamic_cast<FigureContainer*>(toDelete.get()))
 	{
@@ -121,7 +137,6 @@ Scene::~Scene() {
 }
 
 void Scene::DeleteAll() {
-	
 	while (Size() > 0)
 		DeleteFigureAt(0);
 }

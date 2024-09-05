@@ -19,6 +19,9 @@ public:
 	~BezierSurfaceC2();
 
 	MG1::BezierSurfaceC2 Serialize(int idOffset) const;
+	glm::vec3 DerivativeV(int patchV, int pathH, float v, float u)  override { return{};};
+	glm::vec3 DerivativeU(int patchV, int pathH, float v, float u)  override { return{};};
+	glm::vec3 DerivativeVU(int patchV, int pathH, float v, float u) override { return{};};
 
 
 protected:

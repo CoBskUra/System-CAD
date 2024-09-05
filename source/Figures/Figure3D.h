@@ -15,15 +15,15 @@ public:
 
 	Figure3D();
 
-	void virtual RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle);
-	void virtual RotationAlong(Quaternion q, glm::vec3 rotationCenter);
+	void RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle) override;
+	void RotationAlong(Quaternion q, glm::vec3 rotationCenter) override;
 
-	void virtual ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec);
-	void virtual MoveAlong(const Camera& camera, glm::vec3 direction);
+	void ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec) override;
+	void MoveAlong(const Camera& camera, glm::vec3 direction) override;
 
-	void virtual ActiveImGui();
-	glm::mat4x4 virtual GetModelMatrix();
-	glm::mat4x4 virtual GetModelMatrixInvers();
+	void  ActiveImGui() override;
+	glm::mat4x4  GetModelMatrix()  override;
+	glm::mat4x4  GetModelMatrixInvers() override;
 
 protected:
 

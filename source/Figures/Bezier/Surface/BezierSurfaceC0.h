@@ -15,12 +15,22 @@ public:
 	BezierSurfaceC0();
 	~BezierSurfaceC0();
 	MG1::BezierSurfaceC0 Serialize(int idOffset) const;
+	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2) const override;
+	int TakeId(int verticalID, int horizontalID, int k1, int k2) const override;
 
+	glm::vec3 DerivativeV(int patchV, int pathH, float v, float u)	override;
+	glm::vec3 DerivativeU(int patchV, int pathH, float v, float u)	override;
+	glm::vec3 DerivativeVU(int patchV, int pathH, float v, float u)	override;
+
+	glm::vec4 Bernstain3D(float t);
+	glm::vec4 Bernstain3DDerivative(float t);
+	glm::vec3 Bernstain2D(float t);
+	glm::vec3 BernstainPolinomalDe(float t);
 protected:
 	BezierSurfaceC0(const char* name, FigureType type);
 private:
-	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2) const override;
-	int TakeId(int verticalID, int horizontalID, int k1, int k2) const override;
+	std::vector<glm::mat<4, 4, float>> ControlPointsMatrix(int patchV, int pathH);
+	
 	int MaxSize() override;;
 };
 

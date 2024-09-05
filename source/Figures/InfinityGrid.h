@@ -15,9 +15,9 @@ protected:
 	InfinityGrid(FigureType type);
 
 private:
-	VAO vaoInfinityGrid;
-	Shader* infinityGridShader = StaticShaders::GetPointerToInfinityGrid();
+	VAO vao;
+	const Shader& shader = StaticShaders::GetInfinityGrid();
 
-	void CreateInfinityGrid();
+	void CreateInfinityGridVAO();
 };
 

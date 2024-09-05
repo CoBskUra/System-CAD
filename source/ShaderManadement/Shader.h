@@ -29,7 +29,7 @@ public:
 	Shader(const char* vertexFile, const char* fragmentFile);
 	Shader(std::vector<shaderInput> shadersTypes);
 
-	void Activate();
+	void Activate() const;
 	void Delete();
 
 private:

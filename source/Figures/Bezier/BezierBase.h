@@ -43,8 +43,9 @@ public:
 
 	void virtual ChangeShowBezierCurve();
 	void virtual ChangeShowBezierPol();
+	glm::ivec3 Size();
 protected:
 	BezierBase(const char* name, FigureType type);
-	void virtual CreateBezier();
+	void virtual CreateBezierVAO();
 	void SelectedPoints();
 };

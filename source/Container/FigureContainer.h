@@ -25,6 +25,7 @@ public:
 	void SomethingHasChange();
 	bool IsSomethingChange();
 	void virtual MarkFigure(Figure* figure);
+	void virtual UnmarkFigure(Figure* figure);
 	void virtual Update();
 	bool virtual Swap(Figure* from, std::shared_ptr<Figure> to);
 	Figure* At(int i) const;

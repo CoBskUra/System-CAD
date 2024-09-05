@@ -30,11 +30,15 @@ void Manager::MenuInterferes()
 			}
 		}
 		LoadScene();
+		ImGui::SameLine();
+		if (ImGui::Button("ClearScene")) {
+			ClearScene();
+		}
 		SaveScene();
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
-		SelectableList();
+		SelectableList(FigureFilter());
 	}
 	ImGui::End();
 
@@ -186,7 +190,7 @@ void Manager::CreateFiguresInterfers()
 	}
 
 
-	ImGui::SameLine();
+	//ImGui::SameLine();
 	if (ImGui::Button("Bezier surfec C2", ImVec2(150, 20))) {
 		std::shared_ptr<BezierSurfaceC2> Bezier = std::make_shared<BezierSurfaceC2>();
 		Bezier->transpose->SetObjectPosition(cursor.transpose->GetPosition());
@@ -194,13 +198,37 @@ void Manager::CreateFiguresInterfers()
 		sher_ptrScene->AddFigure(Bezier);
 		sher_ptrScene->ChangeActiveState(sher_ptrScene->Size() - 1);
 	}
+
+	ImGui::SameLine();
+	if (ImGui::Button("Gregory Patch", ImVec2(150, 20))) {
+		std::shared_ptr<GregoryPatch> gregory = 
+			std::make_shared<GregoryPatch>(sher_ptrScene.get());
+		sher_ptrScene->AddFigure(gregory);
+	}
 }
 
-void Manager::SelectableList()
+FigureType Manager::FigureFilter()
+{
+	auto figuresTypes = sher_ptrScene->GetTypeOfFiguresOnScene();
+	static int item_current = 0;
+	if (item_current > figuresTypes.size() - 1)
+		item_current = 0;
+	std::vector<const char*> names;
+	for (FigureType f : figuresTypes) {
+		names.push_back(ToString(f));
+	}
+	ImGui::Combo("FiguresTypes", &item_current, names.data(), names.size());
+
+	return figuresTypes[item_current];
+}
+
+void Manager::SelectableList(FigureType figureType)
 {
 	ImVec2 size(150, 20);
 	for (int i = 0; i < sher_ptrScene->Size(); i++)
 	{
+		if (figureType != FigureType::Any && sher_ptrScene->at(i)->GetType() != figureType)
+			continue;
 		ImGui::PushID(i);
 		// delete figure
 		if (!sher_ptrScene->IsDeleteAble(i)) {
@@ -221,7 +249,6 @@ void Manager::SelectableList()
 
 		char buf[200];
 		sprintf_s(buf, "%d. %s", i, sher_ptrScene->at(i)->name);
-
 		if (ImGui::Selectable(buf, centerPoint.Contain(sher_ptrScene->at(i).get()))) {
 			SelectUnselect(i);
 		}
@@ -304,6 +331,11 @@ bool Manager::MergeFigures()
 		return merge.Merge(&centerPoint);
 	}
 	return false;
+}
+
+void Manager::ClearScene()
+{
+	sher_ptrScene->DeleteAll();
 }
 
 void Manager::ProcessInput()

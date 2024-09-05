@@ -22,7 +22,7 @@ BezierInterpolated::BezierInterpolated(MG1::InterpolatedC2 b0, const Scene* scen
 MG1::InterpolatedC2 BezierInterpolated::Serialize(int idOffset) const
 {
 	MG1::InterpolatedC2 bezier{};
-	bezier.SetId(GetId());
+	bezier.SetId(GetId() - idOffset);
 	bezier.name = name;
 	for (int i = 0; i < ContainerSize(); i++)
 	{

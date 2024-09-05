@@ -5,7 +5,9 @@ int BezierSurface::MaxSize()
 	return horizontalNum * verticalNum * 16;
 }
 
-BezierSurface::BezierSurface(const char* name, FigureType type):BezierBase(name, type)
+BezierSurface::BezierSurface(const char* name, FigureType type,
+	const Shader& shader_surface, const Shader& shaderCurve) :
+	shader{ shader_surface }, shader_curve{ shaderCurve }, BezierBase(name, type)
 {
 }
 
@@ -120,33 +122,33 @@ void BezierSurface::Draw(GLFWwindow* window, const Camera& camera)
 
 	if (showBezierPol) {
 		auto showColor = GetShowColor();
-		shader->Activate();
+		shader.Activate();
 		vao.Bind();
 		{
 			glPatchParameteri(GL_PATCH_VERTICES, 16);
 
-			camera.SaveMatrixToShader(shader->ID);
-			glUniform4f(glGetUniformLocation(shader->ID, "COLOR"),
+			camera.SaveMatrixToShader(shader.ID);
+			glUniform4f(glGetUniformLocation(shader.ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
-			glUniform1i(glGetUniformLocation(shader->ID, "PATCH_DIV"), patch_div);
+			glUniform1i(glGetUniformLocation(shader.ID, "PATCH_DIV"), patch_div);
 
 
-			glUniform1i(glGetUniformLocation(shader->ID, "VERTICAL_DRAW"), false);
+			glUniform1i(glGetUniformLocation(shader.ID, "VERTICAL_DRAW"), false);
 			glDrawArrays(GL_PATCHES, 0, numberOfVertexes);
 
-			glUniform1i(glGetUniformLocation(shader->ID, "VERTICAL_DRAW"), true);
+			glUniform1i(glGetUniformLocation(shader.ID, "VERTICAL_DRAW"), true);
 			glDrawArrays(GL_PATCHES, 0, numberOfVertexes);
 		}
 		vao.Unbind();
 	}
 
 	if (showBezierCurve) {
-		shader_curve->Activate();
+		shader_curve.Activate();
 		vao_curve.Bind();
 		{
-			glUniform4f(glGetUniformLocation(shader_curve->ID, "COLOR"),
+			glUniform4f(glGetUniformLocation(shader_curve.ID, "COLOR"),
 				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
-			camera.SaveMatrixToShader(shader_curve->ID);
+			camera.SaveMatrixToShader(shader_curve.ID);
 
 			glDrawElements(GL_LINES, numberOfIndes, GL_UNSIGNED_INT, 0);
 		}
@@ -156,7 +158,7 @@ void BezierSurface::Draw(GLFWwindow* window, const Camera& camera)
 	/*for (int i = 0; i < ContainerSize(); i++)
 		At(i)->Draw(window, camera);*/
 }
-void BezierSurface::CreateBezier()
+void BezierSurface::CreateBezierVAO()
 {
 	numberOfVertexes = 0;
 	std::vector<float> vs{};
@@ -171,12 +173,29 @@ void BezierSurface::CreateBezier()
 			for (int j = 0; j < horizontalNum; j++) {
 				for (int k1 = 0; k1 < 4; k1++) {
 					for (int k2 = 0; k2 < 4; k2++) {
-						glm::vec3 pos = GeneratePosForVertexInPatch(i, j, k1, k2);
+
+
 						auto p = TakePoint(i, j, k1, k2);
+						glm::vec3 pos = GeneratePosForVertexInPatch(i, j, k1, k2);
 						p->transpose->SetObjectPosition(pos);
+
 						Add(p);
 						OpenGLHelper::AddVecToVector(vs, pos);
+
+						if (k2 != 0)
+						{
+							ies.push_back(numberOfVertexes - 1);
+							ies.push_back(numberOfVertexes);
+
+						}
+						if (k1 != 0)
+						{
+							ies.push_back(numberOfVertexes - 4);
+							ies.push_back(numberOfVertexes);
+						}
+
 						numberOfVertexes++;
+
 					}
 				}
 			}
@@ -187,9 +206,9 @@ void BezierSurface::CreateBezier()
 
 		for (int i = 0; i < verticalNum; i++) {
 			for (int j = 0; j < horizontalNum; j++) {
-
 				for (int k1 = 0; k1 < 4; k1++) {
 					for (int k2 = 0; k2 < 4; k2++) {
+
 						auto p = TakePoint(i, j, k1, k2);
 						OpenGLHelper::AddVecToVector(vs, p->transpose->GetPosition());
 
@@ -243,7 +262,7 @@ void BezierSurface::ActiveImGui()
 	if (CreationWindowInterfers(windowSize)) {
 		if (!accepted)
 			Clear();
-		CreateBezier();
+		CreateBezierVAO();
 		if (!openWindow && !accepted)
 		{
 			if (nullptr != refrenceScene)
@@ -276,6 +295,10 @@ void BezierSurface::TurnOffStartupInterfers()
 	openWindow = false;
 	accepted = true;
 	firstTime = false;
+}
+BezierSurface::CreationType BezierSurface::GetWrapType()
+{
+	return creationType;
 }
 void BezierSurface::DeleteRangeControlPoints(int start, int end)
 {
@@ -356,5 +379,10 @@ bool BezierSurface::Swap(Figure* from, std::shared_ptr<Figure>  to)
 	}
 	SomethingHasChange();
 	return true;
+}
+
+glm::ivec2 BezierSurface::SurfaceSize()
+{
+	return glm::ivec2{verticalNum, horizontalNum};
 }
 

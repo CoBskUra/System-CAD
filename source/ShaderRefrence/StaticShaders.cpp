@@ -1,7 +1,6 @@
 #include "StaticShaders.h"
 #include <GLFW/glfw3.h>
 
-const char* StaticShaders::path = "../";
 
 bool StaticShaders::haseBeenInit = false;
 
@@ -23,45 +22,51 @@ Shader StaticShaders::Torus;
 
 Shader StaticShaders::BezierSurfaceC0;
 Shader StaticShaders::BezierSurfaceC2;
+Shader StaticShaders::GregoryPatch;
 
-Shader* StaticShaders::GetPointerToBezier2D() {
-	return &bezier2D;
+const Shader& StaticShaders::GetBezier2D() {
+	return bezier2D;
 }
-Shader* StaticShaders::GetPointerToBezier3D(){
-	return &bezier3D;
-}
-
-Shader* StaticShaders::GetPointerToBezierCurve() {
-	return &bezierCurve;
+const Shader& StaticShaders::GetBezier3D(){
+	return bezier3D;
 }
 
-Shader* StaticShaders::GetPointerToCursor() {
-	return &cursor;
+const Shader& StaticShaders::GetBezierCurve() {
+	return bezierCurve;
 }
 
-Shader* StaticShaders::GetPointerToDefaultShader() {
-	return &defaultShader;
+const Shader& StaticShaders::GetCursor() {
+	return cursor;
 }
 
-Shader* StaticShaders::GetPointerToPoint() {
-	return &point;
+const Shader& StaticShaders::GetDefaultShader() {
+	return defaultShader;
 }
 
-Shader* StaticShaders::GetPointerToInfinityGrid() {
-	return &infinityGrid;
-}
-Shader* StaticShaders::GetPointerToTorus() {
-	return &Torus;
+const Shader& StaticShaders::GetPoint() {
+	return point;
 }
 
-Shader* StaticShaders::GetPointerToBezierSurfaceC0()
+const Shader& StaticShaders::GetInfinityGrid() {
+	return infinityGrid;
+}
+const Shader& StaticShaders::GetTorus() {
+	return Torus;
+}
+
+const Shader& StaticShaders::GetBezierSurfaceC0()
 {
-	return &BezierSurfaceC0;
+	return BezierSurfaceC0;
 }
 
-Shader* StaticShaders::GetPointerToBezierSurfaceC2()
+const Shader& StaticShaders::GetBezierSurfaceC2()
 {
-	return &BezierSurfaceC2;
+	return BezierSurfaceC2;
+}
+
+const Shader& StaticShaders::GetGregoryPatch()
+{
+	return GregoryPatch;
 }
 
 void StaticShaders::Init()
@@ -127,8 +132,8 @@ void StaticShaders::Init()
 
 	BezierSurfaceC0 = {
 	{
-		{"../resource/Shaders/bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"../resource/Shaders/bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		{"../resource/Shaders/bezierSurfaceC0_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"../resource/Shaders/bezierSurfaceC0_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
 		{"../resource/Shaders/bezierSurfaceC0_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
 		{"../resource/Shaders/bezierSurfaceC0_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
@@ -136,10 +141,19 @@ void StaticShaders::Init()
 
 	BezierSurfaceC2 = {
 	{
-		{"../resource/Shaders/bezier3d_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"../resource/Shaders/bezier3d_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		{"../resource/Shaders/bezierSurfaceC2_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"../resource/Shaders/bezierSurfaceC2_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
 		{"../resource/Shaders/bezierSurfaceC2_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
 		{"../resource/Shaders/bezierSurfaceC2_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
+	}
+	};
+
+	GregoryPatch = {
+	{
+		{"../resource/Shaders/bezierSurfaceC0_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"../resource/Shaders/bezierSurfaceC0_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		{"../resource/Shaders/bezierSurfaceC0_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"../resource/Shaders/bezierSurfaceC0_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
 	};
 }

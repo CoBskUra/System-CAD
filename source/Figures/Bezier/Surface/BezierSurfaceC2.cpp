@@ -10,14 +10,12 @@ BezierSurfaceC2::BezierSurfaceC2() : BezierSurfaceC2("BezierSurfaceC2")
 }
 
 
-BezierSurfaceC2::BezierSurfaceC2(const char* name, FigureType type): BezierSurface(name, type)
+BezierSurfaceC2::BezierSurfaceC2(const char* name, FigureType type): 
+	BezierSurface(name, type, StaticShaders::GetBezierSurfaceC2(), StaticShaders::GetBezierCurve())
 {
 	showBezierCurve = false;
-	CreateBezier();
+	CreateBezierVAO();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
-	
-	shader = StaticShaders::GetPointerToBezierSurfaceC2();
-	shader_curve = StaticShaders::GetPointerToBezierCurve();
 }
 
 glm::vec3 BezierSurfaceC2::GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2)
@@ -152,12 +150,14 @@ BezierSurfaceC2::BezierSurfaceC2(MG1::BezierSurfaceC2 bs2, Scene* scene, int idO
 		}
 	}
 
-	CreateBezier();
+	CreateBezierVAO();
 }
 
 MG1::BezierSurfaceC2 BezierSurfaceC2::Serialize(int idOffset) const
 {
 	MG1::BezierSurfaceC2 bs2{};
+	bs2.SetId(GetId() - idOffset);
+	bs2.name = this->name;
 	bs2.size.x = horizontalNum; bs2.size.y = verticalNum;
 
 	bs2.vWrapped = creationType == CreationType::cylinder;

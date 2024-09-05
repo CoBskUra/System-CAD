@@ -14,8 +14,9 @@ public:
 	std::set<FigureContainer*> figureContainers;
 
 	std::vector<bool> active;
+	std::map<FigureType, int> numberOfFigureOfParticularType;
 
-
+	std::vector<FigureType> GetTypeOfFiguresOnScene();
 	int NumberOfActive();
 	std::shared_ptr<Figure> at(int i) const;
 	std::shared_ptr<Figure> byID(uint32_t id) const;
