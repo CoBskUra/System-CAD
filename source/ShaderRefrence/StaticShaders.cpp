@@ -150,10 +150,10 @@ void StaticShaders::Init()
 
 	GregoryPatch = {
 	{
-		{"../resource/Shaders/bezierSurfaceC0_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"../resource/Shaders/bezierSurfaceC0_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
-		{"../resource/Shaders/bezierSurfaceC0_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
-		{"../resource/Shaders/bezierSurfaceC0_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
+		{"../resource/Shaders/GregoryPatch_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"../resource/Shaders/GregoryPatch_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER} ,
+		{"../resource/Shaders/GregoryPatch_tc.glsl", "TESELATION_CONTROL", GL_TESS_CONTROL_SHADER},
+		{"../resource/Shaders/GregoryPatch_te.glsl", "TESELATION_EVALUATION", GL_TESS_EVALUATION_SHADER}
 	}
 	};
 }

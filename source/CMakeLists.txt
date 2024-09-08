@@ -33,6 +33,8 @@ endif ()
 
  file(COPY ${CMAKE_SOURCE_DIR}/resource DESTINATION ${CMAKE_BINARY_DIR})
 
+
+
 target_link_libraries(MG1_projekt PRIVATE glm::glm)
 target_link_libraries(MG1_projekt PRIVATE glad::glad)
 target_link_libraries(MG1_projekt PRIVATE glfw)
@@ -44,3 +46,10 @@ target_link_libraries(MG1_projekt PRIVATE MGSerializer)
 target_include_directories(MG1_projekt PRIVATE ../Scene-Serializer/cpp/Serializer/Serializer)
 
 
+# Ustawienie katalogu z danymi
+set(DATA_FILES_DIR "${CMAKE_SOURCE_DIR}/resource")
+
+# Kopiowanie plików danych po zbudowaniu pliku wykonywalnego
+add_custom_command(TARGET MG1_projekt POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${DATA_FILES_DIR} "${CMAKE_BINARY_DIR}/resource")

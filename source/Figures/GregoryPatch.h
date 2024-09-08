@@ -11,7 +11,7 @@ struct VertexInfo {
 struct Edge {
 	uint32_t surfaceId;
 	int patchV;
-	int pathH;
+	int patchH;
 	VertexInfo from;
 	VertexInfo between_v1, between_v2;
 	VertexInfo to;
@@ -28,6 +28,51 @@ struct Edge {
 				scene->byID(between_v2.v).get(),
 				scene->byID(to.v).get(),
 		};
+	}
+
+	Edge EdgeCloserToPatchCenter(const BezierSurfaceC0* surface) {
+		Edge result = *this;
+
+		int i{ 1 }, j{ 0 };
+		if (from.k2 == to.k2) {
+			std::swap(i, j);
+		}
+		auto moveVertexCloserToCenter = [=](VertexInfo& v)
+			{ v.k1 = abs(v.k1 - i); v.k2 = abs(v.k2 - j); };
+		result.ForAllVertex(moveVertexCloserToCenter);
+
+		auto assignProperId = [=](VertexInfo& v)
+			{	v.v = surface->TakePoint(patchV, patchH, v.k1, v.k2)->GetId(); };
+		result.ForAllVertex(assignProperId);
+
+		return result;
+	}
+
+	Edge EdgeCloserToPatchCenter(const BezierSurfaceC0& surface) {
+		Edge result = *this; 
+
+		int i{ 1 }, j{ 0 };
+		if (from.k2 == to.k2) {
+			std::swap(i, j);
+		}
+		auto moveVertexCloserToCenter = [=](VertexInfo& v)
+			{ v.k1 = abs(v.k1 - i); v.k2 = abs(v.k2 - j); };
+		result.ForAllVertex(moveVertexCloserToCenter);
+
+		auto assignProperId = [=](VertexInfo& v)
+			{	v.v = surface.TakePoint(patchV, patchH, v.k1, v.k2)->GetId();};
+		result.ForAllVertex(assignProperId);
+
+		return result;
+	}
+
+
+	template<typename Func>
+	void ForAllVertex(Func fun) {
+		fun(from);
+		fun(between_v1);
+		fun(between_v2);
+		fun(to);
 	}
 };
 
@@ -80,6 +125,8 @@ public:
 			e3.ChangeDirection();
 		}
 	}
+
+	std::vector<Edge> Edges() { return { e1, e2, e3 }; }
 	
 	friend bool operator==(const TriangleCycle& c1, const TriangleCycle& c2) {
 
@@ -135,7 +182,7 @@ public:
 
 	
 protected:
-
+	int patchSize = 4 * 2 * 3; // 3 patches, 2 edges from every patch, 4 vertex from every edge
 	int patch_div = 4;
 	VAO vao;
 	const Shader& shader = StaticShaders::GetGregoryPatch();

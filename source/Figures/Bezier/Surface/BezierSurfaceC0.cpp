@@ -132,7 +132,7 @@ glm::vec4 BezierSurfaceC0::Bernstain3D(float t) {
 	glm::vec4 bernstain;
 	bernstain.x = powf(1 - t, 3);
 	bernstain.y = 3 * powf(1 - t, 2)*t;
-	bernstain.z = 3 * 1 - t*powf(t, 2);
+	bernstain.z = 3 *( 1 - t)*powf(t, 2);
 	bernstain.w = powf(t, 3);
 
 
@@ -143,7 +143,12 @@ glm::vec4 BezierSurfaceC0::Bernstain3DDerivative(float t)
 {
 	glm::vec3 bern2D = Bernstain2D(t);
 	 
-	return glm::vec4{-3* bern2D.x, 3 * (bern2D.x - bern2D.y), 3 * (bern2D.y - bern2D.z), 3* bern2D.z };
+	return glm::vec4{
+		-3* bern2D.x,
+		3 * (bern2D.x - bern2D.y), 
+		3 * (bern2D.y - bern2D.z),
+		3 * bern2D.z 
+	};
 }
 
 glm::vec3 BezierSurfaceC0::Bernstain2D(float t)
@@ -167,11 +172,9 @@ glm::vec3 BezierSurfaceC0::DerivativeV(int patchV, int patchH, float v, float u)
 {
 	auto controlPoints = ControlPointsMatrix(patchV, patchH);
 
-	auto berU = Bernstain3D(u);
-	auto berV = Bernstain3DDerivative(v);
 	glm::vec3 result;
 	for (int i = 0; i < 3; i++)
-		result[i] = glm::dot(berV, controlPoints[i] * berU);
+		result[i] = glm::dot(Bernstain3DDerivative(v), controlPoints[i] * Bernstain3D(u));
 
 	return result;
 }
@@ -180,11 +183,9 @@ glm::vec3 BezierSurfaceC0::DerivativeU(int patchV, int patchH, float v, float u)
 {
 	auto controlPoints = ControlPointsMatrix(patchV, patchH);
 
-	auto berU = Bernstain3DDerivative(u);
-	auto berV = Bernstain3D(v);
 	glm::vec3 result;
 	for (int i = 0; i < 3; i++)
-		result[i] = glm::dot(berV, controlPoints[i] * berU);
+		result[i] = glm::dot(Bernstain3D(v), controlPoints[i] * Bernstain3DDerivative(u));
 
 	return result;
 }
@@ -193,11 +194,9 @@ glm::vec3 BezierSurfaceC0::DerivativeVU(int patchV, int patchH, float v, float u
 {
 	auto controlPoints = ControlPointsMatrix(patchV, patchH);
 
-	auto berU = Bernstain3DDerivative(u);
-	auto berV = Bernstain3DDerivative(v);
 	glm::vec3 result;
 	for (int i = 0; i < 3; i++)
-		result[i] = glm::dot(berV, controlPoints[i] * berU);
+		result[i] = glm::dot(Bernstain3DDerivative(v), controlPoints[i] * Bernstain3DDerivative(u));
 
 	return result;
 }
