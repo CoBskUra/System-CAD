@@ -42,33 +42,8 @@ void main()
     gl_in[3 + start].gl_Position.xyz
     );
     
-//    start = 4;
-//    ps[1] = Bernstain(u, 
-//    gl_in[0 + start].gl_Position.xyz,
-//    gl_in[1 + start].gl_Position.xyz,
-//    gl_in[2 + start].gl_Position.xyz,
-//    gl_in[3 + start].gl_Position.xyz
-//    );
-//
-//    start = 8;
-//    ps[1] = Bernstain(u, 
-//    gl_in[0 + start].gl_Position.xyz,
-//    gl_in[1 + start].gl_Position.xyz,
-//    gl_in[2 + start].gl_Position.xyz,
-//    gl_in[3 + start].gl_Position.xyz
-//    );
-//    
-//    start = 10;
-//    ps[2] = Bernstain(u, 
-//    gl_in[0 + start].gl_Position.xyz,
-//    gl_in[1 + start].gl_Position.xyz,
-//    gl_in[2 + start].gl_Position.xyz,
-//    gl_in[3 + start].gl_Position.xyz
-//    );
-//
 
-
-    start = 4;
+    start += 4;
     ps[1] = Bernstain(u, 
     gl_in[0 + start].gl_Position.xyz,
     (u * gl_in[1 + start].gl_Position.xyz + v * gl_in[2 + start].gl_Position.xyz) /(u + v), 
@@ -76,7 +51,7 @@ void main()
     gl_in[5 + start].gl_Position.xyz
     );
     
-    start = 6 + 4;
+    start += 6;
     ps[2] = Bernstain(u, 
     gl_in[0 + start].gl_Position.xyz,
     ((1 - u) * gl_in[1 + start].gl_Position.xyz + (1 - v) * gl_in[2 + start].gl_Position.xyz) /(2 - u - v),
@@ -84,7 +59,7 @@ void main()
     gl_in[5 + start].gl_Position.xyz
     );
     
-    start = 6 + 4 + 6;
+    start += 6;
     ps[3] = Bernstain(u, 
     gl_in[0 + start].gl_Position.xyz,
     gl_in[1 + start].gl_Position.xyz,
