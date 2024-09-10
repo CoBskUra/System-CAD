@@ -60,7 +60,7 @@ Graph GregoryPatch::CreateGraph()
 				{
 					for (int k2 = 0; k2 < 4; k2 += 3)
 					{
-						// po prostu chodzenie po p³atku i ³¹czenie 
+						// po prostu chodzenie po pÂ³atku i Â³Â¹czenie 
 						int v1 = surface0->TakePoint(i, j, k1, k2)->GetId();
 						VertexInfo from{ v1, k1, k2 };
 						int k1_a = (((k1 / 3) + 1) % 2) * 3, k2_a = k2;
@@ -164,7 +164,7 @@ void GregoryPatch::CreateGregoryPatchVAO()
 {
 	std::vector<float> vs{};
 
-	// tymczasowo jak bezier C0 p³atek
+	// tymczasowo jak bezier C0 pÂ³atek
 	for (TriangleCycle& cycle : triangleCycle) {
 		for (Edge edge : cycle.Edges())
 		{
@@ -174,7 +174,7 @@ void GregoryPatch::CreateGregoryPatchVAO()
 			for (auto figure : edge.EdgeCloserToPatchCenter(surfaces[edge.surfaceId].get()).FigureFromScene(scene)) {
 				OpenGLHelper::AddVecToVector(vs, figure->transpose->GetPosition());}
 		}
-		//for (auto figure : cycle.GetEdge_3().FigureFromScene(scene)) { // tymczasowo póŸniej bêd¹ tylko 3 fory
+		//for (auto figure : cycle.GetEdge_3().FigureFromScene(scene)) { // tymczasowo pÃ³Å¸niej bÃªdÂ¹ tylko 3 fory
 		//	OpenGLHelper::AddVecToVector(vs, figure->transpose->GetPosition());
 		//};
 	}
@@ -189,7 +189,7 @@ void GregoryPatch::CreateGregoryPatchVAO()
 
 		vao.Unbind(); vbo.Unbind();
 
-		glPatchParameteri(GL_PATCH_VERTICES, patchSize); // zmien póŸniej na 12
+		glPatchParameteri(GL_PATCH_VERTICES, patchSize); // zmien pÃ³Å¸niej na 12
 	}
 
 	vs.clear();
@@ -219,7 +219,14 @@ void GregoryPatch::CreateGregoryPatchVAO()
 				OpenGLHelper::AddVecToVector(vs, end);
 				numberOfArrows++;
 			}
-			
+
+			for (int i = 0; i < 6; i++) {
+				glm::vec3 start = posCloseEdge[i];
+				glm::vec3 end = posCloseEdge[i+ 1];
+				OpenGLHelper::AddVecToVector(vs, start);
+				OpenGLHelper::AddVecToVector(vs, end);
+				numberOfArrows++;
+			}
 
 		}
 	}
@@ -276,7 +283,7 @@ void GregoryPatch::Draw(GLFWwindow* window, const Camera& camera)
 			glUniform4f(glGetUniformLocation(shaderArrows.ID, "COLOR"),
 				arrowsColour.x, arrowsColour.y, arrowsColour.z, arrowsColour.w);
 			camera.SaveMatrixToShader(shaderArrows.ID);
-			glDrawArrays(GL_LINES, 0, numberOfArrows * 2); //póŸniej coœ innego 
+			glDrawArrays(GL_LINES, 0, numberOfArrows * 2); //pÃ³Å¸niej coÅ“ innego 
 		}
 		vaoArrows.Unbind();
 	}
