@@ -182,8 +182,10 @@ public:
 
 	
 protected:
+	bool showDerivative;
 	int patchSize = 4 * 2 * 3; // 3 patches, 2 edges from every patch, 4 vertex from every edge
 	int patch_div = 4;
+	glm::vec4 arrowsColour{1, 0.5, 0.2, 1};
 	VAO vao;
 	const Shader& shader = StaticShaders::GetGregoryPatch();
 
@@ -192,5 +194,7 @@ protected:
 	bool canInsertFigureToFigureContainer;
 
 	GregoryPatch(const char* name, FigureType type);
+private:
+	int numberOfArrows;
 };
 

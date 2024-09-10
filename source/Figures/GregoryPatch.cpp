@@ -5,6 +5,9 @@ void GregoryPatch::FigureSpecificImGui()
 {
 	int counter = 0;
 	ImGui::DragInt("Patch div. :##GregoryPatch", &patch_div);
+	if (ImGui::RadioButton("Derivative vectors##GregoryPatch", showDerivative))
+		showDerivative = !showDerivative;
+
 	for (int i = 0; i < scene->Size(); i++) {
 		if (scene->at(i)->GetType() != FigureType::BezierSurfaceC0) {
 			continue;
@@ -21,13 +24,14 @@ void GregoryPatch::FigureSpecificImGui()
 
 				Update();
 			}
-			else if (surfaces.size() < 3) {
+			else {
 				surfaces[surface->GetId()] = surface;
 
 				Update();
 			}
 		}
 
+		
 		counter++;
 	}
 }
@@ -189,66 +193,37 @@ void GregoryPatch::CreateGregoryPatchVAO()
 	}
 
 	vs.clear();
+	numberOfArrows = 0;
+	// pochodne 
+	for (auto cycle : triangleCycle) {
+		for (Edge& edge : cycle.Edges()) {
+			auto pointsCloseEdge = edge.FigureFromScene(scene);
+			auto pointsFarEdge = edge.EdgeCloserToPatchCenter(surfaces[edge.surfaceId].get()).FigureFromScene(scene);
+			auto posCloseEdge = MathOperations::BezierSubDivide(0.5f,
+				pointsCloseEdge[0]->transpose->GetPosition(),
+				pointsCloseEdge[1]->transpose->GetPosition(),
+				pointsCloseEdge[2]->transpose->GetPosition(),
+				pointsCloseEdge[3]->transpose->GetPosition()
+			);
+			auto posFarEdge = MathOperations::BezierSubDivide(0.5f,
+				pointsFarEdge[0]->transpose->GetPosition(),
+				pointsFarEdge[1]->transpose->GetPosition(),
+				pointsFarEdge[2]->transpose->GetPosition(),
+				pointsFarEdge[3]->transpose->GetPosition()
+			);
 
-	//for (auto cycle : triangleCycle) {
-	//	std::vector<Edge> edges;
-	//	edges.push_back(cycle.GetEdge_1());
-	//	edges.push_back(cycle.GetEdge_2());
-	//	edges.push_back(cycle.GetEdge_3());
-	//	for (Edge& edge : edges) {
-	//		glm::vec3 start = surfaces[edge.surfaceId]->
-	//			TakePoint(edge.patchV, edge.patchH, edge.from.k1, edge.from.k2)->transpose->GetPosition();
-	//		glm::vec3 end = start + surfaces[edge.surfaceId]->DerivativeVU(edge.patchV, edge.patchH, edge.from.k1 / 3, edge.from.k2 / 3);
-	//		//end *= 5;
-	//		OpenGLHelper::AddVecToVector(vs, start);
-	//		OpenGLHelper::AddVecToVector(vs, end);
+			for (int i = 1; i < 6; i++) {
+				glm::vec3 start = posCloseEdge[i];
+				glm::vec3 end = 2.0f * start - posFarEdge[i];
+				OpenGLHelper::AddVecToVector(vs, start);
+				OpenGLHelper::AddVecToVector(vs, end);
+				numberOfArrows++;
+			}
+			
 
-	//	}
-	//}
+		}
+	}
 
-	//for (auto surf : surfaces) {
-	//	for (int i = 0; i < 4; i ++) {
-	//		for (int j = 0; j < 4; j ++) {
-	//			glm::vec3 start = surfaces[surf.first]->
-	//				TakePoint(0, 0, i,j)->transpose->GetPosition();
-	//			glm::vec3 end = start + surfaces[surf.first]->DerivativeV(0, 0, i / 3, j / 3) / 3.0f;
-	//			//end *= 5;
-	//			OpenGLHelper::AddVecToVector(vs, start);
-	//			OpenGLHelper::AddVecToVector(vs, end);
-
-
-	//		}
-	//	}
-	//}
-
-	//for (auto surf : surfaces) {
-	//	for (int i = 0; i < 4; i++) {
-	//		for (int j = 0; j < 4; j++) {
-	//			glm::vec3 start = surfaces[surf.first]->
-	//				TakePoint(0, 0, i, j)->transpose->GetPosition();
-	//			glm::vec3 end = start + surfaces[surf.first]->DerivativeU(0, 0, i / 3, j / 3) / 3.0f;
-	//			//end *= 5;
-	//			OpenGLHelper::AddVecToVector(vs, start);
-	//			OpenGLHelper::AddVecToVector(vs, end);
-
-
-	//		}
-	//	}
-	//}
-	//for (auto surf : surfaces) {
-	//	for (int i = 0; i < 4; i++) {
-	//		for (int j = 0; j < 4; j++) {
-	//			glm::vec3 start = surfaces[surf.first]->
-	//				TakePoint(0, 0, i, j)->transpose->GetPosition();
-	//			glm::vec3 end = start + surfaces[surf.first]->DerivativeVU(0, 0, i / 3, j / 3) / 3.0f;
-	//			//end *= 5;
-	//			OpenGLHelper::AddVecToVector(vs, start);
-	//			OpenGLHelper::AddVecToVector(vs, end);
-
-
-	//		}
-	//	}
-	//}
 
 	vaoArrows.Reactive();
 	vaoArrows.Bind();
@@ -266,12 +241,12 @@ void GregoryPatch::Draw(GLFWwindow* window, const Camera& camera)
 	if (IsSomethingChange())
 		Update();
 
+	auto showColor = GetShowColor();
 	shader.Activate();
 	vao.Bind();
 	{
 		for (int i = 0; i < 3; i++) {
 			glPatchParameteri(GL_PATCH_VERTICES, patchSize);
-			auto showColor = GetShowColor();
 			camera.SaveMatrixToShader(shader.ID);
 			glUniform4f(glGetUniformLocation(shader.ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
@@ -294,27 +269,17 @@ void GregoryPatch::Draw(GLFWwindow* window, const Camera& camera)
 	}
 	vao.Unbind();
 
-	//shaderArrows.Activate();
-	//vaoArrows.Bind();
-	//{
-	//	glUniform4f(glGetUniformLocation(shaderArrows.ID, "COLOR"),
-	//		0.5f, 0.3f, 0.1f, 1);
-	//	camera.SaveMatrixToShader(shaderArrows.ID);
-	//	glDrawArrays(GL_LINES, 0, surfaces.size()*2*16); //póŸniej coœ innego 
-
-
-	//	glUniform4f(glGetUniformLocation(shaderArrows.ID, "COLOR"),
-	//		0.5f, 0.9f, 0.1f, 1);
-	//	camera.SaveMatrixToShader(shaderArrows.ID);
-	//	glDrawArrays(GL_LINES, surfaces.size() * 2 * 16, surfaces.size() * 2 * 16); //póŸniej coœ innego 
-
-
-	//	glUniform4f(glGetUniformLocation(shaderArrows.ID, "COLOR"),
-	//		0.5f, 0.3f, 0.9f, 1);
-	//	camera.SaveMatrixToShader(shaderArrows.ID);
-	//	glDrawArrays(GL_LINES, surfaces.size() * 2 * 16 * 2, surfaces.size() * 2 * 16); //póŸniej coœ innego 
-	//}
-	//vaoArrows.Unbind();
+	if (showDerivative) {
+		shaderArrows.Activate();
+		vaoArrows.Bind();
+		{
+			glUniform4f(glGetUniformLocation(shaderArrows.ID, "COLOR"),
+				arrowsColour.x, arrowsColour.y, arrowsColour.z, arrowsColour.w);
+			camera.SaveMatrixToShader(shaderArrows.ID);
+			glDrawArrays(GL_LINES, 0, numberOfArrows * 2); //póŸniej coœ innego 
+		}
+		vaoArrows.Unbind();
+	}
 
 }
 
