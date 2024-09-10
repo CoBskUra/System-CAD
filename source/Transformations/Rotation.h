@@ -33,13 +33,13 @@ public:
 
 protected:
 	glm::mat4 Rx;
-	float alfa_x;
+	float alfa_x{};
 
 	glm::mat4 Ry;
-	float alfa_y;
+	float alfa_y{};
 
 	glm::mat4 Rz;
-	float alfa_z;
+	float alfa_z{};
 private:
 	float SimplifiedAngle(float angle);
 

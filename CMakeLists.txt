@@ -21,9 +21,10 @@ find_package(unofficial-imguizmo CONFIG REQUIRED)
 
 
 
+
+
 add_subdirectory("source")
 # add subdirectory with path to folder containing Scene-Serializer CMakeList.txt, this should include it in build process
 add_subdirectory("Scene-Serializer/cpp/Serializer")
-
 
 # TODO: Add tests and install targets if needed.

@@ -103,7 +103,7 @@ void Shader::compileErrors(unsigned int shader, const char* type)
 
 
 
-void Shader::Activate()
+void Shader::Activate() const
 {
 	glUseProgram(ID);
 }

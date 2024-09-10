@@ -2,26 +2,56 @@
 
 
 
-int Figure::count = 0;
+uint32_t Figure::s_firstFreeId = 0;
+std::set<uint32_t> Figure::s_takenIds = {};
+std::stack<uint32_t> Figure::s_freedIds = {};
 
-Figure::Figure( const char* uniqueName, FigureType type) :  Figure() {
-	UniqueName = uniqueName + std::to_string(id);
+Figure::Figure(FigureType type) :  Figure() {
 	Type = type;
 	showColor = unmarkColor;
 }
 
-Figure::Figure() : id(count), transpose(this) {
-	UnMark();
+Figure::Figure(const char* name, FigureType type):Figure(type)
+{
+	SetName(name);
+}
 
-	count++;
-	UniqueName += std::to_string(id);
+void Figure::SetFirstFreeId()
+{
+	while (s_takenIds.find(s_firstFreeId) != s_takenIds.end())
+	{
+		s_firstFreeId++;
+	}
+
+	if (s_freedIds.empty())
+	{
+		id = s_firstFreeId++;
+	}
+	else
+	{
+		id = s_freedIds.top();
+		s_freedIds.pop();
+	}
+
+	s_takenIds.insert(id);
+}
+
+void Figure::FreeId() {
+	s_takenIds.erase(id);
+	//s_freedIds.push(id);
+	if (id < s_firstFreeId)
+		s_firstFreeId = id;
+	id = -1;
+}
+
+Figure::Figure() : transpose(this) {
+	Unmark();
+
 	Type = FigureType::Figure;
 	showColor = unmarkColor;
+	SetFirstFreeId();
 }
 
-std::string Figure::GetUniqueName() {
-	return UniqueName;
-}
 
 glm::mat4x4 Figure::GetModelMatrix()
 {
@@ -73,6 +103,7 @@ void Figure::SetShowColor(glm::vec4 newColor)
 Figure::~Figure()
 {
 	Delete();
+	FreeId();
 #ifdef _DEBUG
 	printf("\nDestroyed %s", name);
 #endif
@@ -83,13 +114,16 @@ void  Figure::Draw(GLFWwindow* window, const Camera& camera) {
 
 void  Figure::ActiveImGui() {
 	ImGui::Text(name);
+	ImGui::SameLine();
+	ImGui::Text(std::to_string(id).c_str());
 	if(editAbleName)
 		ImGui::InputText("Name", name, sizeof(name));
-	transpose->ActiveInterferes();
+	FigureSpecificImGui();
 }
 
 void Figure::FigureSpecificImGui()
 {
+	transpose->ActiveInterferes();
 }
 
 void Figure::RotationAlong(glm::vec3 axis, glm::vec3 rotationCenter, float angle)
@@ -132,7 +166,7 @@ void Figure::SetName(const char* newName) {
 	sprintf_s(name, newName);
 }
 
-void Figure::UnMark() {
+void Figure::Unmark() {
 	this->showColor = unmarkColor;
 }
 
@@ -155,6 +189,8 @@ bool Figure::AddContainer(FigureContainer* fc)
 bool Figure::EraseContainer(FigureContainer* fc)
 {
 	auto result = containIn.erase(fc);
+	if(result)
+		fc->Erase(this);
 	return result;
 }
 
@@ -169,6 +205,22 @@ void Figure::InformContainers()
 int Figure::NumberOfContainers()
 {
 	return containIn.size();;
+}
+
+bool Figure::Swap(std::shared_ptr<Figure> to)
+{
+	if (GetType() != to->GetType())
+		return false;
+	
+	while (containIn.size() > 0)
+	{
+		to->AddContainer((*containIn.begin()));
+		if (!(*containIn.begin())->Swap(this, to)) {
+			throw "Something go wrong during swap";
+		}
+	}
+	
+	return true;
 }
 
 bool Figure::SetObjectOwner(Figure* parent)
@@ -200,6 +252,43 @@ bool Figure::IsMyOwner(Figure* possibleOwner)
 bool Figure::IsOwner()
 {
 	return haveSubjects;
+}
+
+uint32_t Figure::GetId() const
+{
+	return id;
+}
+
+uint32_t Figure::GetFirstFreeId()
+{
+	return s_firstFreeId;
+}
+
+uint32_t Figure::LargestTakenId()
+{
+	return s_takenIds.empty()? 0 : *s_takenIds.rbegin();
+}
+
+bool Figure::SetId(uint32_t new_id)
+{
+	if (new_id == this->id)
+	{
+		return true;
+	}
+
+	auto searchResult = s_takenIds.find(new_id);
+
+	if (searchResult != s_takenIds.end())
+	{
+		return false;
+	}
+
+	s_takenIds.insert(new_id);
+	s_freedIds.push(this->id);
+
+	this->id = new_id;
+
+	return true;
 }
 
 

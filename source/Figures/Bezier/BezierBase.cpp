@@ -1,15 +1,15 @@
 #include "BezierBase.h"
 #include "Helper/OpenGLHelper.h"
 
-BezierBase::BezierBase( const char* name) : BezierBase( name, "##BezierBase", FigureType::CenterPoint)
+BezierBase::BezierBase( const char* name) : BezierBase( name, FigureType::CenterPoint)
 {}
 
 BezierBase::BezierBase() : BezierBase("BezierBase")
 {}
 
-BezierBase::BezierBase(const char* name, const char* uniqueName, FigureType type) : CenterPoint(name, uniqueName, type)
+BezierBase::BezierBase(const char* name, FigureType type) : CenterPoint(name, type)
 {
-	CreateBezier();
+	CreateBezierVAO();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
@@ -48,13 +48,13 @@ bool BezierBase::IsValid(Figure* figure) {
 
 void BezierBase::Update() {
 	CenterPoint::Update();
-	CreateBezier();
+	CreateBezierVAO();
 	somethingHasChange = false;
 }
 
 bool BezierBase::AddContainer(FigureContainer* fc)
 {
-	this->UnMark();
+	this->Unmark();
 	fc->Erase(this);
 	return fc->Add(*(FigureContainer*)this);
 }
@@ -63,7 +63,7 @@ void BezierBase::MarkFigure(Figure* f)
 {
 }
 
-void BezierBase::CreateBezier() {
+void BezierBase::CreateBezierVAO() {
 }
 
 void BezierBase::SelectedPoints()

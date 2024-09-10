@@ -135,12 +135,12 @@ bool Camera::handelKeyboardInput(GLFWwindow* window)
 		newPos += deltaTime * keyboardSpeed * glm::normalize(glm::cross(Orientation, Up));
 		updatePosition = true;
 	}
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 	{
 		newPos += deltaTime * keyboardSpeed * Up;
 		updatePosition = true;
 	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
 	{
 		newPos += deltaTime * keyboardSpeed * -Up;
 		updatePosition = true;

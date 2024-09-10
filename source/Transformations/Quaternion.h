@@ -18,6 +18,8 @@ public:
 	Quaternion virtual Invers() const;
 	glm::vec3 RotatePoint(glm::vec3 point) const;
 	Quaternion RotatedAlong(float angle, glm::vec3 axis) const;
+	glm::vec3 virtual GetEulerRadXYZ() const;
+
 
 	void SetRotationAlong(float angle, glm::vec3 axis);
 	glm::vec4 virtual GetAngleRepresentation();

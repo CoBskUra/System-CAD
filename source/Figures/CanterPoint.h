@@ -6,33 +6,55 @@
 #include "Transformations/QuaternionRotationImGui.h"
 
 class CenterPoint: public Point, public FigureContainer {
+
+	enum TypeOfRefrencePoint {
+		LocalMassCenter,
+		GlobalMassCenter,
+		CustomRefrencePoint
+	};
 protected:
-	CenterPoint(const char* name, const char* uniqueName, FigureType type):Point("##CenterPoint", type) {
+	CenterPoint(const char* name, FigureType type):Point( type) {
 		SetName(name);
 		mouseLastPosition = glm::vec2{ 0 };
 	}
 public:
-	CenterPoint(const char* name) : CenterPoint(name, "##CenterPoint", FigureType::CenterPoint){
+	CenterPoint(const char* name) : CenterPoint(name,  FigureType::CenterPoint){
 	}
 
-	CenterPoint() : CenterPoint("CenterPoint", "##CenterPoint", FigureType::CenterPoint){
+	CenterPoint() : CenterPoint("CenterPoint", FigureType::CenterPoint){
 	}
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera) {
+	void  Draw(GLFWwindow* window, const Camera& camera) override {
 		if (ContainerSize() > 0) {
 			Update();
 			Point::Draw(window, camera);
 		}
 	}
 
-	void virtual ActiveImGui() {
+	void  ActiveImGui()override {
 		ImGui::PushID("centerPoint");
 		ImGui::BeginGroup(); {
 			ImGui::Text("Control selected");
 			// translation
 			transpose->ActiveInterferes();
-			if (ImGui::Checkbox("Local change", &localReference))
+			if (ImGui::RadioButton("Local Mass Center", typeOfrefrencePoint == TypeOfRefrencePoint::LocalMassCenter))
+			{
+				typeOfrefrencePoint = LocalMassCenter;
 				ResetValues();
+			}
+			if (ImGui::RadioButton("Global Mass Center", typeOfrefrencePoint == TypeOfRefrencePoint::GlobalMassCenter)) {
+
+				typeOfrefrencePoint = GlobalMassCenter;
+				ResetValues();
+			}
+			if (ImGui::RadioButton("Custom Mass Center", typeOfrefrencePoint == TypeOfRefrencePoint::CustomRefrencePoint))
+			{
+				typeOfrefrencePoint = CustomRefrencePoint;
+				ResetValues();
+			}
+			if (typeOfrefrencePoint == TypeOfRefrencePoint::CustomRefrencePoint)
+				ImGui::DragFloat3("Custom refPoint", glm::value_ptr(customRefrencePoint));
+
 			RotationInterfers();
 			ScaleInterfers();
 			
@@ -41,7 +63,7 @@ public:
 		ImGui::PopID();
 	}
 
-	bool virtual Inputs(GLFWwindow* window, const Camera& camera) {
+	bool  Inputs(GLFWwindow* window, const Camera& camera) override {
 		ImGuiIO& io = ImGui::GetIO();
 
 		if (io.WantCaptureMouse)
@@ -82,7 +104,7 @@ public:
 		return false;
 	}
 
-	void virtual Update()
+	void  Update() override
 	{
 		if (somethingHasChange)
 		{
@@ -90,16 +112,13 @@ public:
 
 			if (valueAdded || valueErased) {
 				ResetValues();
-
-				valueAdded = false;
-				valueErased = false;
 			}
 
-			somethingHasChange = false;
+			FigureContainer::Update();
 		}
 	}
 protected:
-	void virtual SetObjectPosition(float x, float y, float z) {
+	void SetObjectPosition(float x, float y, float z)  override {
 		Transpose::SetObjectPosition(x, y, z);
 		if (transpose_last.GetPosition() != transpose->GetPosition()) {
 			std::set<Figure* >::iterator iter;
@@ -132,7 +151,7 @@ protected:
 	}
 
 	void RotationInterfers() {
-		if (localReference) {
+		if (typeOfrefrencePoint == LocalMassCenter) {
 			if (localQuaternion.ActiveInterferes()) {
 				for (auto iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
 				{
@@ -154,6 +173,7 @@ protected:
 		}
 	}
 
+
 private:
 	bool firstClick = true;
 	glm::vec2 mouseLastPosition;
@@ -163,7 +183,9 @@ private:
 
 	QuaternionRotationImGui globalQuaternion;
 	QuaternionRotationImGui globalQuaternion_last;
-	bool localReference = false;
+
+	TypeOfRefrencePoint typeOfrefrencePoint{GlobalMassCenter};
+	glm::vec3 customRefrencePoint{0,0,0};
 
 	Transpose transpose_last;
 
@@ -171,10 +193,14 @@ private:
 	glm::vec3 LastScaleVec{ 1.0f };
 
 	glm::vec3 ReferencePoint(const Figure& figure) {
-		if (localReference)
-			return figure.transpose->GetPosition();
-		else
-			return transpose->GetPosition();
+		switch (typeOfrefrencePoint)
+		{
+		case CenterPoint::LocalMassCenter: return figure.transpose->GetPosition();
+		case CenterPoint::GlobalMassCenter: return transpose->GetPosition();
+		case CenterPoint::CustomRefrencePoint: return customRefrencePoint;
+		default:
+			return {};
+		}
 	}
 
 	

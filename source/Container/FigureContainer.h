@@ -4,10 +4,10 @@
 class Figure;
 
 class FigureContainer
-{
+{// todo rewrite to use smartPointers
 protected:
 	std::vector<Figure*> orderdFigures;
-	std::set<Figure* > selectedFigures;
+	std::set<Figure*> selectedFigures;
 	bool somethingHasChange;
 	bool valueAdded;
 	bool valueErased;
@@ -21,12 +21,14 @@ public:
 	bool Erase(Figure* figure);
 	bool Contain(Figure* figure);
 	void Clear();
-	int ContainerSize();
+	int ContainerSize() const;
 	void SomethingHasChange();
 	bool IsSomethingChange();
 	void virtual MarkFigure(Figure* figure);
+	void virtual UnmarkFigure(Figure* figure);
 	void virtual Update();
-	Figure* At(int i);
+	bool virtual Swap(Figure* from, std::shared_ptr<Figure> to);
+	Figure* At(int i) const;
 
 	virtual ~FigureContainer();
 };

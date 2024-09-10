@@ -18,23 +18,23 @@
 
 class Figure_ControlSelected : public Figure, public FigureContainer {
 protected:
-	Figure_ControlSelected(Shader* shader, const char* name, const char* uniqueName, FigureType type) :Figure(shader, "##CenterPoint", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader, const char* name, FigureType type) :Figure(shader, FigureType::CenterPoint) {
 		SetName(name);
 		mouseLastPosition = glm::vec2{ 0 };
 	}
 public:
-	Figure_ControlSelected(Shader* shader, const char* name) : Figure_ControlSelected(shader, name, "##Figure_ControlSelected", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader, const char* name) : Figure_ControlSelected(shader, name,  FigureType::CenterPoint) {
 	}
 
-	Figure_ControlSelected(Shader* shader) : Figure_ControlSelected(shader, "Figure_ControlSelected", "##Figure_ControlSelected", FigureType::CenterPoint) {
+	Figure_ControlSelected(Shader* shader) : Figure_ControlSelected(shader, "Figure_ControlSelected",  FigureType::CenterPoint) {
 	}
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera) {
+	void Draw(GLFWwindow* window, const Camera& camera) override {
 		if(IsSomethingChange())
 			Update();
 	}
 
-	void virtual ActiveImGui() {
+	void ActiveImGui()  override {
 		ImGui::PushID("centerPoint");
 		ImGui::BeginGroup(); {
 			ImGui::Text("Control selected");
@@ -50,7 +50,7 @@ public:
 		ImGui::PopID();
 	}
 
-	bool virtual Inputs(GLFWwindow* window, const Camera& camera) {
+	bool Inputs(GLFWwindow* window, const Camera& camera) override {
 		ImGuiIO& io = ImGui::GetIO();
 
 		if (io.WantCaptureMouse)
@@ -91,7 +91,7 @@ public:
 		return false;
 	}
 
-	void virtual Update()
+	void Update() override
 	{
 		CalculateNewPosition();
 
@@ -106,7 +106,7 @@ public:
 	}
 
 protected:
-	void virtual SetObjectPosition(float x, float y, float z) {
+	void SetObjectPosition(float x, float y, float z) override {
 		Transpose::SetObjectPosition(x, y, z);
 		if (transpose_last.GetPosition() != transpose->GetPosition()) {
 			std::set<Figure* >::iterator iter;

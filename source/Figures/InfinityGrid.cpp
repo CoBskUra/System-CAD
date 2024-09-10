@@ -1,8 +1,8 @@
 #include "InfinityGrid.h"
 
-InfinityGrid::InfinityGrid(const char* name) : InfinityGrid("##InfinityGrid", FigureType::UnchangeObject)
+InfinityGrid::InfinityGrid(const char* name) : InfinityGrid( FigureType::UnchangeObject)
 {
-	CreateInfinityGrid();
+	CreateInfinityGridVAO();
 	SetName(name);
 }
 
@@ -12,27 +12,27 @@ InfinityGrid::InfinityGrid() : InfinityGrid("InfinityGrid")
 
 void InfinityGrid::Draw(GLFWwindow* window, const Camera& camera)
 {
-	infinityGridShader->Activate();
-	vaoInfinityGrid.Bind();
+	shader.Activate();
+	vao.Bind();
 	{
-		glUniformMatrix4fv(glGetUniformLocation(infinityGridShader->ID, "camMatrixInvers"),
+		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrixInvers"),
 			1, GL_FALSE, glm::value_ptr(camera.GetCameraMatrixInvers()));
-		camera.SaveMatrixToShader(infinityGridShader->ID);
-		glUniform1f(glGetUniformLocation(infinityGridShader->ID, "near"), camera.GetNearPlane());
-		glUniform1f(glGetUniformLocation(infinityGridShader->ID, "far"), camera.GetFarPlane());
+		camera.SaveMatrixToShader(shader.ID);
+		glUniform1f(glGetUniformLocation(shader.ID, "near"), camera.GetNearPlane());
+		glUniform1f(glGetUniformLocation(shader.ID, "far"), camera.GetFarPlane());
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 	}
-	vaoInfinityGrid.Unbind();
+	vao.Unbind();
 }
 
 bool InfinityGrid::Inputs(GLFWwindow* window, const Camera& camera) {
 	return false;
 }
 
-InfinityGrid::InfinityGrid(const char* uniqueName, FigureType type) : Figure(uniqueName, type) {
+InfinityGrid::InfinityGrid( FigureType type) : Figure( type) {
 }
 
-void InfinityGrid::CreateInfinityGrid()
+void InfinityGrid::CreateInfinityGridVAO()
 {
 	std::vector<float> infinityGrid{
 		1, 1, 0,
@@ -44,10 +44,10 @@ void InfinityGrid::CreateInfinityGrid()
 		1, -1, 0
 	};
 
-	vaoInfinityGrid.Bind();
+	vao.Bind();
 	VBO vboInfinityGrid(infinityGrid, GL_STATIC_DRAW);
 
-	vaoInfinityGrid.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+	vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
-	vaoInfinityGrid.Unbind(); vboInfinityGrid.Unbind();
+	vao.Unbind(); vboInfinityGrid.Unbind();
 }

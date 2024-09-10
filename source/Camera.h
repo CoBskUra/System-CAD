@@ -84,7 +84,7 @@ protected:
 	float lastFrame = 0.0f; 
 
 	float FOVRad = M_PI*0.5;
-	float ctg_FOVRad_0dot5 = 1 / tanf(M_PI * 0.25);
+	float ctg_FOVRad_0dot5 = 1.0f / tanf(M_PI * 0.25);
 
 	float nearPlane = 0.1f; 
 	float farPlane = 100; 

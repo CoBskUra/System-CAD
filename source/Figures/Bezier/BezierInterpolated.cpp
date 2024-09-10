@@ -1,12 +1,36 @@
 #include "BezierInterpolated.h"
 
-BezierInterpolated::BezierInterpolated(const char* name) :BezierInterpolated( name, "##BezierInterpolated", FigureType::BezierInterpolated)
+BezierInterpolated::BezierInterpolated(const char* name) :BezierInterpolated( name,  FigureType::BezierInterpolated)
 {
 	//innerBezierC2.showVirtualPoints = false;
 }
 
 BezierInterpolated::BezierInterpolated():BezierInterpolated( "BezierInterpolated")
 {
+}
+
+BezierInterpolated::BezierInterpolated(MG1::InterpolatedC2 b0, const Scene* scene, int idOffset) :BezierInterpolated() {
+	for (auto refPoint : b0.controlPoints) {
+		uint32_t id = refPoint.GetId() + idOffset;
+		this->Add(scene->byID(id).get());
+	}
+	if (b0.name != "")
+		this->SetName(b0.name.c_str());
+	this->SetId(b0.GetId() + idOffset);
+}
+
+MG1::InterpolatedC2 BezierInterpolated::Serialize(int idOffset) const
+{
+	MG1::InterpolatedC2 bezier{};
+	bezier.SetId(GetId() - idOffset);
+	bezier.name = name;
+	for (int i = 0; i < ContainerSize(); i++)
+	{
+		MG1::PointRef p{ At(i)->GetId() - idOffset };
+
+		bezier.controlPoints.push_back(p);
+	}
+	return bezier;
 }
 
 void BezierInterpolated::Draw(GLFWwindow* window, const Camera& camera)
@@ -21,8 +45,8 @@ void BezierInterpolated::Draw(GLFWwindow* window, const Camera& camera)
 	}*/
 }
 
-BezierInterpolated::BezierInterpolated(const char* name, const char* uniqueName, FigureType type) :
-	BezierBase(name, uniqueName, type)
+BezierInterpolated::BezierInterpolated(const char* name, FigureType type) :
+	BezierBase(name, type)
 {
 }
 

@@ -2,6 +2,9 @@
 
 bool FigureContainer::IsValid(Figure* figure)
 {
+	auto figureContainer = dynamic_cast<FigureContainer*>(figure);
+	if (figureContainer != nullptr && figureContainer == this)
+		return false;
 	return true;
 }
 
@@ -9,7 +12,7 @@ bool FigureContainer::Add(Figure* figure) {
 	if (!IsValid(figure))
 		return false;
 
-	auto pair = selectedFigures.insert(figure );
+	auto pair = selectedFigures.insert(figure);
 	MarkFigure(figure);
 	if (pair.second) {
 		orderdFigures.push_back(figure);
@@ -38,7 +41,7 @@ bool FigureContainer::Add(const FigureContainer& figureCoatiner)
 
 bool FigureContainer:: Erase(Figure* figure) {
 	bool erased = selectedFigures.erase(figure);
-	figure->UnMark();
+	UnmarkFigure(figure);
 	if (erased) {
 		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) {
 			if (figure == *iter) {
@@ -63,7 +66,7 @@ void FigureContainer::Clear()
 	{
 		auto figure = *selectedFigures.begin();
 		selectedFigures.erase(selectedFigures.begin());
-		figure->UnMark();
+		UnmarkFigure(figure);
 		figure->EraseContainer(this);
 	}
 	SomethingHasChange();
@@ -73,7 +76,7 @@ void FigureContainer::Clear()
 	orderdFigures.clear();
 }
 
-int FigureContainer::ContainerSize()
+int FigureContainer::ContainerSize() const
 {
 	return selectedFigures.size();
 }
@@ -93,11 +96,51 @@ void FigureContainer::MarkFigure(Figure* figure)
 {
 }
 
-void FigureContainer::Update()
+void FigureContainer::UnmarkFigure(Figure* figure)
 {
+	figure->Unmark();
 }
 
-Figure* FigureContainer::At(int i)
+void FigureContainer::Update()
+{
+	valueErased = valueAdded = somethingHasChange = false;
+}
+
+bool FigureContainer::Swap(Figure* from, std::shared_ptr<Figure> to)
+{
+	if (from->GetType() != to->GetType())
+		return false;
+
+	if (!Contain(from))
+		return false;
+
+	from->Unmark();
+	to->Mark();
+	if (!Contain(to.get()))
+	{
+		for (auto iter = orderdFigures.begin(); iter != orderdFigures.end(); iter++) {
+			if (from == *iter) {
+				(*iter) = to.get();
+				break;
+			}
+		}
+	}
+	else
+	{
+		Erase(from);
+	}
+
+	selectedFigures.erase(from);
+	selectedFigures.insert(to.get());
+
+	from->EraseContainer(this);
+	SomethingHasChange();
+	valueErased = true;
+	valueAdded = true;
+	return true;
+}
+
+Figure* FigureContainer::At(int i) const
 {
 	return orderdFigures.at(i);
 }

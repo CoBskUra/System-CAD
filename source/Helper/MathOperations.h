@@ -17,9 +17,9 @@ public:
 		float s = sinf(rad);
 		float c = cosf(rad);
 		float t = 1 - c;
-		
+
 		glm::mat4x4 R{ 1.0f };
-		R[0][0] = t*axis.x*axis.x + c;
+		R[0][0] = t * axis.x * axis.x + c;
 		R[1][1] = t * axis.y * axis.y + c;
 		R[2][2] = t * axis.z * axis.z + c;
 		R[3][3] = 1.0f;
@@ -37,7 +37,7 @@ public:
 
 	static void InversThreeDiagonalMatrix(const int n, glm::vec3* x,
 		float* a, float* b,
-		float* c, glm::vec3 *scratch) {
+		float* c, glm::vec3* scratch) {
 		/*
 		 solves Ax = d, where A is a tridiagonal matrix consisting of vectors a, b, c
 		 X = number of equations
@@ -48,7 +48,7 @@ public:
 		 scratch[] = scratch space of length X, provided by caller, allowing a, b, c to be const
 		 not performed in this example: manual expensive common subexpression elimination
 		 */
-		scratch[0] = glm::vec3{ 1, 1, 1 } * (c[0] / b[0]);
+		scratch[0] = glm::vec3{ 1, 1, 1 } *(c[0] / b[0]);
 		x[0] = x[0] / b[0];
 
 		/* loop from 1 to X - 1 inclusive */
@@ -62,5 +62,30 @@ public:
 		/* loop from X - 2 to 0 inclusive */
 		for (int ix = n - 2; ix >= 0; ix--)
 			x[ix] -= scratch[ix] * x[ix + 1];
+	}
+
+	static std::vector<glm::vec3> BezierSubDivide(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3)
+	{
+		std::vector<glm::vec3> result{ 7 };
+		result[0] = p0;
+		result[6] = p3;
+
+		p0 = p0 * (1 - t) + t * p1;
+		p1 = p1 * (1 - t) + t * p2;
+		p2 = p2 * (1 - t) + t * p3;
+
+		result[1] = p0;
+		result[5] = p2;
+
+		p0 = p0 * (1 - t) + t * p1;
+		p1 = p1 * (1 - t) + t * p2;
+
+		result[2] = p0;
+		result[4] = p1;
+
+		p0 = p0 * (1 - t) + t * p1;
+		result[3] = p0;
+
+		return result;
 	}
 };

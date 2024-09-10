@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <vector>
+#include "Models/Curves/Bezier.h"
 
 class BezierBase : public CenterPoint {
 public:
@@ -17,6 +18,19 @@ public:
 
 	BezierBase( const char* name);
 	BezierBase();
+	MG1::Bezier Serialize(int idOffset) const
+	{
+		MG1::Bezier bezier{};
+		bezier.SetId(GetId());
+		bezier.name = name;
+		for (int i = 0; i < ContainerSize(); i++)
+		{
+			MG1::PointRef p{ At(i)->GetId() - idOffset };
+
+			bezier.controlPoints.push_back(p);
+		}
+		return bezier;
+	}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 	void virtual ActiveImGui();
@@ -29,8 +43,9 @@ public:
 
 	void virtual ChangeShowBezierCurve();
 	void virtual ChangeShowBezierPol();
+	glm::ivec3 Size();
 protected:
-	BezierBase(const char* name, const char* uniqueName, FigureType type);
-	void virtual CreateBezier();
+	BezierBase(const char* name, FigureType type);
+	void virtual CreateBezierVAO();
 	void SelectedPoints();
 };

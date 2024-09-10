@@ -19,20 +19,18 @@ int main()
 		return -1;
 
 	//// infinity Grid
-	/*VAO vaoInfinityGrid;
-	vaoInfinityGrid.Bind();
+	/*VAO vao;
+	vao.Bind();
 	VBO vboInfinityGrid(infinityGrid, GL_STATIC_DRAW);
 
-	vaoInfinityGrid.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+	vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
-	vaoInfinityGrid.Unbind(); vboInfinityGrid.Unbind();
-	Shader infinityGridShader("infinityGrid_vert.glsl", "infinityGrid_frag.glsl");*/
+	vao.Unbind(); vboInfinityGrid.Unbind();
+	Shader shader("infinityGrid_vert.glsl", "infinityGrid_frag.glsl");*/
 
 	//InfinityGrid ig;
 	////////////////////////////////
 	Manager manader(&camera, window);
-	MG1::SceneSerializer sceneSerializer;
-	MG1::Scene sceneFromFile = sceneSerializer.LoadScene("D:/fast_acess/Studia/MINI CAD-CAM/Modelowanie Geometryczne I/projekt/MG1_projekt/Scene-Serializer/cpp/Serializer/Sandbox/file_example.json");
 
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
@@ -54,7 +52,7 @@ int main()
 
 		manader.MenuInterferes();
 		manader.Draw();
-		manader.ProcesInput();
+		manader.ProcessInput();
 
 	/*	camera.Inputs(window);
 		camera.ActiveInterferes();*/

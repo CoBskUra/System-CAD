@@ -4,7 +4,7 @@
 
 class Cursor : public Figure {
 public:
-	Cursor(const char* name) : Figure("##Cursor", FigureType::Cursor)
+	Cursor(const char* name) : Figure(FigureType::Cursor)
 	{
 		SetUnmarkColor( glm::vec4(0.8, 0.8, 0.8, 0.6));
 		CreatePoint();
@@ -16,12 +16,12 @@ public:
 	{}
 
 	void virtual Draw(GLFWwindow* window, const Camera& camera) {
-		cursorShader->Activate();
+		shader.Activate();
 		vaoCursor.Bind();
 
-		glUniformMatrix4fv(glGetUniformLocation(cursorShader->ID, "MODEL_MATRIX"),
+		glUniformMatrix4fv(glGetUniformLocation(shader.ID, "MODEL_MATRIX"),
 			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		camera.SaveMatrixToShader(cursorShader->ID);
+		camera.SaveMatrixToShader(shader.ID);
 		glDrawArrays(GL_LINES, 0, 12);
 		vaoCursor.Unbind();
 	}
@@ -57,7 +57,7 @@ public:
 
 
 private:
-	Shader* cursorShader = StaticShaders::GetPointerToCursor();
+	const Shader& shader = StaticShaders::GetCursor();
 	VAO vaoCursor;
 	const float length = 0.25f;
 	void CreatePoint() {

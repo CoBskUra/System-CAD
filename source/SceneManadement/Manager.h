@@ -3,6 +3,7 @@
 #include "SceneManadement/Scene.h"
 #include "ShaderManadement/Shader.h"
 #include "imgui.h"
+#include "Helper/ImGuiExtenstions/imfilebrowser.h"
 #include "Helper/OpenGLHelper.h"
 #include "Camera.h"
 #include "ShaderRefrence/StaticShaders.h"
@@ -19,11 +20,17 @@
 #include "Figures/Bezier/BezierC0.h"
 #include "Figures/Bezier/BezierC2.h"
 #include "Figures/Bezier/BezierInterpolated.h"
-#include "Figures/Bezier/BezierSurfaceC0.h"
-#include "Figures/Bezier/BezierSurfaceC2.h"
+#include "Figures/Bezier/Surface/BezierSurfaceC0.h"
+#include "Figures/Bezier/Surface/BezierSurfaceC2.h"
+#include "SceneManadement/SceneSerializer.h"
+#include <Figures/FigureFunctions/MergePoints.h>
+#include "Figures/GregoryPatch.h"
 
 class Manager {
-	Scene scene;
+	ImGui::FileBrowser fileDialog;
+	char pathSource[200]{ "" };
+	char pathDestination[200]{ "" };
+	std::unique_ptr<Scene> sher_ptrScene = std::make_unique<Scene>();
 	Camera* currentCamera;
 
 	Camera* mainCamera;
@@ -34,7 +41,7 @@ class Manager {
 
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
-	glm::vec2 mouseLastPosition;
+	glm::vec2 mouseLastPosition{};
 
 	StereoscopicView stereoscopicView;
 
@@ -42,14 +49,21 @@ class Manager {
 	int TheClosetFigureToMouse(FigureType figureType);
 	
 	void CreateFiguresInterfers();
-	void SelectableList();
+	FigureType FigureFilter();
+	void SelectableList(FigureType figureType = FigureType::Any);
 
-	void Select(int i);
+	void SelectUnselect(int i);
+	void LoadScene();
+	void SaveScene();
+	bool UnselectAllShortCut();
+	bool MergeFigures();
+	void ClearScene();
+
 public:
 	Manager(Camera* camera, GLFWwindow* window);
 	void MenuInterferes();
 	void Draw();
-	void ProcesInput();
+	void ProcessInput();
 
 	~Manager();
 };
