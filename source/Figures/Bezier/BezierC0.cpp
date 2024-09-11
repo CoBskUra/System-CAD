@@ -34,7 +34,7 @@ MG1::BezierC0 BezierC0::Serialize(int idOffset) const
 
 BezierC0::BezierC0(const char* name, FigureType type) : BezierBase( name, type)
 {
-	CreateBezier();
+	CreateBezierVAO();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
@@ -108,7 +108,7 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 	}
 }
 
-void BezierC0::CreateBezier() {
+void BezierC0::CreateBezierVAO() {
 	vao_bezier3D.Reactive();
 	vao_bezier2D.Reactive();
 	bezier2D_on = false;

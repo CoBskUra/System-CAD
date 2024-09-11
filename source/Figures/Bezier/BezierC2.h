@@ -26,13 +26,13 @@ public:
 
 	virtual ~BezierC2();
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera);
-	void virtual ActiveImGui();
-	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
+	void Draw(GLFWwindow* window, const Camera& camera)  override;
+	void ActiveImGui() override;
+	bool Inputs(GLFWwindow* window, const Camera& camera) override;
 
-	void virtual CreateBezier();
-	void virtual ChangeShowBezierCurve();
-	void virtual ChangeShowBezierPol();
+	void CreateBezierVAO() override;
+	void ChangeShowBezierCurve() override;
+	void ChangeShowBezierPol() override;
 
 protected:
 	BezierC2( const char* name,  FigureType type);

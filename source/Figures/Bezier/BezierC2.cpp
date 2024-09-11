@@ -99,7 +99,7 @@ void BezierC2::ChangeShowBezierPol()
 	innerBezierC0.ChangeShowBezierPol();
 }
 
-void BezierC2::CreateBezier()
+void BezierC2::CreateBezierVAO()
 {
 	innerBezierC0.Clear();
 	virtualPointsNumber = 0;

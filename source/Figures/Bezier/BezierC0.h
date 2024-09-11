@@ -34,5 +34,5 @@ public:
 	void virtual Draw(GLFWwindow* window, const Camera& camera);
 protected:
 	BezierC0(const char* name, FigureType type);
-	void virtual CreateBezier();
+	void CreateBezierVAO() override;
 };

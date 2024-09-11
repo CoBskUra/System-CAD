@@ -51,7 +51,7 @@ BezierInterpolated::BezierInterpolated(const char* name, FigureType type) :
 }
 
 
-void BezierInterpolated::CreateBezier()
+void BezierInterpolated::CreateBezierVAO()
 {
 	innerBezierC0.Clear();
 	virtualPointsNumber = 0;

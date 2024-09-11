@@ -15,10 +15,10 @@ public:
 	BezierInterpolated(MG1::InterpolatedC2 b0, const Scene* scene, int idOffset = 0);
 	MG1::InterpolatedC2 Serialize(int idOffset) const;
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera);
+	void Draw(GLFWwindow* window, const Camera& camera) override;
 
-	void virtual CreateBezier();
-	void virtual ChangeShowBezierCurve();
+	void CreateBezierVAO() override;
+	void ChangeShowBezierCurve() override;
 
 protected:
 	BezierInterpolated(const char* name, FigureType type);
