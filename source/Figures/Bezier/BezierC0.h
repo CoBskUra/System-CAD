@@ -1,5 +1,5 @@
 #pragma once
-#include "BezierBase.h"
+#include "BezierCurve.h"
 #include "Container/FigureContainer.h"
 
 #include <glad/glad.h>
@@ -13,7 +13,7 @@
 #include "Models/Curves/BezierC0.h"
 #include "SceneManadement/Scene.h"
 
-class BezierC0 : public BezierBase {
+class BezierC0 : public BezierCurve {
 	const Shader& lineDrawingShader = StaticShaders::GetBezierCurve();
 	int numberOfVertexes = 0;
 protected:
@@ -31,8 +31,12 @@ public:
 	BezierC0(MG1::BezierC0 b0, const Scene* scene, int idOffset = 0);
 	MG1::BezierC0 Serialize(int idOffset = 0) const;
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera);
+	glm::vec3 Derivative(float t) override;
+	glm::vec3 PositionOnCurve(float t) override;
+	void Draw(GLFWwindow* window, const Camera& camera) override;
 protected:
 	BezierC0(const char* name, FigureType type);
 	void CreateBezierVAO() override;
+	int NumberOfSegments();
+	std::vector<Figure*> ControlPointsInSegment(int segmentId);
 };

@@ -88,4 +88,47 @@ public:
 
 		return result;
 	}
+
+	static glm::vec3 Bezier3D(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
+		p0 = p0 * (1 - t) + t * p1;
+		p1 = p1 * (1 - t) + t * p2;
+		p2 = p2 * (1 - t) + t * p3;
+
+		p0 = p0 * (1 - t) + t * p1;
+		p1 = p1 * (1 - t) + t * p2;
+
+		p0 = p0 * (1 - t) + t * p1;
+
+		return p0;
+	}
+
+	static glm::vec3 Bezier2D(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2) {
+		p0 = p0 * (1 - t) + t * p1;
+		p1 = p1 * (1 - t) + t * p2;
+
+		p0 = p0 * (1 - t) + t * p1;
+
+		return p0;
+	}
+
+	static glm::vec3 BezierND(float t, std::vector<glm::vec3> ps) {
+		for (int i = ps.size() - 1; i >= 0; i--) {
+			for (int j = 0; j < i; j++) {
+				ps[j] = ps[j] * (1 - t) + t * ps[j + 1];
+			}
+		}
+		if (ps.size() == 0)
+			return { 0, 0, 0 };
+
+		return ps[0];
+	}
+
+	static glm::vec3 BezierNDerivative(float t, std::vector<glm::vec3> ps) {
+		for (int i = 0; i < ps.size() - 1; i++) {
+			ps[i] = 3.0f * (ps[i] - ps[i + 1]);
+		}
+		ps.erase(std::next(ps.end(), -1));
+
+		return BezierND(t, ps);
+	}
 };

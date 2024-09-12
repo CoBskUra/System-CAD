@@ -90,13 +90,22 @@ bool BezierC2::Inputs(GLFWwindow* window, const Camera& camera)
 	return any;
 }
 
-BezierC2::BezierC2(const char* name,  FigureType type)
-	:BezierBase(name, type)
+BezierC2::BezierC2(const char* name,  FigureType type): BezierCurve(name, type)
 {}
 
 void BezierC2::ChangeShowBezierPol()
 {
 	innerBezierC0.ChangeShowBezierPol();
+}
+
+glm::vec3 BezierC2::Derivative(float t)
+{
+	return innerBezierC0.Derivative(t);
+}
+
+glm::vec3 BezierC2::PositionOnCurve(float t)
+{
+	return innerBezierC0.PositionOnCurve(t);
 }
 
 void BezierC2::CreateBezierVAO()

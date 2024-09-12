@@ -23,6 +23,8 @@ public:
 			break;
 		}
 	}
+
+	bool canAdd = false;
 protected:
 
 
@@ -66,6 +68,7 @@ public:
 	virtual glm::vec3 DerivativeU(int patchV, int pathH, float v, float u) = 0;
 	virtual glm::vec3 DerivativeVU(int patchV, int pathH, float v, float u) = 0;
 
+	bool IsValid(Figure* figure) override;
 	glm::ivec2 SurfaceSize();
 	virtual Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2) const = 0;
 	virtual int TakeId(int verticalID, int horizontalID, int k1, int k2) const = 0;

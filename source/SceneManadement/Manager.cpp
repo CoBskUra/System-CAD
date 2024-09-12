@@ -34,7 +34,9 @@ void Manager::MenuInterferes()
 		if (ImGui::Button("ClearScene")) {
 			ClearScene();
 		}
+
 		SaveScene();
+		TransformSurfaceUsingCurve();
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
@@ -64,6 +66,7 @@ void Manager::MenuInterferes()
 	ImGui::Begin("Camera Control");
 	currentCamera->ActiveInterferes();
 	ImGui::End();
+	ImGui::ShowDemoWindow();
 }
 
 void Manager::Draw()
@@ -336,6 +339,13 @@ bool Manager::MergeFigures()
 void Manager::ClearScene()
 {
 	sher_ptrScene->DeleteAll();
+}
+
+void Manager::TransformSurfaceUsingCurve()
+{
+	if(ImGui::Button("Transform surface with curve##Manager"))
+		transformSurface.open = true;
+	transformSurface.CreateMyWindow(sher_ptrScene.get());
 }
 
 void Manager::ProcessInput()

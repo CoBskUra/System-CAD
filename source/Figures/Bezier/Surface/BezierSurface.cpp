@@ -32,6 +32,8 @@ bool BezierSurface::CreationWindowInterfers(glm::ivec2 appWindowSize)
 	if (!openWindow)
 		return false;
 
+	canAdd = true;
+
 	bool receivedInput = false;
 	ImGui::SetNextWindowFocus();
 	ImGui::SetNextWindowSize(ImVec2(300, 400));
@@ -103,6 +105,7 @@ bool BezierSurface::CreationWindowInterfers(glm::ivec2 appWindowSize)
 	ImGui::End();
 	ImGui::PopID();
 
+	canAdd = false;
 	return receivedInput;
 }
 
@@ -165,6 +168,7 @@ void BezierSurface::CreateBezierVAO()
 	std::vector<GLuint> ies{};
 
 
+	canAdd = true;
 
 	if (openWindow) {
 		ResizeControlPoints();
@@ -255,6 +259,9 @@ void BezierSurface::CreateBezierVAO()
 		vao_curve.Unbind(); vbo.Unbind(); ebo.Unbind();
 	}
 	numberOfIndes = ies.size();
+
+
+	canAdd = false;
 }
 
 void BezierSurface::ActiveImGui()
@@ -368,8 +375,12 @@ glm::vec3 BezierSurface::GeneratePosForVertexInPatch(int verticalID, int horizon
 
 bool BezierSurface::Swap(Figure* from, std::shared_ptr<Figure>  to)
 {
+	canAdd = true;
 	if (!FigureContainer::Swap(from, to))
+	{
+		canAdd = false;
 		return false;
+	}
 
 	for (int i = 0; i < controlPoints.size(); i++) {
 		if (from == controlPoints[i].get())
@@ -378,7 +389,13 @@ bool BezierSurface::Swap(Figure* from, std::shared_ptr<Figure>  to)
 		}
 	}
 	SomethingHasChange();
+	canAdd = false;
 	return true;
+}
+
+bool BezierSurface::IsValid(Figure* figure)
+{
+	return canAdd && BezierBase::IsValid(figure);
 }
 
 glm::ivec2 BezierSurface::SurfaceSize()

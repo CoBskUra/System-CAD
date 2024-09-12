@@ -45,8 +45,7 @@ void BezierInterpolated::Draw(GLFWwindow* window, const Camera& camera)
 	}*/
 }
 
-BezierInterpolated::BezierInterpolated(const char* name, FigureType type) :
-	BezierBase(name, type)
+BezierInterpolated::BezierInterpolated(const char* name, FigureType type) :BezierCurve(name, type)
 {
 }
 
@@ -87,13 +86,13 @@ void BezierInterpolated::CreateBezierVAO()
 	if (interpolatedPoints.size() == 2) {
 
 		glm::vec3 next_a = At(0)->transpose->GetPosition();
-		glm::vec3 next_b = { 0, 0, 0 };
-		glm::vec3 next_c = { 0, 0, 0 };
 		glm::vec3 next_d = At(1)->transpose->GetPosition();
+		glm::vec3 next_b = (next_a + next_d) / 3.0f;;
+		glm::vec3 next_c = 2.0f * (next_a + next_d) / 3.0f;;
 
 		AddPoint(innerBezierC0, next_a);
-		AddPoint(innerBezierC0, next_a);
-		AddPoint(innerBezierC0, next_a);
+		AddPoint(innerBezierC0, next_b);
+		AddPoint(innerBezierC0, next_c);
 		AddPoint(innerBezierC0, next_d);
 	}
 	else {
@@ -169,6 +168,16 @@ void BezierInterpolated::ChangeShowBezierCurve()
 {
 	BezierBase::ChangeShowBezierCurve();
 	innerBezierC0.ChangeShowBezierCurve();
+}
+
+glm::vec3 BezierInterpolated::Derivative(float t)
+{
+	return innerBezierC0.Derivative(t);
+}
+
+glm::vec3 BezierInterpolated::PositionOnCurve(float t)
+{
+	return innerBezierC0.PositionOnCurve(t);
 }
 
 void BezierInterpolated::ChangeShowBezierPol()

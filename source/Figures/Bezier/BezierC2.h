@@ -1,5 +1,5 @@
 #pragma once
-#include "BezierBase.h"
+#include "BezierCurve.h"
 #include "BezierC0.h"
 #include "Figures/CanterPoint.h"
 #include "Figures/VirtualPoint.h"
@@ -7,7 +7,7 @@
 #include "Models/Curves/BezierC2.h"
 #include "SceneManadement/Scene.h"
 
-class BezierC2: public BezierBase
+class BezierC2: public BezierCurve
 {
 	BezierC0 innerBezierC0;
 	std::vector<VirtualPoint*> virtualPoints;
@@ -34,6 +34,8 @@ public:
 	void ChangeShowBezierCurve() override;
 	void ChangeShowBezierPol() override;
 
+	glm::vec3 Derivative(float t) override;
+	glm::vec3 PositionOnCurve(float t) override;
 protected:
 	BezierC2( const char* name,  FigureType type);
 };
