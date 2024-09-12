@@ -25,6 +25,7 @@
 #include "SceneManadement/SceneSerializer.h"
 #include <Figures/FigureFunctions/MergePoints.h>
 #include "Figures/GregoryPatch.h"
+#include "TransformSurfaceWindow.h"
 
 class Manager {
 	ImGui::FileBrowser fileDialog;
@@ -38,6 +39,8 @@ class Manager {
 	CenterPoint centerPoint;
 	Cursor cursor;
 	InfinityGrid infinityGrid;
+
+	TransformSurfaceWindow transformSurface;
 
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
@@ -58,6 +61,7 @@ class Manager {
 	bool UnselectAllShortCut();
 	bool MergeFigures();
 	void ClearScene();
+	void TransformSurfaceUsingCurve();
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);

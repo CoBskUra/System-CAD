@@ -1,10 +1,10 @@
 #pragma once
-#include "BezierBase.h"
+#include "BezierCurve.h"
 #include "BezierC2.h"
 #include "Models/Curves/InterpolatedC2.h"
 #include "SceneManadement/Scene.h"
 
-class BezierInterpolated: public BezierBase
+class BezierInterpolated: public BezierCurve
 {
 	std::vector<VirtualPoint*> virtualPoints;
 	int virtualPointsNumber = 0;
@@ -20,6 +20,8 @@ public:
 	void CreateBezierVAO() override;
 	void ChangeShowBezierCurve() override;
 
+	glm::vec3 Derivative(float t) override;
+	glm::vec3 PositionOnCurve(float t) override;
 protected:
 	BezierInterpolated(const char* name, FigureType type);
 	void virtual ChangeShowBezierPol();

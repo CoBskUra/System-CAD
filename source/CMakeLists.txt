@@ -11,7 +11,7 @@ add_executable (MG1_projekt "Main.cpp" "Main.h" "Camera.cpp" "Camera.h"  "Consta
  "Helper/MathOperations.h"  "Helper/OpenGLHelper.h" "Helper/ImGuiExtenstions/imfilebrowser.h"
   "Transformations/Quaternion.cpp" "Transformations/Transpose.cpp" "Transformations/Transpose.h" "Transformations/TransposeImGui.h" "Transformations/Quaternion.h" "Transformations/QuaternionRotationImGui.cpp" "Transformations/QuaternionRotationImGui.h"
   "Transformations/Rotation.cpp" "Transformations/Rotation.h" "Transformations/RotationImGui.h" "Transformations/Scale.cpp" "Transformations/Scale.h" "Transformations/ScaleImGui.h"
-    "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp"  "Figures/FigureFunctions/MergePoints.h" "Figures/FigureFunctions/MergePoints.cpp" "Figures/GregoryPatch.h" "Figures/GregoryPatch.cpp")
+    "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp"  "Figures/FigureFunctions/MergePoints.h" "Figures/FigureFunctions/MergePoints.cpp" "Figures/GregoryPatch.h" "Figures/GregoryPatch.cpp" "Figures/Bezier/BezierCurve.h" "Figures/Bezier/BezierCurve.cpp" "Figures/FigureFunctions/TransformSurfercUsingCurve.h" "SceneManadement/TransformSurfaceWindow.h")
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(

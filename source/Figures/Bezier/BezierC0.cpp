@@ -32,10 +32,46 @@ MG1::BezierC0 BezierC0::Serialize(int idOffset) const
 }
 
 
-BezierC0::BezierC0(const char* name, FigureType type) : BezierBase( name, type)
+BezierC0::BezierC0(const char* name, FigureType type) : BezierCurve( name, type)
 {
 	CreateBezierVAO();
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
+}
+
+glm::vec3 BezierC0::Derivative(float t)
+{
+	int segmentId = (int)(NumberOfSegments() * t);
+	if (segmentId == NumberOfSegments())
+		segmentId = segmentId - 1;
+	float newT = ((float)NumberOfSegments()) * t - segmentId;
+
+	std::vector<Figure*> points = ControlPointsInSegment(segmentId);
+	std::vector<glm::vec3> pos;
+	pos.reserve(points.size());
+
+	for (auto figure : points) {
+		pos.push_back(figure->transpose->GetPosition());
+	}
+
+	return MathOperations::BezierNDerivative(newT, pos);
+}
+
+glm::vec3 BezierC0::PositionOnCurve(float t)
+{
+	int segmentId = (int)(NumberOfSegments() * t);
+	if (segmentId == NumberOfSegments())
+		segmentId = segmentId - 1;
+	float newT = ((float)NumberOfSegments()) * t - segmentId;
+
+	std::vector<Figure*> points = ControlPointsInSegment(segmentId);
+	std::vector<glm::vec3> pos;
+	pos.reserve(points.size());
+
+	for (auto figure : points) {
+		pos.push_back(figure->transpose->GetPosition());
+	}
+
+	return MathOperations::BezierND(newT, pos);
 }
 
 void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
@@ -172,4 +208,32 @@ void BezierC0::CreateBezierVAO() {
 	vao_bezier3D.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
 
 	vao_bezier3D.Unbind(); vbo.Unbind();
+}
+
+int BezierC0::NumberOfSegments()
+{
+	if (ContainerSize() < 4)
+	{
+		return 1;
+	}
+
+
+	return 1 + (ContainerSize() - 4) / 3  + ((ContainerSize() - 4) % 3 != 0);
+}
+
+std::vector<Figure*> BezierC0::ControlPointsInSegment(int segmentId)
+{
+	const int numberOfSegments = NumberOfSegments();
+	if(numberOfSegments <= segmentId)
+		throw std::out_of_range("Bad idx passed to At()");
+
+	std::vector<Figure*> points;
+	int start = segmentId * 3;
+	int i = 0;
+	for (start; start < ContainerSize() && i < 4; start++, i++) {
+		points.push_back(At(start));
+	}
+
+
+	return points;
 }
