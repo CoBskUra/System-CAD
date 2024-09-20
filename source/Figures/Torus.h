@@ -10,94 +10,38 @@
 #include "Figures/Figure3D.h"
 #include "ShaderRefrence/StaticShaders.h"
 #include "Models/Torus.h"
+#include "Intersection/IntersectionAble.h"
+#include "Helper/OpenGLHelper.h"
 
-class Torus: public Figure3D
+class Torus: public Figure3D, public IntersectionAble
 {
 public:
-	Torus( const char* name) : Figure3D( FigureType::Torus)
-	{
-		CreateTorus();
-		SetName(name);
-	}
+	Torus(const char* name);
 
-	Torus(): Torus("Torus")
-	{
-	}
+	Torus();
 
-	Torus(MG1::Torus tori, int offsetId):Torus() {
-		this->transpose->SetObjectPosition(tori.position.x, tori.position.y, tori.position.z);
-		Rotation rotation{};
-		rotation.SetRotation_X(tori.rotation.x * M_PI / 180.0);
-		rotation.SetRotation_Y(tori.rotation.y * M_PI / 180.0);
-		rotation.SetRotation_Z(tori.rotation.z * M_PI / 180.0);
-		this->scale.SetScale(tori.scale.x, tori.scale.y, tori.scale.z);
-		this->quaternion.SetMainQuaternion((Quaternion)rotation.Get_R());
-		if (tori.name != "")
-			this->SetName(tori.name.c_str());
-		this->SetId(tori.GetId() + offsetId);
-	}
-
-	MG1::Torus Serialize(int idOffset) const {
-		MG1::Torus tori{};
-		tori.SetId(GetId() - idOffset);
-		tori.name = name;
-		tori.position.x = GetPosition().x;
-		tori.position.y = GetPosition().y;
-		tori.position.z = GetPosition().z;
-		auto angles = quaternion.GetEulerRadXYZ();
-		tori.rotation.x = (angles.x / M_PI * 180.0);
-		tori.rotation.y = (angles.y / M_PI * 180.0);
-		tori.rotation.z = (angles.z / M_PI * 180.0);
-		glm::vec3 scale = this->scale.GetScaleVec();
-		tori.scale.x = scale.x;
-		tori.scale.y = scale.y;
-		tori.scale.z = scale.z;
-		return tori;
-	}
+	Torus(MG1::Torus tori, int offsetId);
+	MG1::Torus Serialize(int idOffset) const;
 
 
-	void  Draw(GLFWwindow* window, const Camera& camera)  override {
-		torusShader.Activate();
-		vao_torus.Bind();
+	void  Draw(GLFWwindow* window, const Camera& camera)  override;
+	//void  ActiveImGui() override;
+	void  FigureSpecificImGui() override;
 
-		auto showColor = GetShowColor();
+	inline glm::vec3 TorusLocalParametryzation(float v, float u);
+	glm::vec3 Parametrization(float v, float u) override;
+	glm::vec3 Derivative_u(float v , float u ) override;
+	glm::vec3 Derivative_uu(float v, float u) override;
 
-		glUniformMatrix4fv(glGetUniformLocation(torusShader.ID, "MODEL_MATRIX"),
-			1, GL_FALSE, glm::value_ptr(GetModelMatrix()));
-		glUniform4f(glGetUniformLocation(torusShader.ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
-		camera.SaveMatrixToShader(torusShader.ID);
+	glm::vec3 Derivative_v(float v , float u ) override;
+	glm::vec3 Derivative_vv(float v, float u) override;
 
-		glDrawElements(GL_LINE_STRIP, 2*segment1*segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
-		vao_torus.Unbind();
-	}
+	glm::vec3 Derivative_vu(float v, float u ) override;
+	glm::vec3 Derivative_uv(float v, float u) override;
 
-	void  ActiveImGui() override {
-		ImGui::BeginGroup();
-		{
-			Figure3D::ActiveImGui();
-			FigureSpecificImGui();
-		}
-		ImGui::EndGroup();
-	}
-
-	void  FigureSpecificImGui() override {
-		ImGui::BeginGroup();
-		{
-			ImGui::Text("Torus parameters");
-			bool any = false;
-			if (ImGui::DragInt("segment 1##Torus", &segment1, 1))
-				any = true;
-			if (ImGui::DragInt("segment 2##Torus", &segment2, 1))
-				any = true;
-			if (ImGui::DragFloat("R##Torus", &R, 0.1f, M_ESP))
-				any = true;
-			if (ImGui::DragFloat("r##Torus", &r, 0.1f, M_ESP))
-				any = true;
-			if(any)
-				CreateTorus();
-		}
-		ImGui::EndGroup();
-	}
+	glm::vec2 Field_u() override;
+	glm::vec2 Field_v() override;
+	glm::bvec2 CanWrap() override; 
 
 private:
 	const Shader& torusShader = StaticShaders::GetTorus();
@@ -107,57 +51,10 @@ private:
 	float R = 0.5f;
 	float r = 0.2f;
 
-	std::vector<float>  createTorusVertexBuffer() {
-		std::vector<float> vertices;
-		for (int i = 0; i < segment1; i++) {
-			float theta1 = (2.0f * M_PI * i) / segment1;
+	std::vector<float>  createTorusVertexBuffer();
 
-			for (int j = 0; j < segment2; j++) {
-				float phi1 = (2.0f * M_PI * j) / segment2;
+	std::vector<GLuint>  createTorusIndeces();
 
-				float x1 = (R + r * cos(theta1)) * cos(phi1);
-				float y1 = r * sin(theta1); 
-				float z1 = (R + r * cos(theta1)) * sin(phi1);
-
-				vertices.push_back(x1);
-				vertices.push_back(y1);
-				vertices.push_back(z1);
-
-			}
-		}
-		return vertices;
-	}
-
-	std::vector<GLuint>  createTorusIndeces() {
-		std::vector<GLuint> indeces;
-		for (int i = 0; i < segment1; i++) {
-			for (int j = 0; j < segment2; j++) {
-				indeces.push_back(segment2 * i + j);
-			}
-			indeces.push_back(segment2* i );
-		}
-
-		for (int j = 0; j < segment2; j++) {
-			for (int i = 0; i < segment1; i++) {
-				indeces.push_back(segment2 * i + j);
-			}
-			indeces.push_back(j);
-		}
-
-		return indeces;
-	}
-
-	void CreateTorus() {
-		vao_torus.Reactive();
-		vao_torus.Bind();
-		auto vs = createTorusVertexBuffer();
-		auto ies = createTorusIndeces();
-		VBO vbo(vs, GL_DYNAMIC_DRAW);
-		EBO ebo(ies);
-
-		vao_torus.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
-
-		vao_torus.Unbind(); vbo.Unbind(); ebo.Unbind();
-	}
+	void CreateTorusVAO();
 };
 #endif

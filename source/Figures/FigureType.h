@@ -13,6 +13,7 @@ enum class FigureType {
 	BezierSurfaceC0, 
 	BezierSurfaceC2,
 	GregoryPatch,
+	IntersectionCurve,
 	COUNT
 };
 
@@ -33,6 +34,7 @@ inline const char* ToString(FigureType v)
 	case FigureType::BezierSurfaceC2: return "BezierSurfaceC2";
 	case FigureType::VirtualPoint: return "VirtualPoint";
 	case FigureType::GregoryPatch: return "GregoryPatch";
+	case FigureType::IntersectionCurve: return "IntersectionCurve";
 	case FigureType::COUNT: 
 	default: return "";
 	}

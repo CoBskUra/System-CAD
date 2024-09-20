@@ -18,9 +18,15 @@ public:
 	Figure* TakePoint(int verticalID, int horizontalID, int k1, int k2) const override;
 	int TakeId(int verticalID, int horizontalID, int k1, int k2) const override;
 
-	glm::vec3 DerivativeV(int patchV, int pathH, float v, float u)	override;
-	glm::vec3 DerivativeU(int patchV, int pathH, float v, float u)	override;
-	glm::vec3 DerivativeVU(int patchV, int pathH, float v, float u)	override;
+	glm::vec3 Parametrization(int patchV, int patchH, float v, float u) override;
+	glm::vec3 DerivativeV(int patchV, int pathH, float v, float u) override;
+	glm::vec3 DerivativeU(int patchV, int pathH, float v, float u) override;
+	glm::vec3 DerivativeVU(int patchV, int pathH, float v, float u) override;
+	glm::vec3 DerivativeUU(int patchV, int pathH, float v, float u) override;
+	glm::vec3 DerivativeVV(int patchV, int pathH, float v, float u) override;
+	glm::vec3 DerivativeUV(int patchV, int pathH, float v, float u) override;
+
+	glm::bvec2 CanWrap() override;
 
 	glm::vec4 Bernstain3D(float t);
 	glm::vec4 Bernstain3DDerivative(float t);
@@ -29,7 +35,6 @@ public:
 protected:
 	BezierSurfaceC0(const char* name, FigureType type);
 private:
-	std::vector<glm::mat<4, 4, float>> ControlPointsMatrix(int patchV, int pathH);
 	
 	int MaxSize() override;;
 };

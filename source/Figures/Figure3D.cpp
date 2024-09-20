@@ -31,10 +31,18 @@ void Figure3D::MoveAlong(const Camera& camera, glm::vec3 direction)
 
 void Figure3D::ActiveImGui()
 {
-    Figure::ActiveImGui();
+    //Figure::ActiveImGui();
+
+    ImGui::Text(name);
+    ImGui::SameLine();
+    ImGui::Text(std::to_string(GetId()).c_str());
+    if (editAbleName)
+        ImGui::InputText("Name", name, sizeof(name));
+    transpose->ActiveInterferes();
     rotation.ActiveInterferes();
     quaternion.ActiveInterferes();
     scale.ActiveInterferes();
+    FigureSpecificImGui();
 }
 
 glm::mat4x4 Figure3D::GetModelMatrix()

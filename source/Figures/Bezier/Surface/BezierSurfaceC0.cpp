@@ -18,11 +18,11 @@ BezierSurfaceC0::BezierSurfaceC0(MG1::BezierSurfaceC0 bs2, Scene* scene, int idO
 	/*if (verticalNum < horizontalNum) {
 		std::swap(verticalNum, horizontalNum);
 	}*/
-	this->creationType = bs2.vWrapped ? CreationType::cylinder : CreationType::surface;
+	this->creationType = bs2.uWrapped ? CreationType::cylinder : CreationType::surface;
 	controlPoints.resize(MaxSize());
 	TurnOffStartupInterfers();
 	numberOfVertexes = 0;
-
+	canAdd = true;
 	for (int i = 0; i < verticalNum; i++) {
 		for (int j = 0; j < horizontalNum; j++) {
 			for (int k1 = 0; k1 < 4; k1++) {
@@ -31,13 +31,14 @@ BezierSurfaceC0::BezierSurfaceC0(MG1::BezierSurfaceC0 bs2, Scene* scene, int idO
 					auto p = scene->byID(bs2.patches.at(i * horizontalNum + j).controlPoints.at(k1 * 4 + k2).GetId() + idOffset);
 					p->SetObjectOwner(this);
 					int id = TakeId(i, j, k1, k2);
-					controlPoints[id] = std::static_pointer_cast<Point>(p);
+					controlPoints[id] = p;
 					Add(p.get());
 					numberOfVertexes++;
 				}
 			}
 		}
 	}
+	canAdd = false;
 
 	CreateBezierVAO();
 }
@@ -55,19 +56,7 @@ BezierSurfaceC0::BezierSurfaceC0(const char* name, FigureType type):
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
-std::vector<glm::mat<4, 4, float>> BezierSurfaceC0::ControlPointsMatrix(int patchV, int patchH)
-{
-	glm::mat<4, 4, float> points_x{}, points_y{}, points_z{};
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			glm::vec3 pos = TakePoint(patchV, patchH, i, j)->transpose->GetPosition();
-			points_x[j][i] = pos.x;
-			points_y[j][i] = pos.y;
-			points_z[j][i] = pos.z;
-		}
-	}
-	return { points_x, points_y, points_z };
-}
+
 
 BezierSurfaceC0::~BezierSurfaceC0()
 {
@@ -88,7 +77,8 @@ MG1::BezierSurfaceC0 BezierSurfaceC0::Serialize(int idOffset) const
 	bs0.name = name;
 	bs0.size.x = horizontalNum; bs0.size.y = verticalNum;
 
-	bs0.vWrapped = creationType == CreationType::cylinder;
+	bs0.uWrapped = creationType == CreationType::cylinder;
+	bs0.vWrapped = !bs0.uWrapped;
 
 	for (int i = 0; i < verticalNum; i++) {
 		for (int j = 0; j < horizontalNum; j++) {
@@ -144,10 +134,10 @@ glm::vec4 BezierSurfaceC0::Bernstain3DDerivative(float t)
 	glm::vec3 bern2D = Bernstain2D(t);
 	 
 	return glm::vec4{
-		-3* bern2D.x,
-		3 * (bern2D.x - bern2D.y), 
-		3 * (bern2D.y - bern2D.z),
-		3 * bern2D.z 
+		3.0f * -bern2D.x,
+		3.0f * (bern2D.x - bern2D.y), 
+		3.0f * (bern2D.y - bern2D.z),
+		3.0f * bern2D.z 
 	};
 }
 
@@ -164,41 +154,109 @@ glm::vec3 BezierSurfaceC0::Bernstain2D(float t)
 
 glm::vec3 BezierSurfaceC0::BernstainPolinomalDe(float t)
 {
-
+	throw "cos";
 	return glm::vec3();
+}
+
+glm::vec3 BezierSurfaceC0::Parametrization(int patchV, int patchH, float v, float u)
+{
+	std::vector<glm::vec3> controlPoints = ControlPointsPosVector(patchV, patchH);
+
+	glm::vec3 ps[4];
+	for (int i = 0; i < 4; i++) {
+		ps[i] = MathOperations::Bezier3D(v,
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4]
+		);
+	}
+
+	glm::vec3 p = MathOperations::Bezier3D(u, ps[0], ps[1], ps[2], ps[3]);
+	return p;
 }
 
 glm::vec3 BezierSurfaceC0::DerivativeV(int patchV, int patchH, float v, float u)
 {
-	auto controlPoints = ControlPointsMatrix(patchV, patchH);
+	auto controlPoints = ControlPointsPosVector(patchV, patchH);
 
-	glm::vec3 result;
-	for (int i = 0; i < 3; i++)
-		result[i] = glm::dot(Bernstain3DDerivative(v), controlPoints[i] * Bernstain3D(u));
 
-	return result;
+	glm::vec3 ps[4];
+	for (int i = 0; i < 4; i++) {
+		ps[i] = MathOperations::Bezier3D_derivative(v,
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4]
+		);
+	}
+
+	glm::vec3 p = MathOperations::Bezier3D(u, ps[0], ps[1], ps[2], ps[3]);
+	return p;
 }
 
 glm::vec3 BezierSurfaceC0::DerivativeU(int patchV, int patchH, float v, float u)
 {
-	auto controlPoints = ControlPointsMatrix(patchV, patchH);
+	auto controlPoints = ControlPointsPosVector(patchV, patchH);
 
-	glm::vec3 result;
-	for (int i = 0; i < 3; i++)
-		result[i] = glm::dot(Bernstain3D(v), controlPoints[i] * Bernstain3DDerivative(u));
 
-	return result;
+	glm::vec3 ps[4];
+	for (int i = 0; i < 4; i++) {
+		ps[i] = MathOperations::Bezier3D(v,
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4]
+		);
+	}
+
+	glm::vec3 p = MathOperations::Bezier3D_derivative(u, ps[0], ps[1], ps[2], ps[3]);
+	return p;
 }
 
 glm::vec3 BezierSurfaceC0::DerivativeVU(int patchV, int patchH, float v, float u)
 {
-	auto controlPoints = ControlPointsMatrix(patchV, patchH);
+	auto controlPoints = ControlPointsPosVector(patchV, patchH);
 
-	glm::vec3 result;
-	for (int i = 0; i < 3; i++)
-		result[i] = glm::dot(Bernstain3DDerivative(v), controlPoints[i] * Bernstain3DDerivative(u));
 
-	return result;
+	glm::vec3 ps[4];
+	for (int i = 0; i < 4; i++) {
+		ps[i] = MathOperations::Bezier3D_derivative(v,
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4]
+		);
+	}
+
+	glm::vec3 p = MathOperations::Bezier3D_derivative(u, ps[0], ps[1], ps[2], ps[3]);
+	return p;
+}
+
+glm::vec3 BezierSurfaceC0::DerivativeUU(int patchV, int pathH, float v, float u)
+{
+	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
+	throw "cos";
+	return glm::vec3();
+}
+
+glm::vec3 BezierSurfaceC0::DerivativeVV(int patchV, int pathH, float v, float u)
+{
+	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
+	throw "cos";
+	return glm::vec3();
+}
+
+glm::vec3 BezierSurfaceC0::DerivativeUV(int patchV, int pathH, float v, float u)
+{
+	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
+	throw "cos";
+	return glm::vec3();
+}
+
+glm::bvec2 BezierSurfaceC0::CanWrap()
+{
+	return { false, creationType == CreationType::cylinder };
 }
 
 int BezierSurfaceC0::MaxSize()

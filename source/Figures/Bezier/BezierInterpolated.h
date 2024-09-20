@@ -22,9 +22,10 @@ public:
 
 	glm::vec3 Derivative(float t) override;
 	glm::vec3 PositionOnCurve(float t) override;
+	
+	void ChangeShowBezierPol() override;
 protected:
 	BezierInterpolated(const char* name, FigureType type);
-	void virtual ChangeShowBezierPol();
 	float TakePointDelta(int i);
 	float TakePointDelta(std::vector<glm::vec3> points, int i);
 	void AddPoint(BezierC0& bezier, glm::vec3 pos);

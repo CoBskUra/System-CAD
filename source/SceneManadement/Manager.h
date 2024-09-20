@@ -25,7 +25,8 @@
 #include "SceneManadement/SceneSerializer.h"
 #include <Figures/FigureFunctions/MergePoints.h>
 #include "Figures/GregoryPatch.h"
-#include "TransformSurfaceWindow.h"
+#include "Windows/TransformSurfaceWindow.h"
+#include "Windows/IntersectionWindow.h"
 
 class Manager {
 	ImGui::FileBrowser fileDialog;
@@ -41,6 +42,7 @@ class Manager {
 	InfinityGrid infinityGrid;
 
 	TransformSurfaceWindow transformSurface;
+	IntersectionWindow intersectionWindow;
 
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
@@ -62,6 +64,7 @@ class Manager {
 	bool MergeFigures();
 	void ClearScene();
 	void TransformSurfaceUsingCurve();
+	void IntersectionWindow();
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);

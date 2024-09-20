@@ -36,7 +36,10 @@ void Manager::MenuInterferes()
 		}
 
 		SaveScene();
+		
 		TransformSurfaceUsingCurve();
+		IntersectionWindow();
+
 		CreateFiguresInterfers();
 		cursor.ActiveImGui();
 		centerPoint.ActiveImGui();
@@ -66,7 +69,7 @@ void Manager::MenuInterferes()
 	ImGui::Begin("Camera Control");
 	currentCamera->ActiveInterferes();
 	ImGui::End();
-	ImGui::ShowDemoWindow();
+	//ImGui::ShowDemoWindow();
 }
 
 void Manager::Draw()
@@ -346,6 +349,16 @@ void Manager::TransformSurfaceUsingCurve()
 	if(ImGui::Button("Transform surface with curve##Manager"))
 		transformSurface.open = true;
 	transformSurface.CreateMyWindow(sher_ptrScene.get());
+}
+
+void Manager::IntersectionWindow()
+{
+	intersectionWindow.camera = currentCamera;
+	intersectionWindow.window = window;
+	intersectionWindow.cursor = &cursor;
+	if (ImGui::Button("Intersection##Manager"))
+		intersectionWindow.open = true;
+	intersectionWindow.CreateMyWindow(sher_ptrScene.get());
 }
 
 void Manager::ProcessInput()

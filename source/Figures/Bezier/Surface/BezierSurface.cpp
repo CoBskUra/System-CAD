@@ -393,6 +393,102 @@ bool BezierSurface::Swap(Figure* from, std::shared_ptr<Figure>  to)
 	return true;
 }
 
+glm::vec4 BezierSurface::Cast_VU_To_PatchVPatchHVU(float v, float u)
+{
+	int patchV = v;
+	if (patchV == SurfaceSize().x)
+		patchV--;
+	v = v - patchV;
+
+	int patchH = u;
+	if (patchH == SurfaceSize().y)
+		patchH--;
+	u = u - patchH;
+
+	return { patchV, patchH, v, u };
+}
+
+glm::vec3 BezierSurface::Parametrization(float v, float u)
+{
+	glm::vec4 params = Cast_VU_To_PatchVPatchHVU(v, u);
+
+	return Parametrization(params.x, params.y, params.z, params.w);
+}
+
+glm::vec3 BezierSurface::Derivative_u(float v, float u)
+{
+	glm::vec4 params = Cast_VU_To_PatchVPatchHVU(v, u);
+
+	return DerivativeU(params.x, params.y, params.z, params.w);
+}
+
+glm::vec3 BezierSurface::Derivative_uu(float v, float u)
+{
+	return glm::vec3();
+}
+
+glm::vec3 BezierSurface::Derivative_v(float v, float u)
+{
+	glm::vec4 params = Cast_VU_To_PatchVPatchHVU(v, u);
+
+	return DerivativeV(params.x, params.y, params.z, params.w);
+}
+
+glm::vec3 BezierSurface::Derivative_vv(float v, float u)
+{
+	glm::vec4 params = Cast_VU_To_PatchVPatchHVU(v, u);
+
+	return DerivativeUU(params.x, params.y, params.z, params.w);
+}
+
+glm::vec3 BezierSurface::Derivative_vu(float v, float u)
+{
+	glm::vec4 params = Cast_VU_To_PatchVPatchHVU(v, u);
+
+	return DerivativeVU(params.x, params.y, params.z, params.w);
+}
+
+glm::vec3 BezierSurface::Derivative_uv(float v, float u)
+{
+	glm::vec4 params = Cast_VU_To_PatchVPatchHVU(v, u);
+
+	return DerivativeUV(params.x, params.y, params.z, params.w);
+}
+
+glm::vec2 BezierSurface::Field_u()
+{
+	return { 0, (float)SurfaceSize().y};
+}
+
+glm::vec2 BezierSurface::Field_v()
+{
+	return { 0, (float)SurfaceSize().x };
+}
+
+std::vector<glm::mat<4, 4, float>> BezierSurface::ControlPointsMatrix(int patchV, int patchH)
+{
+	glm::mat<4, 4, float> points_x{}, points_y{}, points_z{};
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			glm::vec3 pos = TakePoint(patchV, patchH, i, j)->transpose->GetPosition();
+			points_x[i][j] = pos.x;
+			points_y[i][j] = pos.y;
+			points_z[i][j] = pos.z;
+		}
+	}
+	return { points_x, points_y, points_z };
+}
+std::vector<glm::vec3> BezierSurface::ControlPointsPosVector(int patchV, int patchH)
+{
+	std::vector<glm::vec3> poses;
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			glm::vec3 pos = TakePoint(patchV, patchH, j, i)->transpose->GetPosition();
+			poses.push_back(pos);
+		}
+	}
+	return poses;
+}
 bool BezierSurface::IsValid(Figure* figure)
 {
 	return canAdd && BezierBase::IsValid(figure);
