@@ -10,8 +10,9 @@
 class Intersection {
 	float epsilon = 0.00001;
 	const float c = (sqrtf(5) - 1.0f) * 0.5f;
-	const int maxIterations_NextIntersectionParams = 200;
-	const int maxIterations_FirstIntersectionPoint = 200;
+	const int maxIterations_IntersectionFrame = 1000;
+	const int maxIterations_NextIntersectionParams = 100;
+	const int maxIterations_FirstIntersectionPoint = 1000;
 	const int retries_FirstIntersectionPoint = 5;
 	const int retires2_FirstIntersectionPoint = 2;
 	const int randomTriesToFindMatch = 100;
@@ -72,7 +73,8 @@ class Intersection {
 	inline bool IsCreatedLoop(const std::vector<glm::vec2>& points, IntersectionAble* object);
 
 public:
-	glm::vec4 FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 params = glm::vec4{0,0,0,0}, bool derivativeStop = false);
+	glm::vec4 FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 params = glm::vec4{ 0,0,0,0 }, bool derivativeStop = false);
+
 	std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>>  IntersectionFrame(glm::vec4 firstIntersection, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps);
 
 	inline glm::vec4 NextIntersectionParams(glm::vec4 intersectionParams, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps, bool flipDirection = false);
@@ -85,4 +87,5 @@ public:
 	glm::vec4 ParamsCloseToPoint(glm::vec3 point, IntersectionAble* object_a, IntersectionAble* object_b);
 	glm::vec4 RandomTheClosetToEachOther(IntersectionAble* object_a, IntersectionAble* object_b);
 	glm::vec4 RandomTheClosetToPoint(glm::vec3 point, IntersectionAble* object_a, IntersectionAble* object_b);
+	glm::vec4 TheFaresParams(IntersectionAble* object_a);
 };

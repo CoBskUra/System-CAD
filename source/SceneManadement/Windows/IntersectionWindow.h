@@ -88,8 +88,10 @@ public:
 		if (ImGui::Button("Intersections##IntersectionWindow") &&
 			!sceneObject_2.expired() && !sceneObject_1.expired()) {
 			Intersection intersections;
-			auto object_a = dynamic_cast<IntersectionAble*>(sceneObject_1.lock().get());
-			auto object_b = dynamic_cast<IntersectionAble*>(sceneObject_2.lock().get());
+			std::shared_ptr<Figure> figure_1 = sceneObject_1.lock();
+			std::shared_ptr<Figure> figure_2 = sceneObject_2.lock();
+			auto object_a = dynamic_cast<IntersectionAble*>(figure_1.get());
+			auto object_b = dynamic_cast<IntersectionAble*>(figure_2.get());
 
 
 			glm::vec4 closeParams{ 0, 0, 0, 0 };
@@ -100,25 +102,30 @@ public:
 				pos = object_b->Parametrization(closeParams.z, closeParams.w);
 				std::cout << std::endl << pos.x << " " << pos.y << " " << pos.z << std::endl;
 			}
+			else if (figure_2->GetId() == figure_1->GetId())
+				closeParams = intersections.TheFaresParams(object_a);
 			else
 				closeParams = intersections.RandomTheClosetToEachOther(object_a, object_b);
 
 			
 
 			auto params = intersections.FirstIntersectionPoint(object_a, object_b, closeParams);
+			if (figure_2->GetId() == figure_1->GetId() &&
+				abs(params.x - params.z) < 0.000001 &&
+				abs(params.y - params.w) < 0.000001) {
+				std::cout << "false" << std::endl;
+				return;
+			}
 			std::cout<< (intersections.IsIntersected(object_a, object_b, params) ? "true" : "false" )<< std::endl;
 
 			if (!intersections.IsIntersected(object_a, object_b, params))
 				return;
 			auto positions = intersections.IntersectionFrame(params, object_a, object_b, step, epsilon);
 
-			auto curve_a = std::make_shared< IntersectionCurve>(positions.first, sceneObject_1.lock(), scene);
-			auto curve_b = std::make_shared< IntersectionCurve>(positions.second, sceneObject_2.lock(), scene);
+			auto curve_a = std::make_shared< IntersectionCurve>(positions.first, figure_1, scene);
+			auto curve_b = std::make_shared< IntersectionCurve>(positions.second, figure_2, scene);
 			scene->AddFigure(curve_a); 
 			scene->AddFigure(curve_b);
 		}
-
 	}
-
-	
 };

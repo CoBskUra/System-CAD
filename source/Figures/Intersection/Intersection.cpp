@@ -2,15 +2,6 @@
 
 glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 startParametrs, bool derivativeStop) {
 
-	/*if (startParametrs == glm::vec4{ 0, 0, 0, 0 })
-	{
-		startParametrs = {
-			(object_a->Field_v().x + object_a->Field_v().y) * 0.5f,
-			(object_a->Field_u().x + object_a->Field_u().y) * 0.5f,
-			(object_b->Field_v().x + object_b->Field_v().y) * 0.5f,
-			(object_b->Field_u().x + object_b->Field_u().y) * 0.5f,
-		};
-	}*/
 	glm::vec4 params = startParametrs;
 	for (int k = 0; k < retries_FirstIntersectionPoint; k++)
 	{
@@ -36,21 +27,15 @@ glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, Inter
 
 				// niby jest tutaj szukanie minimum α = min(F(α))
 				// F(a) = f(params + a * d)
-				float a = StepMinimalization(params, d, 0.05f, 10, object_a, object_b);
+				float a = StepMinimalization(params, d, 0.0005f, 10, object_a, object_b);
 				params = params + a * d;
 				params = Clamp(params, object_a, object_b);
 				lastDerivativeLength = currentDerivativeLength;
 
-				/////////////////////////////
-				//std::cout << k << " " << i << std::endl;
 
-				if (glm::dot(d, d) < pow(epsilon, 2) || 
-					glm::dot(lastParams - params, lastParams - params) < pow(epsilon, 2))
+				if (glm::dot(d, d) < pow(epsilon, 2) )
 					break;
 				lastParams = params;
-				/*	std::cout << params.x << " " << params.y << " " << params.z << " " << params.w << " " << std::endl;
-					std::cout << Function(params, object_a, object_b) << std::endl;
-					std::cout << d.x << " " << d.y << " " << d.z << " " << d.w << " " << std::endl;*/
 			}
 
 			std::cout << std::endl << std::endl << Function(params, object_a, object_b) << std::endl << std::endl;
@@ -62,7 +47,6 @@ glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, Inter
 				break;
 
 			params = RandomParamsCloseTo(startParametrs, (k + 1) * 0.05, object_a, object_b);
-			std::cout << std::endl << "new params start: " << params.x << " " << params.y << " " << params.z << " " << params.w << " " << std::endl << std::endl << std::endl;
 		}
 		if (Function(params, object_a, object_b) < epsilon) {
 			break;
@@ -72,12 +56,6 @@ glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, Inter
 			break;
 
 	}
-	std::cout << params.x << " " << params.y << " " << params.z << " " << params.w << " " << std::endl;
-
-	glm::vec3 pos_a = object_a->Parametrization(params.x, params.y);
-	glm::vec3 pos_b = object_b->Parametrization(params.z, params.w);
-	std::cout << pos_a.x << " " << pos_a.y << " " << pos_a.z << std::endl;
-	std::cout << pos_b.x << " " << pos_b.y << " " << pos_b.z << std::endl;
 	return params;
 }
 
@@ -87,21 +65,21 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> Intersection::Intersec
 	params_a.push_back({ firstIntersection.x, firstIntersection.y }); 
 	std::vector<glm::vec2> params_b;
 	params_b.push_back({ firstIntersection.z, firstIntersection.w });
-
-	const int maxIterations = 15000;
+	auto cos = object_a->Parametrization(firstIntersection.x, firstIntersection.y);
+	
 	glm::vec4 params = firstIntersection;
 	glm::vec4 lastParams = params;
 	bool flip = false;
 	for (int j = 0; j < 2; j++)
 	{
 		int i;
-		for (i = 0; i < maxIterations;
+		for (i = 0; i < maxIterations_IntersectionFrame;
 			i++) {
 			params = NextIntersectionParams(params, object_a, object_b, step, eps, flip);
 
 			for(int k = 0; k < 5 && Function(params, object_a, object_b) > eps; k++)
 			{
-				params = NextIntersectionParams(lastParams, object_a, object_b, step * powf(0.5, k + 1), flip);
+				params = NextIntersectionParams(lastParams, object_a, object_b, step * powf(0.5, k + 1), eps, flip);
 			}
 
 			if (Function(params, object_a, object_b) > eps)
@@ -119,6 +97,7 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> Intersection::Intersec
 			break;
 		std::reverse(params_a.begin(), params_a.end());
 		std::reverse(params_b.begin(), params_b.end());
+		params = firstIntersection;
 		flip = !flip;
 		
 	}
@@ -140,6 +119,7 @@ glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, Int
 
 	if (flipDirection)
 		t = -t;
+
 	glm::vec3 intersectionPoint = object_a->Parametrization(intersectionParams.x, intersectionParams.y);
 
 	glm::vec4 lastParams = intersectionParams;
@@ -151,8 +131,7 @@ glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, Int
 			p1 - q1,
 			glm::dot( (p1 + q1)*0.5f - intersectionPoint, t) - step
 		};
-
-
+		
 		glm::vec4 f_x{
 			object_a->Derivative_v(params.x, params.y),
 			glm::dot(object_a->Derivative_v(params.x, params.y), t) * 0.5f
@@ -274,7 +253,7 @@ glm::vec4 Intersection::RandomTheClosetToEachOther(IntersectionAble* object_a, I
 	for (int i = 0; i < randomTriesToFindMatch; i++) {
 		glm::vec4 newParams = RandomParamsCloseTo({ 0, 0, 0, 0 }, 1, object_a, object_b);
 		glm::vec3 pos_a = object_a->Parametrization(newParams.x, newParams.y);
-		glm::vec3 pos_b = object_a->Parametrization(newParams.z, newParams.w);
+		glm::vec3 pos_b = object_b->Parametrization(newParams.z, newParams.w);
 
 		float newDistanse = glm::dot(pos_a - pos_b, pos_a - pos_b);
 		if (newDistanse < distance)
@@ -315,6 +294,24 @@ glm::vec4 Intersection::RandomTheClosetToPoint(glm::vec3 point, IntersectionAble
 	}
 
 	return {parms_length_a.first, parms_length_b.first};
+}
+
+glm::vec4 Intersection::TheFaresParams(IntersectionAble* object_a)
+{
+	auto field_v = object_a->Field_v();
+	auto field_u = object_a->Field_v();
+
+	float v_start = field_v.x;
+	float u_start = field_u.x;
+
+	float v_end = field_v.y;
+	float u_end = field_u.y;
+	if (object_a->CanWrap().x)
+		v_end = v_start + (field_v.y - field_v.x) * 0.5;
+	if (object_a->CanWrap().y)
+		u_end = u_start + (field_u.y - field_u.x) * 0.5;
+
+	return {v_start, u_start, v_end, u_end };
 }
 
 inline void Intersection::CalculateObjects_derivative(const glm::vec4& params, IntersectionAble* object_a, IntersectionAble* object_b)
@@ -365,7 +362,19 @@ inline float Intersection::StepMinimalization(const glm::vec4& params, const glm
 		bool clamped = false;
 		newParams_x1 = Clamp(newParams_x1, object_a, object_b, clamped);
 		if (clamped)
+		{
+			int j = 0;
+			while (clamped)
+			{
+				min *= 0.5f;
+				newParams_x1 = params + min * d;
+				Clamp(newParams_x1, object_a, object_b, clamped);
+				if (j > 10)
+					return 0;
+				j++;
+			}
 			return min;
+		}
 
 		clamped = false;
 		Clamp(newParams_x2, object_a, object_b, clamped);
@@ -375,7 +384,7 @@ inline float Intersection::StepMinimalization(const glm::vec4& params, const glm
 			x_2 = (x_1 + x_2) * 0.5;
 			newParams_x2 = params + x_2 * d;
 			Clamp(newParams_x2, object_a, object_b, clamped);
-			if (k > 5)
+			if (k > 10)
 				return min;
 			k++;
 		}
