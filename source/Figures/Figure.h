@@ -50,9 +50,9 @@ public:
 	glm::mat4x4 virtual GetModelMatrixInvers();
 	FigureType GetType() const;
 	glm::vec4 GetShowColor() const;
-	glm::vec4 SetUnmarkColor(glm::vec4 newColor);
-	void SetMarkColor(glm::vec4 newColor);
-	void SetShowColor(glm::vec4 newColor);
+	glm::vec4 virtual  SetUnmarkColor(glm::vec4 newColor);
+	void virtual SetMarkColor(glm::vec4 newColor);
+	void virtual SetShowColor(glm::vec4 newColor);
 
 	virtual ~Figure();
 

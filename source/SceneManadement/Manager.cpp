@@ -69,7 +69,7 @@ void Manager::MenuInterferes()
 	ImGui::Begin("Camera Control");
 	currentCamera->ActiveInterferes();
 	ImGui::End();
-	//ImGui::ShowDemoWindow();
+	ImGui::ShowDemoWindow();
 }
 
 void Manager::Draw()

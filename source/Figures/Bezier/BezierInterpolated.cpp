@@ -186,6 +186,25 @@ void BezierInterpolated::ChangeShowBezierPol()
 	innerBezierC0.ChangeShowBezierPol();
 }
 
+glm::vec4 BezierInterpolated::SetUnmarkColor(glm::vec4 color)
+{
+	innerBezierC0.SetUnmarkColor(color);
+	return Figure::SetUnmarkColor(color);
+}
+
+
+void BezierInterpolated::SetMarkColor(glm::vec4 color)
+{
+	innerBezierC0.SetUnmarkColor(color);
+	Figure::SetMarkColor(color);
+}
+
+void BezierInterpolated::SetShowColor(glm::vec4 color)
+{
+	innerBezierC0.SetShowColor(color);
+	Figure::SetShowColor(color);
+}
+
 float BezierInterpolated::TakePointDelta(int i)
 {
 	glm::vec3 tmp = At(i + 1)->transpose->GetPosition() - At(i)->transpose->GetPosition();

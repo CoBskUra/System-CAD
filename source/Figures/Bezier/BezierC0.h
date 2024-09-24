@@ -17,7 +17,6 @@ class BezierC0 : public BezierCurve {
 	const Shader& lineDrawingShader = StaticShaders::GetBezierCurve();
 	int numberOfVertexes = 0;
 protected:
-	glm::vec4 curveColor{ 1, 0, 1, 1 };
 
 	const Shader& shader_bezier2D = StaticShaders::GetBezier2D();
 	VAO vao_bezier3D;

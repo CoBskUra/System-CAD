@@ -117,6 +117,9 @@ glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, Int
 	glm::vec3 t = glm::cross(normal_a, normal_b);
 	t = glm::normalize(t);
 
+	if (isnan(t.x) || isnan(t.y) || isnan(t.z))
+		t = object_a->Derivative_v(intersectionParams.x, intersectionParams.y);
+
 	if (flipDirection)
 		t = -t;
 

@@ -111,8 +111,8 @@ public:
 
 			auto params = intersections.FirstIntersectionPoint(object_a, object_b, closeParams);
 			if (figure_2->GetId() == figure_1->GetId() &&
-				abs(params.x - params.z) < 0.000001 &&
-				abs(params.y - params.w) < 0.000001) {
+				abs(params.x - params.z) < 0.001 &&
+				abs(params.y - params.w) < 0.001) {
 				std::cout << "false" << std::endl;
 				return;
 			}

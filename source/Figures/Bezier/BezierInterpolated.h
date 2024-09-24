@@ -24,6 +24,10 @@ public:
 	glm::vec3 PositionOnCurve(float t) override;
 	
 	void ChangeShowBezierPol() override;
+
+	glm::vec4 SetUnmarkColor(glm::vec4 color) override;
+	void SetMarkColor(glm::vec4 color) override;
+	void SetShowColor(glm::vec4 color) override;
 protected:
 	BezierInterpolated(const char* name, FigureType type);
 	float TakePointDelta(int i);
