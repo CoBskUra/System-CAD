@@ -2,9 +2,9 @@
 
 // Positions/Coordinates
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec2 inTexCord;
 
-// Outputs the color for the Fragment Shader
-// out vec4 o_color;
+out vec2 TexCoord;
 
 // Imports the camera matrix from the main function
 uniform mat4 MODEL_MATRIX;
@@ -15,4 +15,5 @@ void main()
 	// Outputs the positions/coordinates of all vertices
 	// CAM_MATRIX *
 	gl_Position = CAM_MATRIX * MODEL_MATRIX *  vec4(aPos, 1.0);
+	TexCoord = inTexCord;
 }

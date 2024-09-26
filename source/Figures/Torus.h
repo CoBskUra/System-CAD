@@ -44,6 +44,7 @@ public:
 	glm::bvec2 CanWrap() override; 
 
 private:
+	int numberOfElements;
 	const Shader& torusShader = StaticShaders::GetTorus();
 	VAO vao_torus;
 	int segment1 = 10;

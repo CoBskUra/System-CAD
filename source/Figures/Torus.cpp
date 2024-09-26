@@ -46,6 +46,8 @@ MG1::Torus Torus::Serialize(int idOffset) const
 void Torus::Draw(GLFWwindow* window, const Camera& camera)
 {
 	torusShader.Activate();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, GetTextureId());
 	vao_torus.Bind();
 
 	auto showColor = GetShowColor();
@@ -55,7 +57,7 @@ void Torus::Draw(GLFWwindow* window, const Camera& camera)
 	glUniform4f(glGetUniformLocation(torusShader.ID, "COLOR"), showColor.x, showColor.y, showColor.z, showColor.w);
 	camera.SaveMatrixToShader(torusShader.ID);
 
-	glDrawElements(GL_LINE_STRIP, 2 * segment1 * segment2 + segment1 + segment2, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_LINE_STRIP, numberOfElements, GL_UNSIGNED_INT, 0);
 	vao_torus.Unbind();
 }
 
@@ -78,6 +80,9 @@ void Torus::FigureSpecificImGui()
 		if (any)
 			CreateTorusVAO();
 	}
+
+	ImGui::Text("size = %d x %d", N, N);
+	ImGui::Image((void*)(intptr_t) GetTextureId(), ImVec2(N, N));
 	ImGui::EndGroup();
 }
 
@@ -173,41 +178,48 @@ void Torus::CreateTorusVAO() {
 	VBO vbo(vs, GL_DYNAMIC_DRAW);
 	EBO ebo(ies);
 
-	vao_torus.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+	vao_torus.LinkAttrib(0, 3, GL_FLOAT, false, 5 * sizeof(float), 0);
+	vao_torus.LinkAttrib(1, 2, GL_FLOAT, false, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
 	vao_torus.Unbind(); vbo.Unbind(); ebo.Unbind();
 }
 
 std::vector<GLuint>  Torus::createTorusIndeces(){
 	std::vector<GLuint> indeces;
-	for (int i = 0; i < segment1; i++) {
-		for (int j = 0; j < segment2; j++) {
-			indeces.push_back(segment2 * i + j);
+	numberOfElements = 0;
+	for (int i = 0; i < segment1 + 1 ; i++) {
+		for (int j = 0; j < segment2 + 1 ; j++) {
+			indeces.push_back((segment2 + 1) * i + j);
+			numberOfElements++;
 		}
-		indeces.push_back(segment2 * i);
+		//indeces.push_back((segment2 + 1) * (i + 1) - 1);
+		//numberOfElements++;
 	}
 
-	for (int j = 0; j < segment2; j++) {
-		for (int i = 0; i < segment1; i++) {
-			indeces.push_back(segment2 * i + j);
+	for (int j = 0; j < segment2 + 1 ; j++) {
+		for (int i = 0; i < segment1 + 1 ; i++) {
+			indeces.push_back((segment2 + 1) * i + j);
+			numberOfElements++;
 		}
-		indeces.push_back(j);
+		//indeces.push_back(j);
+		//numberOfElements++;
 	}
-
 	return indeces;
 }
 
 std::vector<float> Torus::createTorusVertexBuffer(){
 	std::vector<float> vertices;
-	for (int i = 0; i < segment1; i++) {
+	for (int i = 0; i < segment1 + 1; i++) {
 		float theta1 = 2.0 * M_PI * static_cast<float>(i) / segment1;
 
-		for (int j = 0; j < segment2; j++) {
+		for (int j = 0; j < segment2 + 1; j++) {
 			float phi1 = 2.0 * M_PI * static_cast<float>( j) / segment2;
 
 			auto pos = TorusLocalParametryzation(theta1, phi1);
 			OpenGLHelper::AddVecToVector(vertices, pos);
 
+			vertices.push_back(static_cast<float>(j) / segment2);
+			vertices.push_back(static_cast<float>(i) / segment1);
 		}
 	}
 	return vertices;

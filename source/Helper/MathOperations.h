@@ -3,6 +3,14 @@
 #include <glm/geometric.hpp>
 static class MathOperations {
 public:
+	static int Wrap(int value, int min, int max) {
+		value -= min;
+		int length = max - min;
+		value = value % length;
+		value = (length + value) % length;
+		return value;
+	}
+
 	static glm::vec3 RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
 	{
 		axis = glm::normalize(axis);

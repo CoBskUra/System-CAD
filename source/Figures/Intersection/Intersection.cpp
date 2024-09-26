@@ -283,7 +283,7 @@ glm::vec4 Intersection::RandomTheClosetToPoint(glm::vec3 point, IntersectionAble
 		};
 
 	parms_length_a = asigneFunction(object_a, { firstParams.x, firstParams.y });
-	parms_length_b = asigneFunction(object_a, { firstParams.z, firstParams.w });
+	parms_length_b = asigneFunction(object_b, { firstParams.z, firstParams.w });
 	
 	for (int i = 0; i < randomTriesToFindMatch; i++) {
 		auto randomParams = RandomParamsCloseTo({ 0,0,0,0 }, 1, object_a, object_b);

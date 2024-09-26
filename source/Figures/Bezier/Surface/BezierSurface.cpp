@@ -126,6 +126,8 @@ void BezierSurface::Draw(GLFWwindow* window, const Camera& camera)
 	if (showBezierPol) {
 		auto showColor = GetShowColor();
 		shader.Activate();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, GetTextureId());
 		vao.Bind();
 		{
 			glPatchParameteri(GL_PATCH_VERTICES, 16);
@@ -134,6 +136,7 @@ void BezierSurface::Draw(GLFWwindow* window, const Camera& camera)
 			glUniform4f(glGetUniformLocation(shader.ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
 			glUniform1i(glGetUniformLocation(shader.ID, "PATCH_DIV"), patch_div);
+			glUniform2i(glGetUniformLocation(shader.ID, "SIZE"), verticalNum, horizontalNum);
 
 
 			glUniform1i(glGetUniformLocation(shader.ID, "VERTICAL_DRAW"), false);
@@ -185,6 +188,7 @@ void BezierSurface::CreateBezierVAO()
 
 						Add(p);
 						OpenGLHelper::AddVecToVector(vs, pos);
+						vs.push_back(i * horizontalNum + j);
 
 						if (k2 != 0)
 						{
@@ -215,6 +219,7 @@ void BezierSurface::CreateBezierVAO()
 
 						auto p = TakePoint(i, j, k1, k2);
 						OpenGLHelper::AddVecToVector(vs, p->transpose->GetPosition());
+						vs.push_back(i * horizontalNum + j);
 
 						if (k2 != 0)
 						{
@@ -241,7 +246,8 @@ void BezierSurface::CreateBezierVAO()
 	{
 		VBO vbo(vs, GL_DYNAMIC_DRAW);
 
-		vao.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+		vao.LinkAttrib(0, 3, GL_FLOAT, false, 4 * sizeof(float), 0);
+		vao.LinkAttrib(1, 1, GL_FLOAT, false, 4 * sizeof(float), (void*)( 3 * sizeof(float)));
 
 		vao.Unbind(); vbo.Unbind();
 
@@ -254,7 +260,7 @@ void BezierSurface::CreateBezierVAO()
 		VBO vbo(vs, GL_DYNAMIC_DRAW);
 		EBO ebo(ies);
 
-		vao_curve.LinkAttrib(0, 3, GL_FLOAT, false, 3 * sizeof(float), 0);
+		vao_curve.LinkAttrib(0, 3, GL_FLOAT, false, 4 * sizeof(float), 0);
 
 		vao_curve.Unbind(); vbo.Unbind(); ebo.Unbind();
 	}
