@@ -123,10 +123,12 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 
 	if (showBezierCurve) {
 		lineDrawingShader.Activate();
+		auto negShowColor = glm::vec4(1, 1, 1, 1) - GetShowColor();
+		negShowColor.a = 1 - negShowColor.a;
 		vao_bezier3D.Bind();
 		{
 			glUniform4f(glGetUniformLocation(lineDrawingShader.ID, "COLOR"),
-				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
+				negShowColor.x, negShowColor.y, negShowColor.z, negShowColor.w);
 			camera.SaveMatrixToShader(lineDrawingShader.ID);
 			glDrawArrays(GL_LINE_STRIP, 0, numberOfVertexes); //ContainerSize() + (ContainerSize() - 4) / 3
 		}
@@ -136,7 +138,7 @@ void BezierC0::Draw(GLFWwindow* window, const Camera& camera) {
 		vao_bezier2D.Bind();
 		{
 			glUniform4f(glGetUniformLocation(lineDrawingShader.ID, "COLOR"),
-				curveColor.x, curveColor.y, curveColor.z, curveColor.w);
+				negShowColor.x, negShowColor.y, negShowColor.z, negShowColor.w);
 			camera.SaveMatrixToShader(lineDrawingShader.ID);
 			glDrawArrays(GL_LINE_STRIP, 0, 3); //ContainerSize() + (ContainerSize() - 4) / 3
 		}

@@ -5,13 +5,16 @@ add_executable (MG1_projekt "Main.cpp" "Main.h" "Camera.cpp" "Camera.h"  "Consta
 	"Figures/Bezier/BezierBase.cpp" "Figures/Bezier/BezierBase.h" "Figures/Bezier/BezierC0.cpp" "Figures/Bezier/BezierC0.h" "Figures/Bezier/BezierC2.cpp" "Figures/Bezier/BezierC2.h" "Figures/Bezier/BezierInterpolated.cpp" "Figures/Bezier/BezierInterpolated.h" "Figures/Bezier/Surface/BezierSurfaceC0.cpp" "Figures/Bezier/Surface/BezierSurfaceC0.h" "Figures/Bezier/Surface/BezierSurfaceC2.cpp" "Figures/Bezier/Surface/BezierSurfaceC2.h" "Figures/Bezier/Surface/BezierSurface.cpp" "Figures/Bezier/Surface/BezierSurface.h" 
 	"Figures/FigureFunctions/MoveMeWithMouse.cpp" "Figures/FigureFunctions/MoveMeWithMouse.h" "Figures/FigureFunctions/StereoscoicView.cpp" "Figures/FigureFunctions/StereoscoicView.h" 
  "ShaderManadement/EBO.h" "ShaderManadement/Shader.h" "ShaderManadement/VAO.h" "ShaderManadement/VBO.h" 
- "ShaderManadement/shaderClass.cpp"  "ShaderRefrence/ShaderCreator.h" "ShaderRefrence/StaticShaders.cpp" "ShaderRefrence/StaticShaders.h" 
+ "ShaderManadement/shaderClass.cpp"  "ShaderManadement/Texture.h" "ShaderManadement/Texture.cpp"
+
+ "ShaderRefrence/ShaderCreator.h" "ShaderRefrence/StaticShaders.cpp" "ShaderRefrence/StaticShaders.h" 
  "Container/FigureContainer.cpp" "Container/FigureContainer.h"
- "SceneManadement/Manager.cpp" "SceneManadement/Manager.h" "SceneManadement/Scene.cpp" "SceneManadement/Scene.h" "SceneManadement/SceneSerializer.h" "SceneManadement/SceneSerializer.cpp"
+ "SceneManadement/Manager.cpp" "SceneManadement/Manager.h" "SceneManadement/Scene.cpp" "SceneManadement/Scene.h" "SceneManadement/SceneSerializer.h" "SceneManadement/SceneSerializer.cpp" 
+
  "Helper/MathOperations.h"  "Helper/OpenGLHelper.h" "Helper/ImGuiExtenstions/imfilebrowser.h"
   "Transformations/Quaternion.cpp" "Transformations/Transpose.cpp" "Transformations/Transpose.h" "Transformations/TransposeImGui.h" "Transformations/Quaternion.h" "Transformations/QuaternionRotationImGui.cpp" "Transformations/QuaternionRotationImGui.h"
   "Transformations/Rotation.cpp" "Transformations/Rotation.h" "Transformations/RotationImGui.h" "Transformations/Scale.cpp" "Transformations/Scale.h" "Transformations/ScaleImGui.h"
-    "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp"  "Figures/FigureFunctions/MergePoints.h" "Figures/FigureFunctions/MergePoints.cpp" "Figures/GregoryPatch.h" "Figures/GregoryPatch.cpp" "Figures/Bezier/BezierCurve.h" "Figures/Bezier/BezierCurve.cpp" "Figures/FigureFunctions/TransformSurfercUsingCurve.h" "SceneManadement/TransformSurfaceWindow.h")
+    "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp"  "Figures/FigureFunctions/MergePoints.h" "Figures/FigureFunctions/MergePoints.cpp" "Figures/GregoryPatch.h" "Figures/GregoryPatch.cpp" "Figures/Bezier/BezierCurve.h" "Figures/Bezier/BezierCurve.cpp" "Figures/FigureFunctions/TransformSurfercUsingCurve.h" "SceneManadement/Windows/TransformSurfaceWindow.h" "SceneManadement/Windows/WindowParent.h" "Figures/Bezier/IntersectionCurve.h" "Figures/Intersection/IntersectionAble.h" "Figures/Torus.cpp" "Figures/Intersection/Intersection.h" "Figures/Intersection/Intersection.cpp" "Figures/Intersection/IntersectionConstFun.h" "Figures/Bezier/IntersectionCurve.cpp" "Helper/Wraper.h" "Figures/Intersection/IntersectionResultInfo.h")
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(

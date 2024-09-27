@@ -32,13 +32,13 @@ public:
 		return bezier;
 	}
 
-	void virtual Draw(GLFWwindow* window, const Camera& camera);
-	void virtual ActiveImGui();
-	bool virtual Inputs(GLFWwindow* window, const Camera& camera);
+	void Draw(GLFWwindow* window, const Camera& camera) override;
+	void ActiveImGui() override;
+	bool Inputs(GLFWwindow* window, const Camera& camera) override;
 
 	bool IsValid(Figure* figure) override;
-	void virtual Update();
-	bool virtual AddContainer(FigureContainer* fc);
+	void Update() override;
+	bool AddContainer(FigureContainer* fc) override;
 	void MarkFigure(Figure* f) override;
 
 	void virtual ChangeShowBezierCurve();

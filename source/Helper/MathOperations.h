@@ -3,6 +3,14 @@
 #include <glm/geometric.hpp>
 static class MathOperations {
 public:
+	static int Wrap(int value, int min, int max) {
+		value -= min;
+		int length = max - min;
+		value = value % length;
+		value = (length + value) % length;
+		return value;
+	}
+
 	static glm::vec3 RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
 	{
 		axis = glm::normalize(axis);
@@ -89,7 +97,7 @@ public:
 		return result;
 	}
 
-	static glm::vec3 Bezier3D(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
+	inline static glm::vec3 Bezier3D(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
 		p0 = p0 * (1 - t) + t * p1;
 		p1 = p1 * (1 - t) + t * p2;
 		p2 = p2 * (1 - t) + t * p3;
@@ -102,7 +110,11 @@ public:
 		return p0;
 	}
 
-	static glm::vec3 Bezier2D(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2) {
+	inline static glm::vec3 Bezier3D_derivative(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2, glm::vec3 p3) {
+		return Bezier2D(t, 3.0f * (p1 - p0), 3.0f * (p2 - p1),3.0f * (p3 - p2));
+	}
+
+	inline static glm::vec3 Bezier2D(float t, glm::vec3 p0, glm::vec3 p1, glm::vec3 p2) {
 		p0 = p0 * (1 - t) + t * p1;
 		p1 = p1 * (1 - t) + t * p2;
 
@@ -111,7 +123,7 @@ public:
 		return p0;
 	}
 
-	static glm::vec3 BezierND(float t, std::vector<glm::vec3> ps) {
+	inline static glm::vec3 BezierND(float t, std::vector<glm::vec3> ps) {
 		for (int i = ps.size() - 1; i >= 0; i--) {
 			for (int j = 0; j < i; j++) {
 				ps[j] = ps[j] * (1 - t) + t * ps[j + 1];
@@ -123,7 +135,7 @@ public:
 		return ps[0];
 	}
 
-	static glm::vec3 BezierNDerivative(float t, std::vector<glm::vec3> ps) {
+	inline static glm::vec3 BezierNDerivative(float t, std::vector<glm::vec3> ps) {
 		for (int i = 0; i < ps.size() - 1; i++) {
 			ps[i] = 3.0f * (ps[i] - ps[i + 1]);
 		}

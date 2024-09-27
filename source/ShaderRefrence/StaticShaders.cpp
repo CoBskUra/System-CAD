@@ -125,8 +125,8 @@ void StaticShaders::Init()
 
 	Torus = {
 	{
-		{"../resource/Shaders/simple_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
-		{"../resource/Shaders/simple_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER}
+		{"../resource/Shaders/torus_vert.glsl", "VERTEX", GL_VERTEX_SHADER} ,
+		{"../resource/Shaders/torus_frag.glsl", "FRAGMENT", GL_FRAGMENT_SHADER}
 	}
 	};
 

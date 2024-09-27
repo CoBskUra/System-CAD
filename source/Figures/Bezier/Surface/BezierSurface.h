@@ -1,8 +1,9 @@
 #pragma once
 #include "Figures/Bezier/BezierBase.h"
 #include "SceneManadement/Scene.h"
+#include "Figures/Intersection/IntersectionAble.h";
 
-class BezierSurface : public BezierBase {
+class BezierSurface : public BezierBase, public IntersectionAble {
 public:
 	enum class CreationType {
 		surface,
@@ -55,6 +56,9 @@ protected:
 	void DeleteRangeControlPoints(int start, int end);
 	virtual glm::vec3 GeneratePosForVertexInPatch(int verticalID, int horizontalID, int k1, int k2);
 	bool Swap(Figure* from, std::shared_ptr<Figure> to) override;
+
+	// czyli  funkcja z (u,v < surfaceSize) => patchV, patchH, v, u   
+	glm::vec4 Cast_VU_To_PatchVPatchHVU(float v, float u);
 public:
 	Scene* refrenceScene;
 
@@ -64,9 +68,29 @@ public:
 	void ActiveImGui()override;
 	void TurnOffStartupInterfers();
 	CreationType GetWrapType();
+
+	virtual glm::vec3 Parametrization(int patchV, int patchH, float v, float u) = 0;
 	virtual glm::vec3 DerivativeV(int patchV, int pathH, float v, float u) = 0;
 	virtual glm::vec3 DerivativeU(int patchV, int pathH, float v, float u) = 0;
 	virtual glm::vec3 DerivativeVU(int patchV, int pathH, float v, float u) = 0;
+	virtual glm::vec3 DerivativeUU(int patchV, int pathH, float v, float u) = 0;
+	virtual glm::vec3 DerivativeVV(int patchV, int pathH, float v, float u) = 0;
+	virtual glm::vec3 DerivativeUV(int patchV, int pathH, float v, float u) = 0;
+
+	glm::vec3 Parametrization(float v, float u) override;
+	glm::vec3 Derivative_u(float v, float u) override;
+	glm::vec3 Derivative_uu(float v, float u) override;
+
+	glm::vec3 Derivative_v(float v, float u) override;
+	glm::vec3 Derivative_vv(float v, float u) override;
+
+	glm::vec3 Derivative_vu(float v, float u) override;
+	glm::vec3 Derivative_uv(float v, float u) override;
+	glm::vec2 Field_u() override;
+	glm::vec2 Field_v() override;
+
+	std::vector<glm::mat<4, 4, float>> ControlPointsMatrix(int patchV, int patchH);
+	std::vector<glm::vec3> ControlPointsPosVector(int patchV, int patchH);
 
 	bool IsValid(Figure* figure) override;
 	glm::ivec2 SurfaceSize();
