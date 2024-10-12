@@ -361,6 +361,34 @@ void Manager::IntersectionWindow()
 	intersectionWindow.CreateMyWindow(sher_ptrScene.get());
 }
 
+void Manager::SelectManyWithMouse(FigureType figureType)
+{
+	auto castMousePos = OpenGLHelper::MousePositionOnScreen(window);
+	float minLength = M_FLOAT_MAX;
+	float min_x = mouseFirstClickPosition.x < castMousePos.x ? mouseFirstClickPosition.x : castMousePos.x;
+	float max_x = mouseFirstClickPosition.x > castMousePos.x ? mouseFirstClickPosition.x : castMousePos.x;
+
+	float min_y = mouseFirstClickPosition.y < castMousePos.y ? mouseFirstClickPosition.y : castMousePos.y;
+	float max_y = mouseFirstClickPosition.y > castMousePos.y ? mouseFirstClickPosition.y : castMousePos.y;
+
+	for (int i = 0; i < sher_ptrScene->Size(); i++) {
+		if (dynamic_cast<FigureContainer*>(sher_ptrScene->at(i).get()))
+			continue;
+		if (sher_ptrScene->at(i)->GetType() == figureType || FigureType::Any == figureType) {
+
+			auto posOnScreen = sher_ptrScene->at(i)->PositionOnScreen(*currentCamera);
+			
+			if (min_x <= posOnScreen.x && posOnScreen.x < max_x &&
+				min_y <= posOnScreen.y && posOnScreen.y < max_y)
+			{
+				if (!centerPoint.Contain(sher_ptrScene->at(i).get()))
+					SelectUnselect(i);
+			}
+		}
+	}
+}
+
+
 void Manager::ProcessInput()
 {
 
@@ -372,7 +400,21 @@ void Manager::ProcessInput()
 	if (io.WantCaptureKeyboard)
 		return;
 
-	if (mouseLeftFirstClick && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+	if(mouseLeftFirstClick)
+		mouseFirstClickPosition = OpenGLHelper::MousePositionOnScreen(window);
+
+	bool canMove = true;
+
+	if (!mouseLeftFirstClick && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS &&
+		glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+	{
+		SelectManyWithMouse(FigureType::Point);
+		
+		mouseLastPosition = OpenGLHelper::MousePositionOnScreen(window);
+		mouseLeftFirstClick = false;
+		canMove = false;
+	}
+	else if (mouseLeftFirstClick && glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
 
 		int id = TheClosetFigureToMouse(FigureType::Any);
 		if (id >= 0) {
@@ -383,12 +425,16 @@ void Manager::ProcessInput()
 	}
 	else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_RELEASE) {
 		mouseLeftFirstClick = true;
+		mouseFirstClickPosition = OpenGLHelper::MousePositionOnScreen(window);;
 	}
 
 	for (int i = 0; i < sher_ptrScene->Size(); i++)
 		sher_ptrScene->at(i)->Inputs(window, *currentCamera);
 
-	centerPoint.Inputs(window, *currentCamera);
+
+	
 	cursor.Inputs(window, *currentCamera);
 	currentCamera->Inputs(window);
+	if(canMove)
+		centerPoint.Inputs(window, *currentCamera);
 }

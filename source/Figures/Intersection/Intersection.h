@@ -16,6 +16,7 @@ class Intersection {
 	const int retries_FirstIntersectionPoint = 5;
 	const int retires2_FirstIntersectionPoint = 2;
 	const int randomTriesToFindMatch = 100;
+	const int samples = 50;
 	Point p1, p2;
 
 	glm::vec3 pos_a;

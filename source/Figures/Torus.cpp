@@ -22,6 +22,12 @@ Torus::Torus(MG1::Torus tori, int offsetId) :Torus()
 	if (tori.name != "")
 		this->SetName(tori.name.c_str());
 	this->SetId(tori.GetId() + offsetId);
+
+	R = tori.largeRadius;
+	r = tori.smallRadius;
+	segment1 = tori.samples.x;
+	segment2 = tori.samples.y;
+	CreateTorusVAO();
 }
 
 MG1::Torus Torus::Serialize(int idOffset) const
@@ -40,6 +46,11 @@ MG1::Torus Torus::Serialize(int idOffset) const
 	tori.scale.x = scale.x;
 	tori.scale.y = scale.y;
 	tori.scale.z = scale.z;
+
+	tori.samples.x = segment1;  tori.samples.y = segment2;
+	tori.smallRadius = r;
+	tori.largeRadius = R;
+
 	return tori;
 }
 

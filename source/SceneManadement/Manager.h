@@ -47,6 +47,7 @@ class Manager {
 	GLFWwindow* window;
 	bool mouseLeftFirstClick = true;
 	glm::vec2 mouseLastPosition{};
+	glm::vec2 mouseFirstClickPosition{};
 
 	StereoscopicView stereoscopicView;
 
@@ -65,6 +66,7 @@ class Manager {
 	void ClearScene();
 	void TransformSurfaceUsingCurve();
 	void IntersectionWindow();
+	void SelectManyWithMouse(FigureType figureType);
 
 public:
 	Manager(Camera* camera, GLFWwindow* window);

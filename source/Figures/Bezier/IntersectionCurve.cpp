@@ -85,7 +85,9 @@ IntersectionCurve::IntersectionCurve(std::vector<glm::vec2> parametryzationVecto
         BresenhamLineWraped(data, x1, y1, x2, y2);
 	}
 
-    FloodFill(data);
+    auto wrap = intersection->CanWrap();
+    std::swap(wrap.x, wrap.y);
+    FloodFill(data, wrap);
 	texture.Recreat();
 	texture.Bind();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -266,7 +268,7 @@ void IntersectionCurve::BresenhamLineWraped(std::vector<float>& data, const int 
     }
 }
 
-void IntersectionCurve::FloodFill(std::vector<float>& data)
+void IntersectionCurve::FloodFill(std::vector<float>& data, glm::bvec2 wrap)
 {
 
     std::queue<std::pair<int, int>> nodes = std::queue<std::pair<int, int>>();
@@ -297,10 +299,27 @@ void IntersectionCurve::FloodFill(std::vector<float>& data)
         int x = node.first;
         int y = node.second;
 
-        nodes.push({ (x + 1) % N, y });
-        nodes.push({ (x - 1 + N) % N, y });
-        nodes.push({ x, (y + 1) % N });
-        nodes.push({ x, (y - 1 + N) % N });
+        if (wrap.x)
+        {
+            nodes.push({ (x + 1) % N, y });
+            nodes.push({ (x - 1 + N) % N, y });
+        }
+        else
+        {
+            if (x < N - 1)  nodes.push({ (x + 1) , y });
+            if (x > 0)  nodes.push({ (x - 1) , y });
+        }
+
+        if (wrap.y)
+        {
+            nodes.push({ x, (y + 1) % N });
+            nodes.push({ x, (y - 1 + N) % N });
+        }
+        else
+        {
+            if (y < N - 1)  nodes.push({ x , y + 1 });
+            if (y > 0)  nodes.push({ x , y - 1 });
+        }
     }
 }
 
