@@ -301,20 +301,86 @@ glm::vec4 Intersection::RandomTheClosetToPoint(glm::vec3 point, IntersectionAble
 
 glm::vec4 Intersection::TheFaresParams(IntersectionAble* object_a)
 {
-	auto field_v = object_a->Field_v();
-	auto field_u = object_a->Field_v();
+	/*auto comparer = [=](glm::vec4 a, glm::vec4 b) {
+		auto pa_1 = object_a->Parametrization(a.x, a.y);
+		auto pa_2 = object_a->Parametrization(a.z, a.w);
+		auto pb_1 = object_a->Parametrization(b.x, b.y);
+		auto pb_2 = object_a->Parametrization(b.z, b.w);
 
-	float v_start = field_v.x;
-	float u_start = field_u.x;
+		auto a_diff = glm::vec2(a.x - a.z, a.y - a.w);
+		auto b_diff = glm::vec2(b.x - b.z, b.y - b.w);
 
-	float v_end = field_v.y;
-	float u_end = field_u.y;
-	if (object_a->CanWrap().x)
-		v_end = v_start + (field_v.y - field_v.x) * 0.5;
-	if (object_a->CanWrap().y)
-		u_end = u_start + (field_u.y - field_u.x) * 0.5;
+		auto pa_diff = pa_1 - pa_2;
+		auto pb_diff = pa_1 - pa_2;
 
-	return {v_start, u_start, v_end, u_end };
+		return glm::dot(pa_diff, pa_diff)  < glm::dot(pb_diff, pb_diff);
+		};*/
+	//auto canWrap = object_a->CanWrap();
+	//auto fild_u = object_a->Field_u();
+	//auto fild_v = object_a->Field_v();
+
+	//auto comparer = [=](glm::vec4 a, glm::vec4 b) {
+	//	auto pa_1 = object_a->Parametrization(a.x, a.y);
+	//	auto pa_2 = object_a->Parametrization(a.z, a.w);
+	//	auto pb_1 = object_a->Parametrization(b.x, b.y);
+	//	auto pb_2 = object_a->Parametrization(b.z, b.w);
+
+	//	auto a_diff = glm::vec2(a.x - a.z, a.y - a.w);
+	//	auto b_diff = glm::vec2(b.x - b.z, b.y - b.w);
+
+	//	auto pa_diff = pa_1 - pa_2;
+	//	auto pb_diff = pa_1 - pa_2;
+
+	//	//return glm::dot(pa_diff, pa_diff) < glm::dot(pb_diff, pb_diff);
+	//	return glm::dot(a_diff, a_diff) < glm::dot(b_diff, b_diff);
+	//	};
+
+	//float minDist = 1;
+	//glm::vec4 params = RandomParamsCloseTo({ 0,0,0,0 }, 1, object_a, object_a);
+	//for (int i = 0; i < randomTriesToFindMatch; i++) {
+	//	auto randomParams = RandomParamsCloseTo({ 0,0,0,0 }, 1, object_a, object_a);
+
+	//	auto parms_diff = glm::vec2(randomParams.x - randomParams.z, randomParams.y - randomParams.w);
+	//	glm::vec3 parametryzation_diff = object_a->Parametrization(randomParams.x, randomParams.y) - object_a->Parametrization(randomParams.z, randomParams.w);
+	//	if (glm::dot(parametryzation_diff, parametryzation_diff) < minDist && !comparer(randomParams, params))
+	//		params = randomParams;
+	//}
+
+	//auto p1 = object_a->Parametrization(params.x, params.y);
+	//auto p2 = object_a->Parametrization(params.z, params.w);
+	//std::cout << std::endl << p1.x << " " << p1.y <<" " << p1.y << std::endl <<
+	//	p2.x << " " << p2.y << " " << p2.y;
+	//std::cout << std::endl << params.x << " " << params.y << " " << params.z << " " << params.w;
+	std::vector<std::pair< glm::vec2, glm::vec3>> params_value;
+	params_value.reserve((samples * samples));
+	auto fild_u = object_a->Field_u();
+	auto fild_v = object_a->Field_v();
+	float lenght_u = fild_u.y - fild_u.x;
+	float lenght_v = fild_v.y - fild_v.x;
+
+	for (int i = 0; i < samples; i++) {
+		for (int j = 0; j < samples; j++) {
+			float u = i * lenght_u / static_cast<float>(samples);
+			float v = j * lenght_v / static_cast<float>(samples);
+			params_value.push_back({ {v,u}, object_a->Parametrization(v,u) });
+		}
+	}
+	glm::vec4 params = { params_value[0].first, params_value[1].first };
+	glm::vec3 diff = params_value[0].second - params_value[1].second;
+	float dist = glm::dot(diff, diff);
+
+	for (int i = 0; i < params_value.size(); i++) {
+		for (int j = i + 1; j < params_value.size(); j++) {
+			auto tmp = params_value[i].second - params_value[j].second;
+			auto tmpDis = glm::dot(tmp, tmp);
+			if (dist > tmpDis) {
+				params = { params_value[i].first, params_value[j].first };
+				dist = tmpDis;
+			}
+		}
+	}
+
+	return params;
 }
 
 inline void Intersection::CalculateObjects_derivative(const glm::vec4& params, IntersectionAble* object_a, IntersectionAble* object_b)

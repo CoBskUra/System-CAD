@@ -2,6 +2,7 @@
 // or project specific include files.
 
 #pragma once
+#define GLM_ENABLE_EXPERIMENTAL
 
 #include<iostream>
 #include<glad/glad.h>
@@ -11,5 +12,6 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+
 
 // TODO: Reference additional headers your program requires here.

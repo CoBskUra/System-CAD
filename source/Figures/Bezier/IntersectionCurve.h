@@ -32,7 +32,7 @@ public:
 	void SetMarkColor(glm::vec4 color) override;
 	void SetShowColor(glm::vec4 color) override;
 	void BresenhamLineWraped(std::vector<float>& data, const int x1, const int y1, const int x2, const int y2);
-	void FloodFill(std::vector<float>& data);
+	void FloodFill(std::vector<float>& data, glm::bvec2 wrap);
 
 	const std::vector<float>& GetResultData() override;
 	GLuint TextureId() override;
