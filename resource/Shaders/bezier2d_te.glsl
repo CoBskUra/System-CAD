@@ -6,6 +6,14 @@ uniform float numberOfSegments;
 uniform float segmentId;
 uniform mat4 CAM_MATRIX;
 
+vec3 BezierD(float t, vec3 p0, vec3 p1, vec3 p2){
+    p0 = 3.0 * ( p0 - p1);
+    p1 = 3.0 * ( p1 - p2);
+    
+    p0 = (1 - t)*p0 + t * p1;
+
+    return p0;
+}
 
 void main()
 {

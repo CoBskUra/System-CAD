@@ -1,5 +1,15 @@
 #include "BezierSurface.h"
 
+void BezierSurface::AddControlPointsToScene(Scene* scene)
+{
+	if (nullptr != scene) {
+		for (int i = 0; i < controlPoints.size(); i++) {
+			if (controlPoints.at(i).get() && Contain(controlPoints.at(i).get()))
+				scene->AddFigure(controlPoints.at(i));
+		}
+	}
+}
+
 int BezierSurface::MaxSize()
 {
 	return horizontalNum * verticalNum * 16;
@@ -92,12 +102,8 @@ bool BezierSurface::CreationWindowInterfers(glm::ivec2 appWindowSize)
 				accepted = true;
 				openWindow = false;
 				receivedInput = true;
-				if (nullptr != refrenceScene) {
-					for (int i = 0; i < controlPoints.size(); i++) {
-						if (controlPoints.at(i).get() && Contain(controlPoints.at(i).get()))
-							refrenceScene->AddFigure(controlPoints.at(i));
-					}
-				}
+				AddControlPointsToScene(refrenceScene);
+				
 			}
 		}
 		ImGui::EndGroup();

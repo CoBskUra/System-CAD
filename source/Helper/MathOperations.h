@@ -143,4 +143,17 @@ public:
 
 		return BezierND(t, ps);
 	}
+
+	inline static std::vector<glm::vec3> BezierNDerivative_points(std::vector<glm::vec3> ps) {
+		for (int i = 0; i < ps.size() - 1; i++) {
+			ps[i] = 3.0f * (ps[i] - ps[i + 1]);
+		}
+		ps.erase(std::next(ps.end(), -1));
+
+		return ps;
+	}
+
+	inline static glm::vec2 ParallelVector(glm::vec2 v, bool cloclkWise = true) {
+		return cloclkWise ? glm::vec2{v.y, -v.x} : glm::vec2{-v.y, v.x};
+	}
 };

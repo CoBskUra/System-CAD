@@ -14,7 +14,7 @@ add_executable (MG1_projekt "Main.cpp" "Main.h" "Camera.cpp" "Camera.h"  "Consta
  "Helper/MathOperations.h"  "Helper/OpenGLHelper.h" "Helper/ImGuiExtenstions/imfilebrowser.h"
   "Transformations/Quaternion.cpp" "Transformations/Transpose.cpp" "Transformations/Transpose.h" "Transformations/TransposeImGui.h" "Transformations/Quaternion.h" "Transformations/QuaternionRotationImGui.cpp" "Transformations/QuaternionRotationImGui.h"
   "Transformations/Rotation.cpp" "Transformations/Rotation.h" "Transformations/RotationImGui.h" "Transformations/Scale.cpp" "Transformations/Scale.h" "Transformations/ScaleImGui.h"
-    "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp"  "Figures/FigureFunctions/MergePoints.h" "Figures/FigureFunctions/MergePoints.cpp" "Figures/GregoryPatch.h" "Figures/GregoryPatch.cpp" "Figures/Bezier/BezierCurve.h" "Figures/Bezier/BezierCurve.cpp" "Figures/FigureFunctions/TransformSurfercUsingCurve.h" "SceneManadement/Windows/TransformSurfaceWindow.h" "SceneManadement/Windows/WindowParent.h" "Figures/Bezier/IntersectionCurve.h" "Figures/Intersection/IntersectionAble.h" "Figures/Torus.cpp" "Figures/Intersection/Intersection.h" "Figures/Intersection/Intersection.cpp" "Figures/Intersection/IntersectionConstFun.h" "Figures/Bezier/IntersectionCurve.cpp" "Helper/Wraper.h" "Figures/Intersection/IntersectionResultInfo.h")
+    "IdGiver/I_IdGiver.h" "IdGiver/IdGiver.h" "IdGiver/IdGiver.cpp"  "Figures/FigureFunctions/MergePoints.h" "Figures/FigureFunctions/MergePoints.cpp" "Figures/GregoryPatch.h" "Figures/GregoryPatch.cpp" "Figures/Bezier/BezierCurve.h" "Figures/Bezier/BezierCurve.cpp" "Figures/FigureFunctions/TransformSurfercUsingCurve.h" "SceneManadement/Windows/TransformSurfaceWindow.h" "SceneManadement/Windows/WindowParent.h" "Figures/Bezier/IntersectionCurve.h" "Figures/Intersection/IntersectionAble.h" "Figures/Torus.cpp" "Figures/Intersection/Intersection.h" "Figures/Intersection/Intersection.cpp" "Figures/Intersection/IntersectionConstFun.h" "Figures/Bezier/IntersectionCurve.cpp"  "Figures/Intersection/IntersectionResultInfo.h" "PathGenerator/HeightMapGenerator.h" "PathGenerator/IntersectionMover.h")
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     add_compile_options(
@@ -48,6 +48,12 @@ target_link_libraries(MG1_projekt PRIVATE MGSerializer)
 # add header files to include search path
 target_include_directories(MG1_projekt PRIVATE ../Scene-Serializer/cpp/Serializer/Serializer)
 
+find_package(OpenMP REQUIRED)
+
+# Dodanie flag kompilatora OpenMP
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(MG1_projekt PRIVATE OpenMP::OpenMP_CXX)
+endif()
 
 # Ustawienie katalogu z danymi
 set(DATA_FILES_DIR "${CMAKE_SOURCE_DIR}/resource")
@@ -56,3 +62,6 @@ set(DATA_FILES_DIR "${CMAKE_SOURCE_DIR}/resource")
 add_custom_command(TARGET MG1_projekt POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${DATA_FILES_DIR} "${CMAKE_BINARY_DIR}/resource")
+
+    # Sprawdzenie, czy kompilator obs³uguje OpenMP
+

@@ -63,6 +63,7 @@ public:
 	Scene* refrenceScene;
 
 	BezierSurface(const char* name, FigureType type, const Shader& shader_surface, const Shader& shaderCurve);
+	void AddControlPointsToScene(Scene* scene);
 	bool Inputs(GLFWwindow* window, const Camera& camera) override;
 	void Draw(GLFWwindow* window, const Camera& camera)override;
 	void ActiveImGui()override;

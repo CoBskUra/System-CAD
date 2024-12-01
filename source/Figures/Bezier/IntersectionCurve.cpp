@@ -45,6 +45,7 @@ IntersectionCurve::IntersectionCurve(std::vector<glm::vec2> parametryzationVecto
 
 	curve->Unmark();
 	SetUnmarkColor({ 0.215, 1, 0.129f, 1 });
+    curve->Update();
 	
 	auto intersectionAble = dynamic_cast<IntersectionAble*>(figure.get());
 	glm::vec2 field_v = intersectionAble->Field_v();
@@ -94,6 +95,21 @@ IntersectionCurve::IntersectionCurve(std::vector<glm::vec2> parametryzationVecto
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, N, N, 0, GL_RED, GL_FLOAT, data.data());
 	texture.Unbind();
+}
+
+int IntersectionCurve::NumberOfPoints()
+{
+    return curve->NumberOfPoints();;
+}
+
+float IntersectionCurve::MaxValue()
+{
+    return curve->MaxValue();
+}
+
+glm::vec3 IntersectionCurve::Derivative_2(float t)
+{
+    return curve->Derivative_2(t);
 }
 
 void IntersectionCurve::Draw(GLFWwindow* window, const Camera& camera)
@@ -331,6 +347,11 @@ const std::vector<float>& IntersectionCurve::GetResultData()
 GLuint IntersectionCurve::TextureId()
 {
     return texture.ID;
+}
+
+void IntersectionCurve::Reverse()
+{
+    curve->Reverse();
 }
 
 IntersectionCurve::~IntersectionCurve()

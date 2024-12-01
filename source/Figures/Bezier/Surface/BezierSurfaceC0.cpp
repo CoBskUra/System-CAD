@@ -1,7 +1,20 @@
 #include "BezierSurfaceC0.h"
 #include <imgui_impl_opengl3.h>
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name, 
+std::shared_ptr<BezierSurfaceC0> BezierSurfaceC0::CreateSurfaceShard_ptr(const char* name, int horizontal, int vertical, glm::vec3 pos)
+{
+	auto bezierS = std::make_shared<BezierSurfaceC0>(name);
+	bezierS->horizontalNum = horizontal;
+	bezierS->verticalNum = vertical;
+	bezierS->creationType = CreationType::surface;
+	bezierS->CreateBezierVAO();
+	bezierS->TurnOffStartupInterfers();
+	bezierS->SetObjectPosition(pos.x, pos.y, pos.z);
+	bezierS->CreateBezierVAO();
+	return bezierS;
+}
+
+BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name,
 	FigureType::BezierSurfaceC0)
 {
 }

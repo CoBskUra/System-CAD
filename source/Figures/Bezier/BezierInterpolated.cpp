@@ -3,10 +3,12 @@
 BezierInterpolated::BezierInterpolated(const char* name) :BezierInterpolated( name,  FigureType::BezierInterpolated)
 {
 	//innerBezierC2.showVirtualPoints = false;
+	Update();
 }
 
 BezierInterpolated::BezierInterpolated():BezierInterpolated( "BezierInterpolated")
 {
+	Update();
 }
 
 BezierInterpolated::BezierInterpolated(MG1::InterpolatedC2 b0, const Scene* scene, int idOffset) :BezierInterpolated() {
@@ -170,6 +172,21 @@ void BezierInterpolated::ChangeShowBezierCurve()
 	innerBezierC0.ChangeShowBezierCurve();
 }
 
+float BezierInterpolated::MaxValue()
+{
+	return innerBezierC0.MaxValue();
+}
+
+int BezierInterpolated::NumberOfPoints()
+{
+	return innerBezierC0.NumberOfPoints();
+}
+
+glm::vec3 BezierInterpolated::Derivative_2(float t)
+{
+	return innerBezierC0.Derivative_2(t);
+}
+
 glm::vec3 BezierInterpolated::Derivative(float t)
 {
 	return innerBezierC0.Derivative(t);
@@ -203,6 +220,11 @@ void BezierInterpolated::SetShowColor(glm::vec4 color)
 {
 	innerBezierC0.SetShowColor(color);
 	Figure::SetShowColor(color);
+}
+
+void BezierInterpolated::Reverse()
+{
+	innerBezierC0.Reverse();
 }
 
 float BezierInterpolated::TakePointDelta(int i)

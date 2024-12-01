@@ -1,4 +1,5 @@
 ﻿#include "Intersection.h"
+#include <Figures/Bezier/BezierCurve.h>
 
 glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 startParametrs, bool derivativeStop) {
 
@@ -128,6 +129,7 @@ glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, Int
 	glm::vec4 lastParams = intersectionParams;
 	glm::vec4 params = intersectionParams;
 	for (int i = 0; i < maxIterations_NextIntersectionParams; i++) {
+		
 		glm::vec3 p1 = object_a->Parametrization(params.x, params.y);
 		glm::vec3 q1 = object_b->Parametrization(params.z, params.w);
 		glm::vec4 f{ 
@@ -162,6 +164,8 @@ glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, Int
 
 		if (glm::dot(params - lastParams, params - lastParams) < eps)
 			break;
+		if (isnan(params.x))
+			return lastParams;
 		lastParams = params;
 	}
 
@@ -248,6 +252,32 @@ glm::vec4 Intersection::ParamsCloseToPoint(glm::vec3 point, IntersectionAble* ob
 	return { params_1.x, params_1.y, params_2.x, params_2.y};
 }
 
+glm::vec2 Intersection::ParamsCloseToPointSample(glm::vec3 point, IntersectionAble* object_a)
+{
+	float dis = M_FLOAT_MAX;
+	glm::vec2 params;
+	float lenght_u = (object_a->Field_u().y - object_a->Field_u().x);
+	float lenght_v = (object_a->Field_v().y - object_a->Field_v().x);
+	float start_u = object_a->Field_u().x;
+	float start_v = object_a->Field_v().x;
+	const float sampleCount = 100.0f;
+	float sampleInvers = 1.0f / sampleCount;
+	for (int i = 0; i <= sampleCount; i++) {
+		for (int j = 0; j <= sampleCount; j++) {
+			glm::vec2 currentParams{ start_v + i*sampleInvers * lenght_v, start_u + j * sampleInvers * lenght_u};
+			glm::vec3 pos = object_a->Parametrization(currentParams.x, currentParams.y);
+			float currentDis = glm::dot(pos - point, pos - point);
+			if (currentDis < dis)
+			{
+				dis = currentDis;
+				params = currentParams;
+			}
+			
+		}
+	}
+	return params;
+}
+
 glm::vec4 Intersection::RandomTheClosetToEachOther(IntersectionAble* object_a, IntersectionAble* object_b)
 {
 	float distance = std::numeric_limits<float>::max();
@@ -301,56 +331,7 @@ glm::vec4 Intersection::RandomTheClosetToPoint(glm::vec3 point, IntersectionAble
 
 glm::vec4 Intersection::TheFaresParams(IntersectionAble* object_a)
 {
-	/*auto comparer = [=](glm::vec4 a, glm::vec4 b) {
-		auto pa_1 = object_a->Parametrization(a.x, a.y);
-		auto pa_2 = object_a->Parametrization(a.z, a.w);
-		auto pb_1 = object_a->Parametrization(b.x, b.y);
-		auto pb_2 = object_a->Parametrization(b.z, b.w);
-
-		auto a_diff = glm::vec2(a.x - a.z, a.y - a.w);
-		auto b_diff = glm::vec2(b.x - b.z, b.y - b.w);
-
-		auto pa_diff = pa_1 - pa_2;
-		auto pb_diff = pa_1 - pa_2;
-
-		return glm::dot(pa_diff, pa_diff)  < glm::dot(pb_diff, pb_diff);
-		};*/
-	//auto canWrap = object_a->CanWrap();
-	//auto fild_u = object_a->Field_u();
-	//auto fild_v = object_a->Field_v();
-
-	//auto comparer = [=](glm::vec4 a, glm::vec4 b) {
-	//	auto pa_1 = object_a->Parametrization(a.x, a.y);
-	//	auto pa_2 = object_a->Parametrization(a.z, a.w);
-	//	auto pb_1 = object_a->Parametrization(b.x, b.y);
-	//	auto pb_2 = object_a->Parametrization(b.z, b.w);
-
-	//	auto a_diff = glm::vec2(a.x - a.z, a.y - a.w);
-	//	auto b_diff = glm::vec2(b.x - b.z, b.y - b.w);
-
-	//	auto pa_diff = pa_1 - pa_2;
-	//	auto pb_diff = pa_1 - pa_2;
-
-	//	//return glm::dot(pa_diff, pa_diff) < glm::dot(pb_diff, pb_diff);
-	//	return glm::dot(a_diff, a_diff) < glm::dot(b_diff, b_diff);
-	//	};
-
-	//float minDist = 1;
-	//glm::vec4 params = RandomParamsCloseTo({ 0,0,0,0 }, 1, object_a, object_a);
-	//for (int i = 0; i < randomTriesToFindMatch; i++) {
-	//	auto randomParams = RandomParamsCloseTo({ 0,0,0,0 }, 1, object_a, object_a);
-
-	//	auto parms_diff = glm::vec2(randomParams.x - randomParams.z, randomParams.y - randomParams.w);
-	//	glm::vec3 parametryzation_diff = object_a->Parametrization(randomParams.x, randomParams.y) - object_a->Parametrization(randomParams.z, randomParams.w);
-	//	if (glm::dot(parametryzation_diff, parametryzation_diff) < minDist && !comparer(randomParams, params))
-	//		params = randomParams;
-	//}
-
-	//auto p1 = object_a->Parametrization(params.x, params.y);
-	//auto p2 = object_a->Parametrization(params.z, params.w);
-	//std::cout << std::endl << p1.x << " " << p1.y <<" " << p1.y << std::endl <<
-	//	p2.x << " " << p2.y << " " << p2.y;
-	//std::cout << std::endl << params.x << " " << params.y << " " << params.z << " " << params.w;
+	
 	std::vector<std::pair< glm::vec2, glm::vec3>> params_value;
 	params_value.reserve((samples * samples));
 	auto fild_u = object_a->Field_u();
@@ -381,6 +362,340 @@ glm::vec4 Intersection::TheFaresParams(IntersectionAble* object_a)
 	}
 
 	return params;
+}
+
+glm::vec3 Intersection::RayIntersection(IntersectionAble* object_a, glm::vec3 pos, glm::vec3 direction, bool& found)
+{
+	/*glm::vec3 params{ 0, 0, 0 };
+	glm::vec3 f{ 1,1,1 };
+	float eps = 0.0001;
+	int i = 0;
+	while (glm::dot(f, f) > eps && i < 50)
+	{
+		if (isnan(params.x) || isnan(params.y) || isnan(params.z))
+		{
+			found = false;
+			return { 0, 0, 0 };
+		}
+
+		f = object_a->Parametrization(params.x, params.y) - pos - params.z * direction;
+		glm::vec3 f_x = object_a->Derivative_v(params.x, params.y);
+		glm::vec3 f_y = object_a->Derivative_u(params.x, params.y);
+		glm::vec3 f_z = -direction;
+		glm::mat3 fd{ f_x, f_y, f_z };
+		params = params - glm::inverse(fd) * f;
+		bool clamped = false;
+		auto cos = Clamp({ params.x, params.y }, object_a, clamped);
+		params.x = cos.x;
+		params.y = cos.y;
+		i++;
+	}
+	found = glm::dot(f, f) < eps;
+
+	return pos + direction*params.z;*/
+	glm::vec3 params{ 0, 0, 0 };
+	glm::vec3 f{ 1,1,1 };
+	float eps = 0.0001;
+	found = false;
+	glm::vec3 d;
+	float lastDerivativeLength = 1;
+	glm::vec3 lastParams = params;
+	float B = 0;
+	for (int i = 0; i < 50; i++)
+	{
+		auto object_v = object_a->Derivative_v(params.x, params.y);
+		auto object_u = object_a->Derivative_u(params.x, params.y);
+		auto object_value = object_a->Parametrization(params.x, params.y);
+		auto ray_value = pos + direction * params.z;
+
+		glm::vec3 currentDerivative = {
+		glm::dot(object_v, object_value) - glm::dot(object_v, ray_value),
+		glm::dot(object_u, object_value) - glm::dot(object_u, ray_value),
+		glm::dot(direction, ray_value) - glm::dot(object_value, direction),
+		};
+
+		float currentDerivativeLength = glm::dot(currentDerivative, currentDerivative);
+
+		B = currentDerivativeLength / lastDerivativeLength;
+		d = -currentDerivative + B * d;
+		if (i % 20 == 0)
+		{
+			d = -currentDerivative;
+			lastDerivativeLength = currentDerivativeLength;
+		}
+		//d = Clamp(d, object_a, object_b);
+
+		// niby jest tutaj szukanie minimum α = min(F(α))
+		// F(a) = f(params + a * d)
+		//float a = StepMinimalization(params, d, 0.0005f, 10, object_a, object_b);
+		float a = 0.1;
+		params = params + a * d;
+		if (isnan(params.x)) {
+			break;
+		}
+		bool tmpBool;
+		auto tmpParams = Clamp({ params.x, params.y }, object_a, tmpBool);
+		params.x = tmpParams.x;
+		params.y = tmpParams.y;
+		lastDerivativeLength = currentDerivativeLength;
+
+		if (glm::dot(object_value - ray_value, object_value - ray_value) < epsilon) {
+			found = true;
+			break;
+		}
+
+		if (glm::dot(d, d) < pow(epsilon, 2))
+			break;
+		lastParams = params;
+	}
+
+
+
+	/*if (derivativeStop && glm::dot(d, d) < pow(epsilon, 2))
+		break;*/
+
+
+
+	return pos + direction * params.z;
+}
+
+glm::vec2 Intersection::IntersectionBezier_2D_XZ(glm::vec2 params, BezierCurve* bezierCurve, glm::vec2 pos, glm::vec2 direction, float r)
+{
+	int k;
+	for ( k = 0; k < 100; k++)
+	{
+		auto tmp_bezier_d = bezierCurve->Derivative(params.s);
+		auto tmp_bezier_dd = bezierCurve->Derivative_2(params.s);
+		auto tmp_bezier_pos = bezierCurve->PositionOnCurve(params.s);
+		glm::vec2 bezier_d{ tmp_bezier_d.x, tmp_bezier_d.z };
+		glm::vec2 bezier_dd{ tmp_bezier_dd.x, tmp_bezier_dd.z };
+		glm::vec2 bezier_pos{ tmp_bezier_pos.x, tmp_bezier_pos.z };
+		glm::vec2 normal{ bezier_d.y, -bezier_d.x };
+		normal = glm::normalize(normal) * r;
+		glm::vec2 normal_d{ bezier_dd.y, -bezier_dd.x };
+		if(glm::dot(normal_d, normal_d) > 0)
+			normal_d = glm::normalize(normal_d) * r;
+		glm::vec2 p = pos + direction * params.t;
+
+		glm::vec2 d{
+			glm::dot(normal_d, normal) + glm::dot(normal_d, bezier_pos) - glm::dot(normal_d, p) +
+				glm::dot(bezier_d, normal) + glm::dot(bezier_d, bezier_pos) - glm::dot(bezier_d, p),
+			glm::dot(p, direction) - glm::dot(bezier_d, p) - glm::dot(normal, p)
+		};
+
+		float a = 0.5;
+
+		params = params - a * d;
+		if (params.s > 1)
+			params.s = 1;
+		else if (params.s < 0)
+			params.s = 0;
+
+		if (glm::dot(d, d) < pow(epsilon, 2))
+			break;
+	}
+
+	return params;
+}
+
+glm::vec2 Intersection::IntersectionBezier_2D_XZ(glm::vec2 params, BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r)
+{
+	float max_1 = bezierCurve_1->MaxValue();
+	float max_2 = bezierCurve_2->MaxValue();
+	for (int k = 0; k < 100; k++) {
+		auto tmp = bezierCurve_1->PositionOnCurve(params.x);
+		glm::vec2 b1{ tmp.x, tmp.z };
+		auto n1 = glm::normalize(Normal_2D(bezierCurve_1, params.x));
+
+		tmp = bezierCurve_2->PositionOnCurve(params.y);
+		glm::vec2 b2{ tmp.x, tmp.z };
+		auto n2 = glm::normalize(Normal_2D(bezierCurve_2, params.y));
+
+		glm::vec2 f = r * (n1 - n2) + b1 - b2;
+
+		if (glm::dot(f, f) < epsilon)
+			break;
+		/*tmp = bezierCurve_1->Derivative(params.x);;
+		glm::vec2 fx = r * NormalizeNormal_2D_Derivative(bezierCurve_1, params.x) + glm::vec2{tmp.x, tmp.z};
+		tmp = bezierCurve_2->Derivative(params.y);
+		glm::vec2 fy = -r * NormalizeNormal_2D_Derivative(bezierCurve_2, params.y) - glm::vec2{ tmp.x, tmp.z };*/
+		glm::vec2 fx = Two_bezierIntersectionDerivative(bezierCurve_1, params.x, r);
+		glm::vec2 fy = Two_bezierIntersectionDerivative(bezierCurve_2, params.y, r);
+		auto invers = glm::inverse(glm::mat2{ fx, fy });
+
+		params = params - invers * f * 0.1f;
+
+		params = { Clamp(params.x, 0, max_1), Clamp(params.y, 0, max_2) };
+	}
+	return params;
+	/*int k;
+	for (k = 0; k < 100; k++)
+	{
+		auto tmp_bezier_d = bezierCurve->Derivative(params.s);
+		auto tmp_bezier_dd = bezierCurve->Derivative_2(params.s);
+		auto tmp_bezier_pos = bezierCurve->PositionOnCurve(params.s);
+		glm::vec2 bezier_d{ tmp_bezier_d.x, tmp_bezier_d.z };
+		glm::vec2 bezier_dd{ tmp_bezier_dd.x, tmp_bezier_dd.z };
+		glm::vec2 bezier_pos{ tmp_bezier_pos.x, tmp_bezier_pos.z };
+		glm::vec2 normal{ bezier_d.y, -bezier_d.x };
+		normal = glm::normalize(normal) * r;
+		glm::vec2 normal_d{ bezier_dd.y, -bezier_dd.x };
+		if (glm::dot(normal_d, normal_d) > 0)
+			normal_d = glm::normalize(normal_d) * r;
+		glm::vec2 p = pos + direction * params.t;
+
+		glm::vec2 d{
+			glm::dot(normal_d, normal) + glm::dot(normal_d, bezier_pos) - glm::dot(normal_d, p) +
+				glm::dot(bezier_d, normal) + glm::dot(bezier_d, bezier_pos) - glm::dot(bezier_d, p),
+			glm::dot(p, direction) - glm::dot(bezier_d, p) - glm::dot(normal, p)
+		};
+
+		float a = 0.5;
+
+		params = params - a * d;
+		if (params.s > 1)
+			params.s = 1;
+		else if (params.s < 0)
+			params.s = 0;
+
+		if (glm::dot(d, d) < pow(epsilon, 2))
+			break;
+	}*/
+
+	//return params;
+}
+
+float Intersection::TheClosetTo(BezierCurve* bezierCurve, glm::vec3 pos)
+{
+	const int iterations = 500;
+	float iterationsInvers = 1.0f / static_cast<float>(iterations);
+	float best = 0;
+	float bestDis = glm::dot(bezierCurve->PositionOnCurve(0) - pos, bezierCurve->PositionOnCurve(0) - pos);
+	for (int i = 0; i <= iterations; i++) {
+		float t = i * iterationsInvers;
+		auto posOnCurve = bezierCurve->PositionOnCurve(t);
+		auto dis = glm::dot(bezierCurve->PositionOnCurve(0) - pos, bezierCurve->PositionOnCurve(0) - pos);;
+		if (dis < bestDis) {
+			bestDis = dis;
+			best = t;
+		}
+	}
+	return best;
+}
+
+std::vector<glm::vec2> Intersection::PosibleIntersections(BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r)
+{
+	std::vector<glm::vec3> posibleIntersections;
+	int samples_1 = bezierCurve_1->NumberOfPoints();
+	int samples_2 = bezierCurve_2->NumberOfPoints();
+	float invers_sample_1 = 1.0f / static_cast<float>(samples_1);
+	float invers_sample_2 = 1.0f / static_cast<float>(samples_2);
+
+	float max_1 = bezierCurve_1->MaxValue();
+	float max_2 = bezierCurve_2->MaxValue();
+	float tolerance = 0.0005;
+	float tolerance_2 = .5f;
+	glm::vec3 lastPosible;
+	for (int i = 0; i < samples_1; i++) {
+		float t1 = max_1 * i * invers_sample_1;
+		auto p1 = MoveAcrossNormal(t1, bezierCurve_1, r);
+
+		for (int j = 0; j < samples_2; j++) {
+			float t2 = max_2 * j * invers_sample_2;
+			auto p2 = MoveAcrossNormal(t2, bezierCurve_2, r);
+
+			auto diff = p1 - p2;
+			float dis_1 = glm::dot(diff, diff);
+			if (dis_1 < tolerance)
+			{
+				if (posibleIntersections.size() != 0) {
+					//auto last = posibleIntersections[posibleIntersections.size() - 1];
+					auto diff_2 = glm::vec2{lastPosible.x, lastPosible.y} - glm::vec2{ t1, t2 };
+					float lastDis = lastPosible.z;
+					lastPosible = { t1, t2, dis_1 };
+					if (abs(diff_2.x * diff_2.y) < tolerance_2 * tolerance_2)
+					{
+						if (lastDis > dis_1)
+							posibleIntersections[posibleIntersections.size() - 1] = lastPosible;
+						continue;
+					}
+				}
+				if (bezierCurve_1 != bezierCurve_2 || fabsf(t1 - t2) > tolerance_2)
+				{
+					lastPosible = { t1, t2, dis_1 };
+					posibleIntersections.push_back(lastPosible);
+				}
+				//break; // zakładam, że w jednym punkcie krzywe nie przecinają się wiele razy
+			}
+		}
+	}
+
+	std::vector<glm::vec2> params(posibleIntersections.size());
+	for (int i = 0; i < posibleIntersections.size(); i++)
+		params[i] = { posibleIntersections[i].x, posibleIntersections[i].y };
+
+	return params;
+}
+
+std::vector<cureIntersectionInfo> Intersection::PosibleIntersections_2(BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r)
+{
+	std::vector<cureIntersectionInfo> posibleIntersections;
+	int samples_1 = bezierCurve_1->NumberOfPoints();
+	int samples_2 = bezierCurve_2->NumberOfPoints();
+	float invers_sample_1 = 1.0f / static_cast<float>(samples_1);
+	float invers_sample_2 = 1.0f / static_cast<float>(samples_2);
+
+	float max_1 = bezierCurve_1->MaxValue();
+	float max_2 = bezierCurve_2->MaxValue();
+	float pices_1 = max_1 * invers_sample_1;
+	float eps = 0.001;
+	for (int i = 0; i < samples_1; i++) {
+		float t1 = max_1 * i * invers_sample_1;
+		auto p1_0 = MoveAcrossNormal(t1, bezierCurve_1, r);
+		float next_1 = max_1 * (i + 1) * invers_sample_1 ;
+		if (next_1 > max_1)
+			next_1 = 0;
+		auto p1_1 = MoveAcrossNormal(next_1, bezierCurve_1, r);
+
+		for (int j = 0; j < samples_2; j++) {
+			float t2 = max_2 * j * invers_sample_2;
+			auto p2_0 = MoveAcrossNormal(t2, bezierCurve_2, r);
+			float next_2 = j < samples_2 ? max_2 * (j + 1) * invers_sample_2 : 0;
+			if (next_2 > max_2)
+				next_2 = 0;
+			auto p2_1 = MoveAcrossNormal(next_2, bezierCurve_2, r);
+
+			glm::vec2 a{ p1_0.x, p1_0.z }, b{ p1_1.x, p1_1.z };
+			glm::vec2 c{ p2_0.x, p2_0.z }, d{ p2_1.x, p2_1.z };
+
+			bool intersect = false;
+			float s;
+			glm::vec2 p = VectorIntersection(a, b, c, d, intersect, s);
+			if(intersect && (bezierCurve_1 != bezierCurve_2 || fabsf(t1 - t2)> pices_1 + 1)){
+				cureIntersectionInfo cii;
+				cii.t1 = t1;
+				cii.bezier_1 = bezierCurve_1;
+				cii.t2 = t2;
+				cii.bezier_2 = bezierCurve_2;
+				cii.pos = p;
+				posibleIntersections.push_back(cii);
+			}
+		}
+	}
+
+	if (bezierCurve_1 == bezierCurve_2) {
+		for (int i = 0; i < posibleIntersections.size(); i++) {
+			for (int j = i + 1; j < posibleIntersections.size(); j++) {
+				auto diff = posibleIntersections[i].pos - posibleIntersections[j].pos;
+				if ( glm::dot(diff, diff)  < eps) {
+					posibleIntersections.erase(posibleIntersections.begin() + j);
+					j--;
+				}
+			}
+		}
+	}
+
+	return posibleIntersections;
 }
 
 inline void Intersection::CalculateObjects_derivative(const glm::vec4& params, IntersectionAble* object_a, IntersectionAble* object_b)
@@ -667,6 +982,33 @@ inline glm::vec4 Intersection::Clamp(glm::vec4 params, IntersectionAble* object_
 		(!canWrap_b.x && result.z != params.z) ||
 		(!canWrap_b.y && result.w != params.w);
 	return result;
+}
+
+inline glm::vec2 Intersection::Clamp(glm::vec2 params, IntersectionAble* object_a, bool& clamped)
+{
+	clamped  = false;
+	auto size_a_v = object_a->Field_v();
+	auto size_a_u = object_a->Field_u();
+
+
+	auto canWrap_a = object_a->CanWrap();
+
+	if (!canWrap_a.x) {
+		params.x = Clamp(params.x, size_a_v.x, size_a_v.y);
+		clamped = true;
+	}
+	else {
+		params.x = Wrap(params.x, size_a_v.x, size_a_v.y);
+	}
+	///
+	if (!canWrap_a.y) {
+		params.y = Clamp(params.y, size_a_u.x, size_a_u.y);
+		clamped = true;
+	}
+	else {
+		params.y = Wrap(params.y, size_a_u.x, size_a_u.y);
+	}
+	return params;
 }
 
 inline float Intersection::Clamp(const float& a, const float& min, const float& max)

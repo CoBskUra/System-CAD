@@ -38,12 +38,44 @@ BezierC0::BezierC0(const char* name, FigureType type) : BezierCurve( name, type)
 	SetUnmarkColor(glm::vec4(1, 1, 0, 1));
 }
 
-glm::vec3 BezierC0::Derivative(float t)
+int BezierC0::NumberOfPoints()
 {
-	int segmentId = (int)(NumberOfSegments() * t);
+	return ContainerSize();
+}
+
+float BezierC0::MaxValue()
+{
+	return NumberOfSegments();
+}
+
+glm::vec3 BezierC0::Derivative_2(float t)
+{
+	/*int segmentId = (int)(NumberOfSegments() * t);
 	if (segmentId == NumberOfSegments())
 		segmentId = segmentId - 1;
-	float newT = ((float)NumberOfSegments()) * t - segmentId;
+	float newT = ((float)NumberOfSegments()) * t - segmentId;*/
+	int segmentId = SegmentID(t);
+	float newT = ValueTForSegment(t, segmentId);
+
+	std::vector<Figure*> points = ControlPointsInSegment(segmentId);
+	std::vector<glm::vec3> pos;
+	pos.reserve(points.size());
+
+	for (auto figure : points) {
+		pos.push_back(figure->transpose->GetPosition());
+	}
+
+	return MathOperations::BezierNDerivative(newT, MathOperations::BezierNDerivative_points(pos));
+}
+
+glm::vec3 BezierC0::Derivative(float t)
+{
+	/*int segmentId = (int)(NumberOfSegments() * t);
+	if (segmentId == NumberOfSegments())
+		segmentId = segmentId - 1;
+	float newT = ((float)NumberOfSegments()) * t - segmentId;*/
+	int segmentId = SegmentID(t);
+	float newT = ValueTForSegment(t, segmentId);
 
 	std::vector<Figure*> points = ControlPointsInSegment(segmentId);
 	std::vector<glm::vec3> pos;
@@ -58,10 +90,12 @@ glm::vec3 BezierC0::Derivative(float t)
 
 glm::vec3 BezierC0::PositionOnCurve(float t)
 {
-	int segmentId = (int)(NumberOfSegments() * t);
+	/*int segmentId = (int)(NumberOfSegments() * t);
 	if (segmentId == NumberOfSegments())
 		segmentId = segmentId - 1;
-	float newT = ((float)NumberOfSegments()) * t - segmentId;
+	float newT = ((float)NumberOfSegments()) * t - segmentId;*/
+	int segmentId = SegmentID(t);
+	float newT = ValueTForSegment(t, segmentId);
 
 	std::vector<Figure*> points = ControlPointsInSegment(segmentId);
 	std::vector<glm::vec3> pos;

@@ -7,6 +7,7 @@
 #include "Figures/Point.h"
 #include "Figures/Bezier/BezierInterpolated.h"
 #include "Figures/Bezier/IntersectionCurve.h"
+#include <glm/gtx/string_cast.hpp>
 
 class IntersectionWindow: public WindowParent {
 public:
@@ -110,6 +111,7 @@ public:
 			
 
 			auto params = intersections.FirstIntersectionPoint(object_a, object_b, closeParams);
+			std::cout << glm::to_string(params)<< std::endl;
 			if (figure_2->GetId() == figure_1->GetId() &&
 				abs(params.x - params.z) < 0.001 &&
 				abs(params.y - params.w) < 0.001) {

@@ -1,7 +1,6 @@
 #version 410
 
 layout (equal_spacing ,isolines) in;
-in float additionalData[];
 
 uniform int VERTICAL_DRAW;
 uniform mat4 CAM_MATRIX;

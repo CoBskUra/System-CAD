@@ -13,6 +13,11 @@ Manager::Manager(Camera* camera, GLFWwindow* window):
 
 void Manager::MenuInterferes()
 {
+	ImGui::Begin("test tekstury"); {
+		heightGenerator.Interfers(sher_ptrScene.get());
+	}
+	ImGui::End();
+
 	ImGui::Begin("Menu");
 	{
 		if (ImGui::RadioButton("Turn on stereoscopic view", stereoscopicView.turnOn))

@@ -34,6 +34,9 @@ public:
 	void ChangeShowBezierCurve() override;
 	void ChangeShowBezierPol() override;
 
+	int NumberOfPoints() override;
+	float MaxValue() override;
+	glm::vec3 Derivative_2(float t) override;
 	glm::vec3 Derivative(float t) override;
 	glm::vec3 PositionOnCurve(float t) override;
 protected:

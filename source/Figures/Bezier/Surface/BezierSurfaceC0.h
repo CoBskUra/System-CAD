@@ -10,6 +10,7 @@ class BezierSurfaceC0: public BezierSurface
 {
 public:
 
+	static std::shared_ptr<BezierSurfaceC0> CreateSurfaceShard_ptr(const char* name, int horizontal, int vertical, glm::vec3 pos);
 	BezierSurfaceC0(const char* name);
 	BezierSurfaceC0(MG1::BezierSurfaceC0 bs2, Scene* scene, int idOffset);
 	BezierSurfaceC0();

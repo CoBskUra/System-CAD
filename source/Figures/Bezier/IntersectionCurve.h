@@ -20,6 +20,10 @@ class IntersectionCurve : public BezierCurve, public IntersectionResultInfo {
 public:
 
 	IntersectionCurve(std::vector<glm::vec2> params, std::shared_ptr<Figure> figure, Scene* scene);
+
+	int NumberOfPoints() override;
+	float MaxValue() override;
+	glm::vec3 Derivative_2(float t) override;
 	glm::vec3 Derivative(float t) override;
 	glm::vec3 PositionOnCurve(float t) override;
 	void Draw(GLFWwindow* window, const Camera& camera) override;
@@ -36,5 +40,8 @@ public:
 
 	const std::vector<float>& GetResultData() override;
 	GLuint TextureId() override;
+
+	void Reverse() override;
+
 	~IntersectionCurve();
 };

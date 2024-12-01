@@ -29,6 +29,7 @@ public:
 	void virtual Update();
 	bool virtual Swap(Figure* from, std::shared_ptr<Figure> to);
 	Figure* At(int i) const;
+	void virtual Reverse();
 
 	virtual ~FigureContainer();
 };
