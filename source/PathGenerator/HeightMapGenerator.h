@@ -8,6 +8,8 @@
 #include <Figures/Bezier/IntersectionCurve.h>
 #include <Figures/Bezier/Surface/BezierSurfaceC0.h>
 #include "glm/gtx/string_cast.hpp"
+#include <ctime>    
+#include <future>
 
 class HeightMapGenerator {
 	Texture heightTexture{ GL_TEXTURE_2D };
@@ -19,6 +21,10 @@ class HeightMapGenerator {
 	float tolerance = 0.95;
 	float error = 2;
 	float epsilon = 0.000001;
+	const float r = 10.0f * 0.5f / 50.0f;
+	const float scale = 50;
+	const glm::vec3 center{ 1.5, 0, 1.5 };
+	const glm::vec3 bease{ 0, baseHeight, 0 };
 
 	void ResizeHeights() {
 		heights.resize(resolution_x * resolution_z);
@@ -53,6 +59,11 @@ public:
 		{
 			Path_2(scene);
 		}
+		if (ImGui::Button("Sziezki_1.5"))
+		{
+			Path_1dot5(scene);
+		}
+
 		ShowTexture();
 	}
 
@@ -262,6 +273,12 @@ public:
 			}*/
 		}
 
+		auto lastPos = positions[positions.size() - 1];
+		lastPos.y = 60;
+		positions.push_back(lastPos);
+		positions.push_back({0, 60, 0});
+
+
 		SavePath("D:/fast_acess/Studia/MINI CAD-CAM/Programowanie urz¹dŸeñ sterowanych numerycznie/Projekty/symulator/MillingCutterSimulator/Paths/sciezki.k16", positions);
 
 	}
@@ -312,9 +329,7 @@ public:
 
 	void Path_2(Scene* scene) {
 		auto bezierS = BezierSurfaceC0::CreateSurfaceShard_ptr("bezier", 1, 1, { 1.5f, 0, 1.5f });
-		float r = 10.0f * 0.5 / 50.0f;
-		float scale = 50;
-		glm::vec3 center{ 1.5, 0, 1.5 };
+		
 		Intersection intersection{};
 		std::vector<IntersectionAble*> intersectionAbles;
 		intersectionAbles.reserve(scene->figureContainers.size() * 2);
@@ -380,22 +395,47 @@ public:
 		/*params = intersection.IntersectionBezier_2D_XZ(params, interCurves[0].get(), {0, 3}, {1, 0}, 6.0f / 5.0f);*/
 
 		std::cout << params.x << " " << params.y;
-		auto body_1_taile_1 = intersection.PosibleIntersections_2(interCurves[0].get(), interCurves[1].get(), r);
-		auto body_1_leftFin_1 = intersection.PosibleIntersections_2(interCurves[0].get(), interCurves[2].get(), r);
-		auto body_1_rightFin_1 = intersection.PosibleIntersections_2(interCurves[0].get(), interCurves[3].get(), r);
+		auto future_body_1_taile_1 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[0].get(), interCurves[1].get(), r);
+		auto future_body_1_leftFin_1 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[0].get(), interCurves[2].get(), r);
+		auto future_body_1_rightFin_1 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[0].get(), interCurves[3].get(), r);
 
-		auto body_1_taile_2 = intersection.PosibleIntersections_2(interCurves[0].get(), interCurves[5].get(), r);
+		auto future_body_1_taile_2 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[0].get(), interCurves[5].get(), r);
 
-		auto body_2_taile_2 = intersection.PosibleIntersections_2(interCurves[4].get(), interCurves[5].get(), r);
+		auto future_body_2_taile_2 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[4].get(), interCurves[5].get(), r);
 
-		auto body_2_leftFin_2 = intersection.PosibleIntersections_2(interCurves[4].get(), interCurves[6].get(), r);
-		auto body_2_rightFin_2 = intersection.PosibleIntersections_2(interCurves[4].get(), interCurves[7].get(), r);
+		auto future_body_2_leftFin_2 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[4].get(), interCurves[6].get(), r);
+		auto future_body_2_rightFin_2 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[4].get(), interCurves[7].get(), r);
 
-		auto body_2_taile_1 = intersection.PosibleIntersections_2(interCurves[4].get(), interCurves[1].get(), r);
+		auto future_body_2_taile_1 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[4].get(), interCurves[1].get(), r);
 
+		auto future_taile_1_taile_1 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[1].get(), interCurves[1].get(), r);
+		auto future_taile_2_taile_2 = std::async(std::launch::async, &Intersection::PosibleIntersections_2, &intersection,
+			interCurves[5].get(), interCurves[5].get(), r);
 
-		auto taile_1_taile_1 = intersection.PosibleIntersections_2(interCurves[1].get(), interCurves[1].get(), r);
-		auto taile_2_taile_2 = intersection.PosibleIntersections_2(interCurves[5].get(), interCurves[5].get(), r);
+		// Pobieranie wyników
+		auto body_1_taile_1 = future_body_1_taile_1.get();
+		auto body_1_leftFin_1 = future_body_1_leftFin_1.get();
+		auto body_1_rightFin_1 = future_body_1_rightFin_1.get();
+
+		auto body_1_taile_2 = future_body_1_taile_2.get();
+		auto body_2_taile_2 = future_body_2_taile_2.get();
+
+		auto body_2_leftFin_2 = future_body_2_leftFin_2.get();
+		auto body_2_rightFin_2 = future_body_2_rightFin_2.get();
+
+		auto body_2_taile_1 = future_body_2_taile_1.get();
+
+		auto taile_1_taile_1 = future_taile_1_taile_1.get();
+		auto taile_2_taile_2 = future_taile_2_taile_2.get();
 
 		std::vector<std::vector<cureIntersectionInfo>> intersections{
 			body_1_taile_1, body_1_leftFin_1, body_1_rightFin_1, body_1_taile_2,
@@ -420,7 +460,7 @@ public:
 		results.reserve(1024);
 		results.push_back({ 0, 60, 0 });
 		results.push_back({ 0, 60, 0 });
-		glm::vec3 bease{ 0, baseHeight, 0 };
+		results.push_back({ 0, 60, 0 });
 		do {
 			std::shared_ptr <Point> point = std::make_shared<Point>();
 			if (current_t > currentCure->MaxValue())
@@ -435,76 +475,270 @@ public:
 				if (info.ShouldMove(currentCure, current_t, nextParam - 0.001))
 				{
 					switchCount++;
-					auto next = info.MoveToNextCurve(currentCure);
+					auto next = info.MoveToNextCurve(currentCure, current_t);
 					std::cout << current_t << std::endl;
+					if (currentCure == next.first || switchCount == 9 || switchCount == 4)
+					{
+						int numberOfOut = 2;
+						current_t -= nextParam * numberOfOut;
+						float lest = info.t1_1 < info.t2_1 ? info.t1_1 : info.t2_1;
+						if(switchCount == 4)
+							lest = !(info.t1_1 < info.t2_1) ? info.t1_1 : info.t2_1; // mam to gdzieœ boto ostatnia zmiana a ja jestem zmêczony. Problem jest taki, ¿e to nie jest samo przeciêcie, wiêc za³o¿enie, ¿e idziemy z mniejszej wartoœci do wiêkszej jest b³êdne.
+						float larger_1 = lest == info.t1_1 ? info.t1_2 : info.t2_2;
+						//if (switchCount == 4 || switchCount == 9 || switchCount == 8)
+						if ( switchCount == 3)
+							larger_1 = lest + (larger_1 - lest) * 0.3f;
+						else if(switchCount == 8)
+							larger_1 = lest + (larger_1 - lest) * 0.8f;
+						else
+							larger_1 = lest + (larger_1 - lest) * 0.5f;
+						//else
+						//	larger_1 = lest;
+						nextParam = (larger_1 - current_t) / numberOfOut;
+						for (int i = 0; i < numberOfOut; i++) {
+							results.pop_back();
+							scene->DeleteLastFigure();
+							bezierInterpolaited->Erase(point.get());
+						}
+						for (int i = 0; i <= 16* numberOfOut; i++) {
+							current_t += nextParam * 0.0625 * min(1, i);
+							if (current_t > currentCure->MaxValue())
+								current_t = current_t - currentCure->MaxValue();
+							std::shared_ptr <Point> point2 = std::make_shared<Point>();
+							position = intersection.MoveAcrossNormal(current_t, currentCure, r);
+							results.push_back((position - center) * scale + bease);
+							point2->transpose->SetObjectPosition(intersection.MoveAcrossNormal(current_t, currentCure, r));
+							scene->AddFigure(point2);
+							bezierInterpolaited->Add(point2.get());
+						}
+
+						float larger = info.t1_2 > info.t2_2 ? info.t1_2 : info.t2_2;
+						if(currentCure == next.first)
+							next.second = larger;
+					}
+
 					currentCure = next.first;
 					current_t = next.second;
 					std::cout << switchCount << " " << glm::to_string(info.pos) << " " << current_t << std::endl;
 					auto der = currentCure->Derivative(current_t);
 					auto derLength = glm::dot(der, der);
 					nextParam = 0.5f;
-					if (switchCount == 8)
+					if (switchCount == 8 || switchCount == 3)
+					{
 						nextParam = 0.125f;
+					}
 					break;
 				}
 			}
-			if ((switchCount == 2 && current_t >= 112.0f) || (switchCount == 7 && current_t >= 120.0))
-				nextParam = 0.125f;
 			current_t += nextParam;
 
 		} while (fabsf(current_t - start_t) > nextParam - 0.001 || startCure != currentCure);
 		scene->AddFigure(bezierInterpolaited);
-		
-		results[1].x = results[2].x;
-		results[1].z = results[2].z;
-		SavePath("D:/fast_acess/Studia/MINI CAD-CAM/Programowanie urz¹dŸeñ sterowanych numerycznie/Projekty/symulator/MillingCutterSimulator/Paths/sciezki_2.f10", results);
+
+		results[1].x = results[3].x;
+		results[1].z = - 75 - 5.0f - 0.1f;
+
+		results[2] = results[1];
+		results[2].y = baseHeight;
+		auto last = results[results.size() - 1];
+		last.y = 60;
+		results.push_back(last);
+		results.push_back({ 0, 60, 0 });
+
+		std::string outFile = std::string("D:/fast_acess/Studia/MINI CAD-CAM/Programowanie urz¹dŸeñ sterowanych numerycznie/Projekty/symulator/MillingCutterSimulator/Paths/sciezki_2.f10");
+		SavePath(outFile.c_str(), results);
 
 
-		/*for (int i = 0; i < interCurves.size(); i++) {
-			for (int j = i + 1; j < interCurves.size(); j++) {
-				auto posibleIntersectionPoints = intersection.PosibleIntersections(interCurves[i].get(), interCurves[j].get(), r);
-				intersectionPoints.push_back(posibleIntersectionPoints);
-			}
-		}*/
-		/*for (auto pip : posibleIntersectionPoints)
-		{
-			auto p = intersection.IntersectionBezier_2D_XZ(pip, interCurves[0].get(), interCurves[1].get(), r);
-			std::cout << glm::to_string(interCurves[0]->PositionOnCurve(p.x)) << "\n" << glm::to_string(interCurves[1]->PositionOnCurve(p.y));
-		}*/
-		/*std::vector<std::shared_ptr<Point>> points;
-		points.reserve(20);
-		int cos = 0;
-		for (auto params : intersections) {
-			int id = 0;
-			if (cos < 4)
-				id = 0;
-			else if (cos < 8)
-				id = 4;
-			else if (cos == 8)
-				id = 1;
-			else
-				id = 5;
-
-			auto curve = interCurves[id];
-			for (auto p : params) {
-				std::shared_ptr <Point> point = std::make_shared<Point>();
-				point->transpose->SetObjectPosition({p.pos.x, 0, p.pos.y});
-				scene->AddFigure(point);
-			}
-			cos++;
-		}*/
 
 		for (int i = 0; i < interCurves.size(); i++) {
 			scene->AddFigure(interCurves[i]);
 		}
 		scene->AddFigure(bezierS);
+	}
 
-		/*for (int i = 0; i < 5; i++) {
-			std::shared_ptr <Point> start = std::make_shared<Point>();
-			start->transpose->SetObjectPosition(intersection.MoveAcrossNormal(interCurves[0]->MaxValue() * 0.75 + i * 10, interCurves[0].get(), r));
-			scene->AddFigure(start);
-		}*/
+	void Path_1dot5(Scene* scene) {
+		auto vertexes = LoadPath("D:/fast_acess/Studia/MINI CAD-CAM/Programowanie urz¹dŸeñ sterowanych numerycznie/Projekty/symulator/MillingCutterSimulator/Paths/sciezki_2.f10");
+		float distanceBeetwenPaths = 2 * r - r / 5.0f;
+		vertexes.erase(vertexes.begin(), vertexes.begin() + 3);
+
+		std::vector<glm::vec3> points;
+		glm::vec3 direction_z{ 0, 0, 1 };
+		glm::vec3 direction_x{ 1, 0, 0 };
+
+		const glm::vec3 up{ 0, 0, 1 };
+		const glm::vec3 down{ 0, 0, -1 };
+		const glm::vec3 right{ 1, 0, 0 };
+		const glm::vec3 left{ -1, 0, 0 };
+
+		glm::vec3 directionVertical = up;
+		glm::vec3 directionHorizontal = right;
+
+		const float halfDistanceBeetwenPaths = distanceBeetwenPaths * 0.5f;
+		points.push_back({ 0, 60, 0 });
+		points.push_back({ -75 + halfDistanceBeetwenPaths, 60, -75 - distanceBeetwenPaths * 2});
+
+		glm::vec3 pos{ halfDistanceBeetwenPaths, 0, -distanceBeetwenPaths * 2 };
+		points.push_back(TransformOrigin(pos));
+		glm::vec3 min{ halfDistanceBeetwenPaths * 0.5f, 0, 0 },
+			max{ 3 - halfDistanceBeetwenPaths * 0.5f, 5, 3 };
+		for(int i =0; i < 38; i++) {
+			
+			auto block = LegalPosition(vertexes, pos, directionVertical, 0); // obliczanie pozycji przeszkody
+			
+			float additionalScalar = 1;
+			if (i == 2 || i == 30 || i == 31 || i == 35 || i == 16 || i == 15)
+				additionalScalar = 0.5f;
+			else if(i == 3 || i == 22)
+				additionalScalar = 0.2f;
+
+			// nie napotkano przeszkody
+			if (isnan(block.first)) { 
+				// obcinanie do krawêdzi
+				ClampPos(pos + directionVertical * 10.0f, min, max, pos); 
+				points.push_back(TransformOrigin(pos));
+				pos += directionHorizontal * distanceBeetwenPaths * additionalScalar;
+				if (pos.x > max.x)
+				{
+					directionHorizontal = SwitchDirection(directionHorizontal, left, right);
+					ClampPos(pos, min, max, pos);
+				}
+				else if (pos.x < min.x)
+					break;
+				points.push_back(TransformOrigin(pos));
+				directionVertical = SwitchDirection(directionVertical, up, down);
+			}
+			else {
+				glm::vec3 border = block.second - directionVertical * halfDistanceBeetwenPaths;
+				points.push_back(TransformOrigin(border));
+
+				auto posiblePos = LegalPosition(vertexes, border, directionHorizontal, 0);
+				if (isnan(posiblePos.first) ||
+					glm::dot(border - posiblePos.second, border - posiblePos.second) > distanceBeetwenPaths * distanceBeetwenPaths)
+					pos = border + directionHorizontal * distanceBeetwenPaths;
+				else
+				{
+					pos = pos - directionVertical * 10.0f + directionHorizontal * distanceBeetwenPaths * additionalScalar;
+					pos = LegalPosition(vertexes, pos, directionVertical, 0).second - directionVertical * halfDistanceBeetwenPaths * 0.15f;
+				}
+				points.push_back(TransformOrigin(pos));
+				directionVertical = SwitchDirection(directionVertical, up, down);
+			}
+			
+		}
+		auto last = points[points.size() - 1];
+		last.y = 60;
+		points.push_back(last);
+		points.push_back({ 0, 60, 0 });
+
+		std::string outFile = std::string("D:/fast_acess/Studia/MINI CAD-CAM/Programowanie urz¹dŸeñ sterowanych numerycznie/Projekty/symulator/MillingCutterSimulator/Paths/") + std::string("sciezki_1.5.f10");
+		SavePath(outFile.c_str(), points);
+	}
+
+	glm::vec3 SwitchDirection(glm::vec3 d_current, glm::vec3 d1, glm::vec3 d2) {
+		if (d_current == d1)
+			return d2;
+		else
+			return d1;
+	}
+
+	bool ClampPos(glm::vec3 pos, const glm::vec3& min, const glm::vec3& max, glm::vec3& result) {
+		result = pos;
+		if (pos.x > max.x) pos.x = max.x;
+		if (pos.y > max.y) pos.y = max.y;
+		if (pos.z > max.z) pos.z = max.z;
+		if (pos.x < min.x) pos.x = min.x;
+		if (pos.y < min.y) pos.y = min.y;
+		if (pos.z < min.z) pos.z = min.z;
+		bool clamped = result == pos;
+		result = pos;
+		return clamped;
+	}
+
+	std::pair<float, glm::vec3> LegalPosition(const std::vector<glm::vec3> points, glm::vec3 start, glm::vec3 direction, float dis) {
+		const float epsilon = 0.0001;
+		float s = M_FLOAT_MAX;
+		float a = glm::dot(direction, direction);
+		float aInvers = 1.0f / a;
+		float disPow = dis * dis;
+		float smalestDistance = M_FLOAT_MAX;
+		for (auto point : points) {
+			glm::vec3 startMPoint = start - point;
+			float startMPointsPow = glm::dot(startMPoint, startMPoint);
+			float b = 2 * glm::dot(startMPoint, direction);
+			float c = startMPointsPow - disPow;
+			float delta = b * b - 4 * a * c;
+
+			float s_tmp;
+			float tmpDis;
+			if (delta < 0){
+				s_tmp = -b / (2 * a);
+				s_tmp = s_tmp < 0 ? 0 : s_tmp;
+				auto dif = start + direction * s_tmp - point;
+				tmpDis = glm::dot(dif, dif) - disPow;
+
+				if (tmpDis < epsilon)
+					tmpDis = 0;
+			}
+			else {
+				float s_1 = (-b - sqrt(delta)) / (2 * a);
+				s_1 = s_1 < 0 ? M_FLOAT_MAX : s_1;
+				float s_2 = (-b + sqrt(delta)) / (2 * a);
+				s_2 = s_2 < 0 ? M_FLOAT_MAX : s_2;
+
+				s_tmp = min(s_1, s_2);
+				tmpDis = 0;
+			}
+
+			if (tmpDis < smalestDistance || 
+				(tmpDis == smalestDistance && s_tmp < s)) {
+				s = s_tmp;
+				smalestDistance = tmpDis;
+			}
+		}
+
+		if (s >= M_FLOAT_MAX || smalestDistance > 0)
+			return { NAN, start * NAN};
+
+		return { s, start + direction * s };
 	}
 
 
+
+	std::vector<glm::vec3> LoadPath(const char* pathToFile)
+	{
+		std::vector<glm::vec3> path;
+		std::string  tmpPath{ pathToFile };
+		int exeStartPos = tmpPath.find_last_of('.') + 1;
+
+		std::string line;
+		std::ifstream myfile(pathToFile);
+		int numberOfLines = std::count(std::istreambuf_iterator<char>(myfile),
+			std::istreambuf_iterator<char>(), '\n');
+		path.clear();
+		path.reserve(numberOfLines);
+		myfile.seekg(0);
+		float scaleInvers = 1.0f / scale;
+		if (myfile.is_open())
+		{
+			while (std::getline(myfile, line))
+			{
+				//std::cout << line << '\n';
+				int x = line.find('X') + 1;
+				int y = line.find('Y') + 1;
+				int z = line.find('Z') + 1;
+				glm::vec3 pos{ std::stof(&line[x]), std::stof(&line[z]), std::stof(&line[y]) };
+				pos = (pos - bease) * scaleInvers + center;
+
+				path.push_back(pos);
+			}
+			myfile.close();
+		}
+
+		else std::cout << "Unable to open file";
+		return path;
+	}
+
+	inline glm::vec3 TransformOrigin(const glm::vec3& position) {
+		return (position - center) * scale + bease;
+	}
 };

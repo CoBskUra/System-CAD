@@ -10,23 +10,36 @@
 struct cureIntersectionInfo {
 	glm::vec2 pos;
 	BezierCurve* bezier_1;
-	float t1;
+	float t1_1;
+	float t1_2;
 	BezierCurve* bezier_2;
-	float t2;
+	float t2_1;
+	float t2_2;
 
-	std::pair<BezierCurve*, float> MoveToNextCurve(BezierCurve* curve) {
+	std::pair<BezierCurve*, float> MoveToNextCurve(BezierCurve* curve, float t = -1) {
+		if (curve == bezier_1 && curve == bezier_2) {
+			if (fabsf(t1_1 - t) < fabsf(t2_1 - t)) {
+				return { bezier_2 , t2_2 };
+			}
+			else
+				return { bezier_1 , t1_2 };
+		}
+
 		if (curve == bezier_1)
-			return { bezier_2 , t2 };
+			return { bezier_2 , t2_2 };
 		else if(curve == bezier_2)
-			return { bezier_1 , t1 };
+			return { bezier_1 , t1_2 };
 		return { nullptr, -1 };
 	}
 
 	bool ShouldMove(BezierCurve* curve, float t, float dis = 0.49f) {
+		if (curve == bezier_1 && curve == bezier_2)
+			return fabsf(t1_1 - t) < dis || fabsf(t2_1 - t) < dis;
+
 		if (curve == bezier_1)
-			return fabsf(t1 - t) < dis;
+			return fabsf(t1_1 - t) < dis;
 		else if (curve == bezier_2)
-			return fabsf(t2 - t) < dis;
+			return fabsf(t2_1 - t) < dis;
 		return false;
 	}
 };

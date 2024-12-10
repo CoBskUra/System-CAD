@@ -42,7 +42,7 @@ public:
 		return t;
 	}
 
-	inline int ValueTForSegment(float t, int segmentId) {
+	inline float ValueTForSegment(float t, int segmentId) {
 		return t - segmentId;
 	}
 

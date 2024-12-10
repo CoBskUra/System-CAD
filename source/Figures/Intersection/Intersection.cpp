@@ -639,6 +639,7 @@ std::vector<glm::vec2> Intersection::PosibleIntersections(BezierCurve* bezierCur
 
 std::vector<cureIntersectionInfo> Intersection::PosibleIntersections_2(BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r)
 {
+	std::cout << "robi sie" << std::endl;
 	std::vector<cureIntersectionInfo> posibleIntersections;
 	int samples_1 = bezierCurve_1->NumberOfPoints();
 	int samples_2 = bezierCurve_2->NumberOfPoints();
@@ -673,9 +674,11 @@ std::vector<cureIntersectionInfo> Intersection::PosibleIntersections_2(BezierCur
 			glm::vec2 p = VectorIntersection(a, b, c, d, intersect, s);
 			if(intersect && (bezierCurve_1 != bezierCurve_2 || fabsf(t1 - t2)> pices_1 + 1)){
 				cureIntersectionInfo cii;
-				cii.t1 = t1;
+				cii.t1_1 = t1;
+				cii.t1_2 = next_1;
 				cii.bezier_1 = bezierCurve_1;
-				cii.t2 = t2;
+				cii.t2_1 = t2;
+				cii.t2_2 = next_2;
 				cii.bezier_2 = bezierCurve_2;
 				cii.pos = p;
 				posibleIntersections.push_back(cii);
