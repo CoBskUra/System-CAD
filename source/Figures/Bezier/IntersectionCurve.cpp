@@ -97,6 +97,81 @@ IntersectionCurve::IntersectionCurve(std::vector<glm::vec2> parametryzationVecto
 	texture.Unbind();
 }
 
+IntersectionCurve::IntersectionCurve(std::vector<glm::vec2> parametryzationVector, std::shared_ptr<Figure> figure, IntersectionAble* intersectionAble, Scene* scene) :BezierCurve("IntersectionCurve", FigureType::IntersectionCurve)
+{
+
+    intersectedFigure = figure;
+    curve = std::make_shared<BezierInterpolated>("BezierInterpolated-Intersection");
+    this->scene = scene;
+
+    if (!curve->showBezierPol)
+        curve->ChangeShowBezierPol();
+    if (curve->showBezierCurve)
+        curve->ChangeShowBezierCurve();
+
+
+    points.reserve(parametryzationVector.size());
+    params = parametryzationVector;
+    for (glm::vec2 pos : parametryzationVector) {
+        std::shared_ptr<Point> point = std::make_shared<Point>();
+        point->transpose->SetObjectPosition(intersectionAble->Parametrization(pos.x, pos.y));
+        curve->Add(point.get());
+        points.push_back(point);
+    }
+
+    curve->Unmark();
+    SetUnmarkColor({ 0.215, 1, 0.129f, 1 });
+    curve->Update();
+
+    glm::vec2 field_v = intersectionAble->Field_v();
+    glm::vec2 field_u = intersectionAble->Field_u();
+    float length_v = field_v.y - field_v.x;
+    float length_u = field_u.y - field_u.x;
+
+    data = std::vector<float>(N * N);
+    for (int k = 0; k < parametryzationVector.size() - 1; k++)
+    {
+        auto pos = parametryzationVector[k];
+        int y1 = (N - 1) * (pos.x - field_v.x) / length_v;
+        int x1 = (N - 1) * (pos.y - field_u.x) / length_u;
+
+        auto pos2 = parametryzationVector[k + 1];
+        int y2 = (N - 1) * (pos2.x - field_v.x) / length_v;
+        int x2 = (N - 1) * (pos2.y - field_u.x) / length_u;
+
+        glm::vec2 vector{ x2 - x1, y2 - y1 };
+        glm::vec2 vectorWrapped{ x1 + (N - x2), y1 + (N - y2) };
+        if (abs(x2 - x1) > abs(x1 + (N - x2)) || abs(x2 - x1) > abs(x2 + (N - x1)))
+        {
+            if (x2 < x1)
+                x2 += N;
+            else
+                x2 -= N;
+
+        }
+
+        if (abs(y2 - y1) > abs(y1 + (N - y2)) || abs(y2 - y1) > abs(y2 + (N - y1)))
+        {
+            if (y2 < y1)
+                y2 += N;
+            else
+                y2 -= N;
+        }
+
+        BresenhamLineWraped(data, x1, y1, x2, y2);
+    }
+
+    auto wrap = intersectionAble->CanWrap();
+    std::swap(wrap.x, wrap.y);
+    FloodFill(data, wrap);
+    texture.Recreat();
+    texture.Bind();
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, N, N, 0, GL_RED, GL_FLOAT, data.data());
+    texture.Unbind();
+}
+
 int IntersectionCurve::NumberOfPoints()
 {
     return curve->NumberOfPoints();;
@@ -133,50 +208,56 @@ void IntersectionCurve::ActiveImGui()
 
 void IntersectionCurve::FigureSpecificImGui()
 {
-    if (intersectedFigure.expired()) {
-        scene->DeleteFigureById(GetId());
-        return;
-    }
+    ImGui::PushID(GetId());
 
-	if (ImGui::Button("Convert to Interpolated##IntersectionCurve")) {
-		ConvertToInterpolated();
-	}
-	ImGui::Text("pointer = %x", texture.ID);
-
-    ImGui::Text("figure: %s", intersectedFigure.lock()->name);
-	ImGui::Text("size = %d x %d", N, N);
-    ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(N, N));
-
-    bool refresh = false;
-    if (ImGui::RadioButton("Show red##IntersectionCurve", showRed)) {
-        showRed = !showRed;
-        refresh = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::RadioButton("Show black##IntersectionCurve", !showRed)) {
-        showRed = !showRed;
-        refresh = true;
-        
-    }
-
-    if (ImGui::RadioButton("Include intersection##IntersectionCurve", includeIntersection)) {
-        includeIntersection = !includeIntersection;
-        refresh = true;
-        
-    }
-
-    if (refresh)
+    ImGui::BeginGroup();
     {
-        auto inter = dynamic_cast<IntersectionAble*>(intersectedFigure.lock().get());
+        if (intersectedFigure.expired()) {
+            scene->DeleteFigureById(GetId());
+            return;
+        }
 
-        float min = showRed ? 0.5f : 0.0f;
-        float max = showRed ? 1.0f : 0.49f;
-        if (includeIntersection)
-            inter->AddActiveTexture(this, min, max);
-        else
-            inter->RemoveActiveTexture(TextureId());
+        if (ImGui::Button("Convert to Interpolated##IntersectionCurve")) {
+            ConvertToInterpolated();
+        }
+        ImGui::Text("pointer = %x", texture.ID);
+
+        ImGui::Text("figure: %s", intersectedFigure.lock()->name);
+        ImGui::Text("size = %d x %d", N, N);
+        ImGui::Image((void*)(intptr_t)texture.ID, ImVec2(N, N));
+
+        bool refresh = false;
+        if (ImGui::RadioButton("Show red##IntersectionCurve", showRed)) {
+            showRed = !showRed;
+            refresh = true;
+        }
+        ImGui::SameLine();
+        if (ImGui::RadioButton("Show black##IntersectionCurve", !showRed)) {
+            showRed = !showRed;
+            refresh = true;
+
+        }
+
+        if (ImGui::RadioButton("Include intersection##IntersectionCurve", includeIntersection)) {
+            includeIntersection = !includeIntersection;
+            refresh = true;
+
+        }
+
+        if (refresh)
+        {
+            auto inter = dynamic_cast<IntersectionAble*>(intersectedFigure.lock().get());
+
+            float min = showRed ? 0.5f : 0.0f;
+            float max = showRed ? 1.0f : 0.49f;
+            if (includeIntersection)
+                inter->AddActiveTexture(this, min, max);
+            else
+                inter->RemoveActiveTexture(TextureId());
+        }
     }
-
+    ImGui::EndGroup();
+    ImGui::PopID();
 }
 
 glm::vec4 IntersectionCurve::SetUnmarkColor(glm::vec4 color)

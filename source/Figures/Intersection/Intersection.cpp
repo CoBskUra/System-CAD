@@ -1,8 +1,19 @@
 ﻿#include "Intersection.h"
 #include <Figures/Bezier/BezierCurve.h>
 
-glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 startParametrs, bool derivativeStop) {
+bool Intersection::IsLoop(glm::vec2 p0, glm::vec2 p1, glm::vec2 p2)
+{
+	glm::vec2 a = p1 - p0;
+	glm::vec2 b = p2 - p1;
+	glm::vec2 c = p0 - p2;
+	if (glm::dot(b, b) + glm::dot(c, c) < glm::dot(a, a))
+		return true;
+	return false;
+}
 
+glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 startParametrs, float functionEpsilon, bool derivativeStop) {
+	if (functionEpsilon == -1)
+		functionEpsilon = epsilon;
 	glm::vec4 params = startParametrs;
 	for (int k = 0; k < retries_FirstIntersectionPoint; k++)
 	{
@@ -34,26 +45,26 @@ glm::vec4 Intersection::FirstIntersectionPoint(IntersectionAble* object_a, Inter
 				lastDerivativeLength = currentDerivativeLength;
 
 
-				if (glm::dot(d, d) < pow(epsilon, 2) )
+				if (glm::dot(d, d) < pow(functionEpsilon, 2) )
 					break;
 				lastParams = params;
 			}
 
 			std::cout << std::endl << std::endl << Function(params, object_a, object_b) << std::endl << std::endl;
-			if (Function(params, object_a, object_b) < epsilon) {
+			if (Function(params, object_a, object_b) < functionEpsilon) {
 				break;
 			}
 
-			if (derivativeStop && glm::dot(d, d) < pow(epsilon, 2))
+			if (derivativeStop && glm::dot(d, d) < pow(functionEpsilon, 2))
 				break;
 
 			params = RandomParamsCloseTo(startParametrs, (k + 1) * 0.05, object_a, object_b);
 		}
-		if (Function(params, object_a, object_b) < epsilon) {
+		if (Function(params, object_a, object_b) < functionEpsilon) {
 			break;
 		}
 
-		if (derivativeStop && glm::dot(d, d) < epsilon)
+		if (derivativeStop && glm::dot(d, d) < functionEpsilon)
 			break;
 
 	}
@@ -76,14 +87,15 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> Intersection::Intersec
 		int i;
 		for (i = 0; i < maxIterations_IntersectionFrame;
 			i++) {
-			params = NextIntersectionParams(params, object_a, object_b, step, eps, flip);
+			bool suces = false;
+			params = NextIntersectionParams(params, object_a, object_b, step, eps, flip, suces);
 
-			for(int k = 0; k < 5 && Function(params, object_a, object_b) > eps; k++)
+			for(int k = 0; k < 5 && (!suces || Function(params, object_a, object_b) > eps); k++)
 			{
-				params = NextIntersectionParams(lastParams, object_a, object_b, step * powf(0.5, k + 1), eps, flip);
+				params = NextIntersectionParams(lastParams, object_a, object_b, step * powf(0.5, k + 1), eps, flip, suces);
 			}
 
-			if (Function(params, object_a, object_b) > eps)
+			if (!suces || Function(params, object_a, object_b) > eps)
 				break;
 
 			lastParams = params;
@@ -95,7 +107,14 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> Intersection::Intersec
 		}
 
 		if (IsCreatedLoop(params_a, object_a))
+		{
+			params_a.pop_back();
+			params_b.pop_back();
+			params_a.push_back(params_a[0]);
+			params_b.push_back(params_b[0]);
+
 			break;
+		}
 		std::reverse(params_a.begin(), params_a.end());
 		std::reverse(params_b.begin(), params_b.end());
 		params = firstIntersection;
@@ -106,8 +125,9 @@ std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>> Intersection::Intersec
 	return { params_a, params_b };
 }
 
-glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps, bool flipDirection)
+glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps, bool flipDirection, bool &suces)
 {
+	suces = false;
 	glm::vec3 normal_a = glm::cross(
 		object_a->Derivative_v(intersectionParams.x, intersectionParams.y),
 		object_a->Derivative_u(intersectionParams.x, intersectionParams.y));
@@ -163,9 +183,15 @@ glm::vec4 Intersection::NextIntersectionParams(glm::vec4 intersectionParams, Int
 		params = Clamp(params, object_a, object_b);
 
 		if (glm::dot(params - lastParams, params - lastParams) < eps)
+		{
+			suces = true;
 			break;
+		}
 		if (isnan(params.x))
+		{
+			suces = false;
 			return lastParams;
+		}
 		lastParams = params;
 	}
 
@@ -572,9 +598,9 @@ float Intersection::TheClosetTo(BezierCurve* bezierCurve, glm::vec3 pos)
 	float best = 0;
 	float bestDis = glm::dot(bezierCurve->PositionOnCurve(0) - pos, bezierCurve->PositionOnCurve(0) - pos);
 	for (int i = 0; i <= iterations; i++) {
-		float t = i * iterationsInvers;
+		float t = bezierCurve->MaxValue() * i * iterationsInvers;
 		auto posOnCurve = bezierCurve->PositionOnCurve(t);
-		auto dis = glm::dot(bezierCurve->PositionOnCurve(0) - pos, bezierCurve->PositionOnCurve(0) - pos);;
+		auto dis = glm::dot(posOnCurve - pos, posOnCurve - pos);;
 		if (dis < bestDis) {
 			bestDis = dis;
 			best = t;
@@ -637,12 +663,39 @@ std::vector<glm::vec2> Intersection::PosibleIntersections(BezierCurve* bezierCur
 	return params;
 }
 
+std::vector<vectorIntersectionInfo> Intersection::PosibleIntersections(std::vector<glm::vec2>& points_1, std::vector<glm::vec2>& points_2)
+{
+	std::vector<vectorIntersectionInfo> posibleIntersections;
+
+	for (int i = 0; i < points_1.size() - 1; i++) {
+		std::pair<glm::vec2, glm::vec2> vector_1{ points_1[i], points_1[i + 1] };
+
+		for (int j = 0; j < points_2.size() - 1; j++) {
+			std::pair<glm::vec2, glm::vec2> vector_2{ points_2[j], points_2[j + 1] };
+
+			bool intersect = false;
+			float s;
+			glm::vec2 p = VectorIntersection(
+				vector_1.first, vector_1.second, 
+				vector_2.first, vector_2.second, 
+				intersect, s);
+			if (intersect && 
+				(points_1 != points_2 || fabsf(i - j) > 2)) { // check self-itersection
+				vectorIntersectionInfo vii{ points_1, i, i + 1, points_2, j, j + 1 };
+				posibleIntersections.push_back(vii);
+			}
+		}
+	}
+
+	return posibleIntersections;
+}
+
 std::vector<cureIntersectionInfo> Intersection::PosibleIntersections_2(BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r)
 {
 	std::cout << "robi sie" << std::endl;
 	std::vector<cureIntersectionInfo> posibleIntersections;
-	int samples_1 = bezierCurve_1->NumberOfPoints();
-	int samples_2 = bezierCurve_2->NumberOfPoints();
+	int samples_1 = bezierCurve_1->NumberOfPoints() * 1.0f;
+	int samples_2 = bezierCurve_2->NumberOfPoints() * 1.0f;
 	float invers_sample_1 = 1.0f / static_cast<float>(samples_1);
 	float invers_sample_2 = 1.0f / static_cast<float>(samples_2);
 

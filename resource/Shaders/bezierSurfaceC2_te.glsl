@@ -5,10 +5,16 @@ layout (equal_spacing ,isolines) in;
 uniform int VERTICAL_DRAW;
 uniform mat4 CAM_MATRIX;
 uniform int PATCH_DIV;
+uniform float OFFSET;
 uniform ivec2 SIZE;
 
 out vec2 TexCoord;  
 in float tePatchId[]; 
+
+struct Info{
+    vec3 normal;
+    vec3 pos;
+};
 
 vec3 Bernstain(float t, vec3 p0, vec3 p1, vec3 p2, vec3 p3){
     p0 = p0*(1.0 - t) + p1 * t;
@@ -23,34 +29,67 @@ vec3 Bernstain(float t, vec3 p0, vec3 p1, vec3 p2, vec3 p3){
     return  p0;
 }
 
-vec3 bicubicPatch(float u, float v){
+vec3 Bernstain2D(float t, vec3 p0, vec3 p1, vec3 p2){
+    p0 = p0*(1.0 - t) + p1 * t;
+    p1 = p1*(1.0 - t) + p2 * t;
+    
+    p0 = p0*(1.0 - t) + p1 * t;
+
+    return  p0;
+}
+
+vec3 BernstainDerivted(float t, vec3 p0, vec3 p1, vec3 p2, vec3 p3){
+    p0 = 3.0 * (p0 - p1);
+    p1 = 3.0 * (p1 - p2);
+    p2 = 3.0 * (p2 - p3);
+
+    return  Bernstain2D(t, p0, p1, p2);
+}
+
+
+void ToBeziseBaise(inout vec3 p0,inout vec3 p1,inout vec3 p2,inout vec3 p3){
+    vec3 tmpP1 = p1;
+
+    p0 = (p0 + 4*p1 + p2) / 6.0;
+    p3 = (p1 + 4*p2 + p3) / 6.0;
+
+    p1 = (2*tmpP1 + p2) / 3.0;
+    p2 = (1*tmpP1 + 2*p2) / 3.0;
+}
+
+Info bicubicPatch(float u, float v){
     vec3 bezierPoints[4];
+    vec3 bezierPoints_Du[4];
+    Info info;
+    vec3 p0, p1, p2, p3;
 
     for(int y = 0; y < 4; y++){
-    bezierPoints[y] =  Bernstain(u,
-                            (gl_in[0 + y * 4].gl_Position.xyz +
-                             4.0*gl_in[1 + y * 4].gl_Position.xyz +
-                             gl_in[2 + y * 4].gl_Position.xyz) / 6.0,
-
-                            (2.0*gl_in[1 + y * 4].gl_Position.xyz +
-                             1.0*gl_in[2 + y * 4].gl_Position.xyz) / 3.0,
-
-                            (1.0*gl_in[1 + y * 4].gl_Position.xyz +
-                             2.0*gl_in[2 + y * 4].gl_Position.xyz) / 3.0,
-
-                            (gl_in[1 + y * 4].gl_Position.xyz +
-                             4.0*gl_in[2 + y * 4].gl_Position.xyz +
-                             gl_in[3 + y * 4].gl_Position.xyz) / 6.0);
+        p0 = gl_in[0 + y * 4].gl_Position.xyz;
+        p1 = gl_in[1 + y * 4].gl_Position.xyz;
+        p2 = gl_in[2 + y * 4].gl_Position.xyz;
+        p3 = gl_in[3 + y * 4].gl_Position.xyz;
+        ToBeziseBaise(p0, p1, p2, p3);
+        bezierPoints[y] =  Bernstain(u, p0, p1, p2, p3);
+        bezierPoints_Du[y] = BernstainDerivted(u, p0, p1, p2, p3);
     }
 
-    vec3 p = Bernstain(v, 
-        (bezierPoints[0] + 4*bezierPoints[1] + bezierPoints[2]) / 6.0,
-        (2*bezierPoints[1] + bezierPoints[2]) / 3.0,
-        (1*bezierPoints[1] + 2*bezierPoints[2]) / 3.0,
-        (bezierPoints[1] + 4*bezierPoints[2] + bezierPoints[3]) / 6.0
-    );
+    p0 = bezierPoints[0];
+    p1 = bezierPoints[1];
+    p2 = bezierPoints[2];
+    p3 = bezierPoints[3];
+    ToBeziseBaise(p0, p1, p2, p3);
+    vec3 p = Bernstain(v, p0, p1, p2, p3);
+    vec3 p_v = BernstainDerivted(v, p0, p1, p2, p3);
 
-    return p;
+    p0 = bezierPoints_Du[0];
+    p1 = bezierPoints_Du[1];
+    p2 = bezierPoints_Du[2];
+    p3 = bezierPoints_Du[3];
+    ToBeziseBaise(p0, p1, p2, p3);
+    vec3 p_u = Bernstain(v, p0, p1, p2, p3);
+    info.pos = p;
+    info.normal = normalize(cross(p_v, p_u));
+    return info;
 }
 
 void main()
@@ -71,7 +110,10 @@ void main()
     float(horizontalId + u) / float( SIZE.y),
         float(verticalId + v ) / float( SIZE.x));
 
-    vec3 p = bicubicPatch(u, v);
+    //vec3 p = bicubicPatch(u, v);
+    Info info = bicubicPatch(u, v);
 
-    gl_Position = CAM_MATRIX * vec4(p , 1.0);
+
+    gl_Position = CAM_MATRIX * vec4(info.pos + info.normal * OFFSET , 1.0);
+    //gl_Position = CAM_MATRIX * vec4(info.pos , 1.0);
 }

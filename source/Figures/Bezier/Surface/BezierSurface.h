@@ -48,6 +48,7 @@ protected:
 	int verticalNum = 1, horizontalNum = 1;
 	float radius = 1, height = 1;
 	bool accepted = false, openWindow = true, firstTime = true;
+	float offset = 0.0f;
 
 	virtual int MaxSize();
 	void ResizeControlPoints();
@@ -59,6 +60,7 @@ protected:
 
 	// czyli  funkcja z (u,v < surfaceSize) => patchV, patchH, v, u   
 	glm::vec4 Cast_VU_To_PatchVPatchHVU(float v, float u);
+	void ThrowErrorIfOutOfBoundry(int verticalID, int horizontalID, int k1, int k2) const;
 public:
 	Scene* refrenceScene;
 

@@ -1,14 +1,58 @@
 #pragma once
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
+#include <Constants.h>
+#include <vector>
+#include <functional>
 static class MathOperations {
 public:
+	template<typename T_out, typename T_in>
+	static void AppendVector(std::vector<T_out>& vector_out, std::vector<T_in>& vector_in, int start, int end, std::function < T_out(T_in)> transformFun) {
+		vector_out.reserve(vector_out.size() - start + end);
+		for (int i = start; i < end; i++) {
+			vector_out.push_back(transformFun(vector_in[i]));
+		}
+	}
+
+	static float MinDisFromCenter_Di(int i, const std::vector<glm::vec2>& params, glm::vec2 field, float center, const bool fromRight = true) {
+		float dis = M_FLOAT_MAX ;
+		for (auto& par : params) {
+			float tmpDis = fromRight ? par[i] - center : center - par[i];
+			if ( tmpDis < 0)
+				continue;
+			if (tmpDis < dis)
+				dis = tmpDis;
+		}
+		return dis;
+	}
+
+	static float MaxDisFromCenter_Di(int i, const std::vector<glm::vec2>& params, glm::vec2 field, float center, const bool fromRight = true) {
+		float dis = -1;
+		for (auto& par : params) {
+			float tmpDis = fromRight ? par[i] - center : center - par[i];
+			if (tmpDis < 0)
+				continue;
+			if (tmpDis > dis)
+				dis = tmpDis;
+		}
+		return dis;
+	}
+
 	static int Wrap(int value, int min, int max) {
 		value -= min;
 		int length = max - min;
 		value = value % length;
 		value = (length + value) % length;
 		return value;
+	}
+
+	static float SimpleWrap(const float t, const glm::vec2& field) {
+		float length = field.y - field.x;
+		if (t > field.y)
+			return SimpleWrap(t - length, field);
+		else if (t < field.x)
+			return SimpleWrap(t + length, field);
+		return t;
 	}
 
 	static glm::vec3 RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
@@ -136,8 +180,9 @@ public:
 	}
 
 	inline static glm::vec3 BezierNDerivative(float t, std::vector<glm::vec3> ps) {
+		float degree = ps.size() - 1;
 		for (int i = 0; i < ps.size() - 1; i++) {
-			ps[i] = 3.0f * (ps[i] - ps[i + 1]);
+			ps[i] = degree * (ps[i + 1] - ps[i]);
 		}
 		ps.erase(std::next(ps.end(), -1));
 
@@ -145,8 +190,9 @@ public:
 	}
 
 	inline static std::vector<glm::vec3> BezierNDerivative_points(std::vector<glm::vec3> ps) {
+		float degree = ps.size() - 1;
 		for (int i = 0; i < ps.size() - 1; i++) {
-			ps[i] = 3.0f * (ps[i] - ps[i + 1]);
+			ps[i] = degree * (ps[i + 1] - ps[i]);
 		}
 		ps.erase(std::next(ps.end(), -1));
 

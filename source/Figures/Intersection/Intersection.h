@@ -44,11 +44,67 @@ struct cureIntersectionInfo {
 	}
 };
 
+struct vectorIntersectionInfo {
+	std::vector<glm::vec2>* m_vector_1;
+	std::pair<int, int> m_id_1;
+
+	std::vector<glm::vec2>* m_vector_2;
+	std::pair<int, int> m_id_2;
+
+	vectorIntersectionInfo(std::vector<glm::vec2>& vector_1,
+		int id1_1,
+		int id1_2,
+		std::vector<glm::vec2>& vector_2,
+		int id2_1,
+		int id2_2) : m_vector_1(&vector_1), m_vector_2(&vector_2)
+	{
+		m_id_1 = { id1_1, id1_2 };
+		m_id_2 = {id2_1, id2_2};
+	}
+
+
+	vectorIntersectionInfo(std::vector<glm::vec2>& vector_1,
+		std::pair<int, int> id_1,
+		std::vector<glm::vec2>& vector_2,
+		std::pair<int, int> id_2
+	) : m_vector_1(&vector_1), m_vector_2(&vector_2)
+	{
+		m_id_1 = id_1;
+		m_id_2 = id_2;
+	}
+
+	std::optional<std::pair< std::vector<glm::vec2>*, std::pair<int, int>>>
+		MoveToNextCurve(std::vector<glm::vec2>* vector, glm::vec2 p) {
+
+		if (vector == m_vector_1 &&
+			(p == m_vector_1->at(m_id_1.first) || p == m_vector_1->at(m_id_1.second))) {
+			return std::pair< std::vector<glm::vec2>*, std::pair<int, int>>( m_vector_2, m_id_2 ) ;
+		}
+		else if (vector == m_vector_2 &&
+			(p == m_vector_2->at(m_id_2.first) || p == m_vector_2->at(m_id_2.second))) {
+			return { { m_vector_1, m_id_1} };
+		}
+		
+		return {};
+	}
+
+	bool ShouldMove(std::vector<glm::vec2>* vector, glm::vec2 p) {
+
+		if (vector == m_vector_1 &&
+			(p == m_vector_1->at(m_id_1.first) || p == m_vector_1->at(m_id_1.second)))
+			return true;
+		else if (vector == m_vector_2 &&
+			(p == m_vector_2->at(m_id_2.first) || p == m_vector_2->at(m_id_2.second)))
+			return true;
+		return false;
+	}
+};
+
 // find 0.5*x^t*A*x + x^t*b
 class Intersection {
 	float epsilon = 0.00001;
 	const float c = (sqrtf(5) - 1.0f) * 0.5f;
-	const int maxIterations_IntersectionFrame = 1000;
+	const int maxIterations_IntersectionFrame = 800;
 	const int maxIterations_NextIntersectionParams = 100;
 	const int maxIterations_FirstIntersectionPoint = 1000;
 	const int retries_FirstIntersectionPoint = 5;
@@ -113,11 +169,12 @@ class Intersection {
 	inline bool IsCreatedLoop(const std::vector<glm::vec2>& points, IntersectionAble* object);
 
 public:
-	glm::vec4 FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 params = glm::vec4{ 0,0,0,0 }, bool derivativeStop = false);
+	bool IsLoop(glm::vec2 p0, glm::vec2 p1, glm::vec2 p2);
+	glm::vec4 FirstIntersectionPoint(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 params = glm::vec4{ 0,0,0,0 }, float functionEpsilon = -1, bool derivativeStop = false);
 
 	std::pair<std::vector<glm::vec2>, std::vector<glm::vec2>>  IntersectionFrame(glm::vec4 firstIntersection, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps);
 
-	inline glm::vec4 NextIntersectionParams(glm::vec4 intersectionParams, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps, bool flipDirection = false);
+	inline glm::vec4 NextIntersectionParams(glm::vec4 intersectionParams, IntersectionAble* object_a, IntersectionAble* object_b, float step, float eps, bool flipDirection, bool &suces);
 
 	bool IsIntersected(IntersectionAble* object_a, IntersectionAble* object_b);
 	bool IsIntersected(IntersectionAble* object_a, IntersectionAble* object_b, glm::vec4 params);
@@ -135,6 +192,7 @@ public:
 	float TheClosetTo(BezierCurve* bezierCurve, glm::vec3 pos);
 
 	std::vector<glm::vec2> PosibleIntersections(BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r = 0);
+	std::vector<vectorIntersectionInfo> PosibleIntersections(std::vector<glm::vec2>& points_1, std::vector<glm::vec2>& points_2);
 	std::vector<cureIntersectionInfo> PosibleIntersections_2(BezierCurve* bezierCurve_1, BezierCurve* bezierCurve_2, float r = 0);
 	inline glm::vec3 MoveAcrossNormal(float t, BezierCurve* bezierCurve, float r) {
 		auto tmp = glm::normalize(Normal_2D(bezierCurve, t));
@@ -183,7 +241,20 @@ public:
 		} / factor;
 	}
 
-	inline glm::vec2 VectorIntersection(glm::vec2 a, glm::vec2 b, glm::vec2 c, glm::vec2 d, bool& isOneIntersection, float& s) {
+	/*inline bool IsInsideABSquare(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c) {
+		glm::vec2 BottomLeft;
+		BottomLeft.x = fminf(a.x, b.x);
+		BottomLeft.y = fmin(a.y, b.y);
+
+		glm::vec2 UpRight;
+		UpRight.x = fmaxf(a.x, b.x);
+		UpRight.y = fmaxf(a.y, b.y);
+
+		if(BottomLeft.x <= c.x && UpRight.x >= c.x && BottomLeft.y <= c.y && UpRight.y >=  )
+
+	}*/
+
+	inline glm::vec2 VectorIntersection(const glm::vec2& a, const glm::vec2& b, const glm::vec2& c, const glm::vec2& d, bool& isOneIntersection, float& s) {
 
 		isOneIntersection = false;
 		glm::vec2 v0 = b - a;

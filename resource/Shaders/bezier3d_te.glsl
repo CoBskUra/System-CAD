@@ -52,5 +52,6 @@ void main()
     // Cubic Bezier interpolation
     vec3 p = p0 * b0 + p1 * b1 + p2 * b2 + p3 * b3;
 
-    gl_Position = CAM_MATRIX * vec4(p + 0.1 * Normal(t, p0, p1, p2, p3), 1.0);
+    //gl_Position = CAM_MATRIX * vec4(p + 0.1 * Normal(t, p0, p1, p2, p3), 1.0);
+    gl_Position = CAM_MATRIX * vec4(p, 1.0);
 }
