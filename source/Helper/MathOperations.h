@@ -4,8 +4,21 @@
 #include <Constants.h>
 #include <vector>
 #include <functional>
+//#include "Figures/Bezier/BezierCurve.h"
+#include "Figures/Intersection/IntersectionAble.h"
 static class MathOperations {
 public:
+
+	template <typename VecType>
+	static float PowDistance(const VecType& vec_1, const VecType& vec_2) {
+		VecType diff = vec_1 - vec_2;
+		return glm::dot(diff, diff);
+	}
+
+	static glm::vec2 Rotation90Degree(const glm::vec2& vec) {
+		return { -vec.y, vec.x };
+	}
+
 	template<typename T_out, typename T_in>
 	static void AppendVector(std::vector<T_out>& vector_out, std::vector<T_in>& vector_in, int start, int end, std::function < T_out(T_in)> transformFun) {
 		vector_out.reserve(vector_out.size() - start + end);
@@ -25,6 +38,27 @@ public:
 		}
 		return dis;
 	}
+
+	//static inline glm::vec3  MovedAcrossNormalCloseTo(float t, BezierCurve* curve, float r, glm::vec3 closeToDirection) {
+	//	glm::vec3 dereative = glm::normalize(curve->Derivative(t));
+	//	glm::vec3 normal = glm::normalize(glm::cross(dereative, glm::cross(dereative, closeToDirection)));
+	//	glm::vec3 pos = curve->PositionOnCurve(t);
+	//	return pos + normal * r;
+	//};
+
+	static inline glm::vec3  MovedAcrossNormalOfParametr_v_CloseTo(float v, float u, IntersectionAble* surf, float r, glm::vec3 closeToDirection) {
+		glm::vec3 dereative = glm::normalize(surf->Derivative_v(v, u));
+		glm::vec3 normal = glm::normalize(glm::cross(glm::cross(dereative, closeToDirection), dereative));
+		glm::vec3 pos = surf->Parametrization(v, u);
+		return pos + normal * r;
+	};
+
+	static inline glm::vec3  MovedAcrossNormalOfParametr_u_CloseTo(float v, float u, IntersectionAble* surf, float r, glm::vec3 closeToDirection) {
+		glm::vec3 dereative = glm::normalize(surf->Derivative_u(v, u));
+		glm::vec3 normal = glm::normalize(glm::cross(glm::cross(dereative, closeToDirection), dereative));
+		glm::vec3 pos = surf->Parametrization(v, u);
+		return pos + normal * r;
+	};
 
 	static float MaxDisFromCenter_Di(int i, const std::vector<glm::vec2>& params, glm::vec2 field, float center, const bool fromRight = true) {
 		float dis = -1;

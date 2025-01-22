@@ -60,23 +60,44 @@ public:
 
 		ImGui::DragFloat("tolerance", &tolerance);
 		ImGui::SameLine();
-		if (ImGui::Button("Sciezki_1")) {
+		if (ImGui::Button("path_1_rougher")) {
 			LoadHeights();
 			GeneratePaths(tolerance);
 		}
-		if (ImGui::Button("Sziezki_2"))
+		/*if (ImGui::Button("path_3_border (befor 2)"))
 		{
 			Path_2(scene);
-		}
-		if (ImGui::Button("Sziezki_1.5"))
+		}*/
+		if (ImGui::Button("path_2_base (after 3)"))
 		{
-			Path_1dot5(scene);
+			//Path_1dot5(scene, {});
+			std::string outFile = path + std::string("path_2_base_poprawka.f10");
+			SavePath(outFile.c_str(), Path_1dot5(scene, {}));
 		}
-		if (ImGui::Button("Sziezki_3"))
+		if (ImGui::Button("path_2_base_border (after 3)")) {
+			std::vector<glm::vec3> result;
+			result.push_back(frezStartPos);
+			auto border = Path_2(scene);
+			result.append_range(Path_1dot5(scene, border));
+			
+
+			std::for_each(border.begin(), border.end(), [=](glm::vec3& p) { p = TransformOrigin(p); });
+			result.append_range(border);
+
+			glm::vec3 last = result[result.size() - 1];
+			last.y = frezStartPos.y;
+			result.push_back(last);
+			result.push_back(frezStartPos);
+
+			std::string outFile = path + std::string("path_2_base_border.f10");
+			SavePath(outFile.c_str(), result);
+		}
+
+		if (ImGui::Button("path_4_accurate_borders_generation_to_folder\n( befor path_4_accurate_from_folder"))
 		{
 			GenerateObjectConstrains(scene);
 		}
-		if (ImGui::Button("Sziezki_3_from_folder"))
+		if (ImGui::Button("path_3_accurate_from_folder_and_hole"))
 		{
 			GeneratorOfPathInsideConstrain ap;
 			ap.m_height = height;
@@ -85,18 +106,21 @@ public:
 			tmpScene = sc.LoadScene(
 				"D:/fast_acess/Studia/MINI CAD-CAM/Modelowanie Geometryczne I/projekt/MG1_projekt/resource/Models/fish_19_double.json",
 				move(tmpScene));
-			auto positions = ap.GeneratePathFromConstrains(tmpScene.get(), outPathConstrains, TakeAllFiguresAndIntersectionAble(tmpScene.get(), r_08_frez_k), r_08_frez_k);
+			auto positions = ap.GeneratePathFromConstrains(tmpScene.get(), outPathConstrains + "/testOfBetterSolution/", TakeAllFiguresAndIntersectionAble(tmpScene.get(), r_08_frez_k), r_08_frez_k);
 
 			std::for_each(positions.begin(), positions.end(), [=](glm::vec3& p) {
 				p = TransformOrigin(p);
 				});
-			positions.push_back(frezStartPos);
-			SavePath((path + std::string("sciezki_3.k08")).c_str(), positions);
+
+			auto tmpPositions = TheHole(scene, holeTolerance);
+			tmpPositions.erase(tmpPositions.begin());
+			positions.append_range(tmpPositions);
+			SavePath((path + std::string("path_3_accurateAndHole.k08")).c_str(), positions);
 			//GeneratePathFromConstrains(scene);
 		}
 
 		ImGui::DragFloat("hole tolerance", &holeTolerance);
-		if (ImGui::Button("The Hole")) {
+		if (ImGui::Button("path 5 hole")) {
 			TheHole(scene, holeTolerance);
 		}
 
@@ -119,10 +143,10 @@ public:
 		Intersection intersection;
 
 		for (auto obj : intersectionAbles) {
-			float sample_u = obj->Field_u().y * 500;
-			float sample_v = obj->Field_v().y * 500;
+			float sample_u = obj->Field_u().y * 1000;
+			float sample_v = obj->Field_v().y * 1000;
 			for (int i = 0; i <= sample_v; i++) {
-				if (i % 10 == 0)
+				if (i % 200 == 0)
 					std::cout << i << std::endl;
 				float v = (float)i * obj->Field_v().y / sample_v;
 				for (int j = 0; j < sample_u; j++) {
@@ -297,7 +321,7 @@ public:
 		positions.push_back(frezStartPos);
 
 
-		SavePath((path + std::string("sciezki_1.k16")).c_str(), positions);
+		SavePath((path + std::string("path_1_rougher.k16")).c_str(), positions);
 
 	}
 
@@ -373,7 +397,7 @@ public:
 		return max;
 	}
 
-	void Path_2(Scene* scene) {
+	std::vector<glm::vec3> Path_2(Scene* scene) {
 		auto bezierS = BezierSurfaceC0::CreateSurfaceShard_ptr("bezier", 1, 1, { 1.5f, 0, 1.5f });
 		bezierS->ScaleAlong(bezierS->transpose->GetPosition(), { 1.25, 0.0, 1.25 });
 		Intersection intersection{};
@@ -386,7 +410,7 @@ public:
 			}
 		}
 		if (intersectionAbles.size() < 8)
-			return;
+			return {};
 		// magiczne liczby specjalnie dobrane do modelu rybki
 		std::vector<glm::vec4> parametrs{
 			{0.463905, 2.55678, 0.616398, 0.379837},	//left_fin_1
@@ -508,9 +532,9 @@ public:
 		std::cout << std::endl;
 		std::vector<glm::vec3> results;
 		results.reserve(1024);
-		results.push_back(frezStartPos);
-		results.push_back(frezStartPos);
-		results.push_back(frezStartPos);
+		//results.push_back(frezStartPos);
+		/*results.push_back(frezStartPos);
+		results.push_back(frezStartPos);*/
 		do {
 			std::shared_ptr <Point> point = std::make_shared<Point>();
 			if (current_t > currentCure->MaxValue())
@@ -518,7 +542,7 @@ public:
 			else if (current_t < 0)
 				current_t = currentCure->MaxValue();
 			auto position = intersection.MoveAcrossNormal(current_t, currentCure, r);
-			results.push_back((position - center) * scale + bease);
+			results.push_back(position);
 			point->transpose->SetObjectPosition(intersection.MoveAcrossNormal(current_t, currentCure, r));
 			scene->AddFigure(point);
 			bezierInterpolaited->Add(point.get());
@@ -546,27 +570,30 @@ public:
 		
 		scene->AddFigure(bezierInterpolaited);
 
-		results[1].x = -75 - 5.0f - 0.1f;
-		results[1].z = results[3].z;
+		/*results[0].x = -75 - 5.0f - 0.1f;
+		results[0].z = results[2].z;
 
-		results[2] = results[1];
-		results[2].y = baseHeight;
+		results[1] = results[0];
+		results[1].y = baseHeight;
 
-		results.push_back(results[3]);
+		results.push_back(results[2]);
 		auto last = results[results.size() - 1];
 		last.y = frezStartPos.y;
-		results.push_back(last);
-		results.push_back(frezStartPos);
+		results.push_back(last);*/
 
-		std::string outFile = path + std::string("sciezki_2.f10");
-		SavePath(outFile.c_str(), results);
+		return results;
+
+		//results.push_back(frezStartPos);
+
+		/*std::string outFile = path + std::string("path_3_border.f10");
+		SavePath(outFile.c_str(), results);*/
 
 
 
-		for (int i = 0; i < interCurves.size(); i++) {
+		/*for (int i = 0; i < interCurves.size(); i++) {
 			scene->AddFigure(interCurves[i]);
-		}
-		scene->AddFigure(bezierS);
+		}*/
+		//scene->AddFigure(bezierS);
 	}
 
 	void RemoveSimilarAtBeginAndEnd(std::vector<glm::vec2>& data, float dis) {
@@ -589,10 +616,11 @@ public:
 		}
 	}
 
-	void Path_1dot5(Scene* scene) {
-		auto vertexes = LoadPath((path + std::string("sciezki_2.f10")).c_str());
+	std::vector<glm::vec3> Path_1dot5(Scene* scene, std::vector<glm::vec3> vertexes) {
+		//vertexes = LoadPath((path + std::string("path_3_border.f10")).c_str());
+		//auto vertexes = Path_2(scene);
 		float distanceBeetwenPaths = 2 * r - r / 3.0f;
-		vertexes.erase(vertexes.begin(), vertexes.begin() + 3);
+		//vertexes.erase(vertexes.begin(), vertexes.begin() + 2);
 		glm::vec3 UpLeft = { 3,0,3 };
 
 		std::vector<glm::vec3> points;
@@ -608,7 +636,7 @@ public:
 		glm::vec3 directionHorizontal = right;
 
 		const float halfDistanceBeetwenPaths = distanceBeetwenPaths * 0.5f;
-		points.push_back(frezStartPos);
+		//points.push_back(frezStartPos);
 		points.push_back({ -75 + halfDistanceBeetwenPaths, frezStartPos.y, -75 - distanceBeetwenPaths * 2});
 
 		glm::vec3 startPos = { halfDistanceBeetwenPaths, 0, -distanceBeetwenPaths * 2 };
@@ -629,19 +657,19 @@ public:
 			//	//directionVertical = SwitchDirection(directionVertical, up, down);
 			//	additionalScalar = 0.0f;
 			//}
-			if (i == 5 || i == 17 || i == 31 ) {
+			if (i == 4 || i == 6  || i == 32 || i == 19) {
 				additionalScalar = 0.5f;
 			}
 
-			if (i == 20) {
+			if (i == 21) {
 				additionalScalar = 0.1f;
 			}
 
-			if(i == 13 || i == 15) {
+			if(i == 14 || i == 16 || i == 18) {
 				additionalScalar = 0.7f;
 			}
 			
-			if (i == 37) {
+			if (i == 38) {
 				additionalScalar = 0.7f;
 			}
 
@@ -699,13 +727,14 @@ public:
 			}
 			
 		}
-		auto last = points[points.size() - 1];
+		/*auto last = points[points.size() - 1];
 		last.y = frezStartPos.y;
-		points.push_back(last);
-		points.push_back(frezStartPos);
+		points.push_back(last);*/
+		//points.push_back(frezStartPos);
 
-		std::string outFile = path + std::string("sciezki_1.5.f10");
-		SavePath(outFile.c_str(), points);
+		return points;
+	/*	std::string outFile = path + std::string("path_2_base.f10");
+		SavePath(outFile.c_str(), points);*/
 	}
 
 
@@ -857,7 +886,7 @@ public:
 			{0.689233, 0.611476, 3.578446, 2.721919},
 			{0.437978, 0.124236, 4.462134, 1.051075}, // tail_1
 			{0.774002, 0.311689, 0.600445, 1.810303}, 
-			{0.500074, 0.255490, 4.688413, 13.901965},
+			{0.688584, 0.747081, 14.054398, 2.153436},
 
 
 			{0.392950, 0.469432, 1.182027, 4.059142},
@@ -888,8 +917,8 @@ public:
 				positions.second.end());*/
 			Reduce(positions.second);
 			objectParams[i].push_back(positions.second);
-			/*Texture cos{ GL_TEXTURE_2D };
-			interCurves.push_back(std::make_shared< IntersectionCurve>(positions.second, figures[i].first, &figures[i].second.second, scene));*/
+			Texture cos{ GL_TEXTURE_2D };
+			interCurves.push_back(std::make_shared< IntersectionCurve>(positions.second, figures[i].first, &figures[i].second.second, scene));
 		}
 #pragma endregion
 
@@ -900,9 +929,11 @@ public:
 			{3.360984, 14.406018, 4.322404, 3.783720},	// body taile 
 			{9.316753, 4.148162, 1.224576, 1.578465},	// body right fin
 
+			//{10.754529, 0.925698, 0.707498, 1.003828},	// body - back - up
+			{10.761684, 0.916646, 0.710975, 1.006114},		// body - back close to center
+			{11.462418, 2.163230, 0.912601, 0.743262},		// body - back far from center
 			{11.901263, 2.242390, 1.160305, 0.613488},	// body - back - right
 			{12.333655, 0.089156, 1.503938, 1.389227},	// body - back - left
-			{10.754529, 0.925698, 0.707498, 1.003828},	// body - back - up
 
 			{14.449626, 1.838129, 3.357511, 4.385929},	// body 2 - tail 1
 			{14.449626, 1.838129, 3.357511, 4.385929},	// body 1 - tail 2
@@ -914,7 +945,7 @@ public:
 		int body_2_id = 9;
 		auto body_1 = figures[body_1_id];
 		auto body_2 = figures[body_2_id];
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 7; i++) {
 			int id = i + 2;
 			if (i >= 3)
 				id = 0;
@@ -930,6 +961,20 @@ public:
 
 			Reduce(positions.first);
 			Reduce(positions.second);
+
+			if(id == 0 && i <= 4) // specjalny case dla up back
+			{
+				auto ids = TheLargerDistanceBetweenIds(positions.second, &fig.second.second);
+				if (ids.first < positions.second.size() - ids.first) {
+					positions.first.erase(	positions.first.begin(),	std::next(positions.first.begin(),	ids.second));
+					positions.second.erase(	positions.second.begin(),	std::next(positions.second.begin(), ids.second));
+				}
+				else
+				{
+					positions.first.erase(	std::next(positions.first.begin(),	ids.second), positions.first.end());
+					positions.second.erase(	std::next(positions.second.begin(),	ids.second), positions.second.end());
+				}
+			}
 
 			objectParams[body_1_id].push_back(positions.first);
 			objectParams[id].push_back(positions.second);
@@ -1022,18 +1067,37 @@ public:
 					}
 					
 					if (!(k == 0 || k == 1) &&
-						!((k == 5 || k == 9) && intersectionID > 3 && intersectionID < 6) )
+						!((k == 5 || k == 9) && intersectionID > 3 && intersectionID < 7) )
 					{
 						auto intersectionsPoints = intersection.PosibleIntersections(result, vectorParam);
+						if (k == 5 || k == 9)
+							for (auto ip : intersectionsPoints) {
+								auto addPoint = [=](glm::vec3 pos) {std::shared_ptr <Point> point2 = std::make_shared<Point>();
+								point2->transpose->SetObjectPosition(pos);
+								scene->AddFigure(point2);
+									};
+								auto insertAble = &figures[pair.first].second.second;
+								auto tmpPar = result[ip.m_id_1.first];
+								addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
+
+								tmpPar = result[ip.m_id_1.second];
+								addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
+
+								tmpPar = ip.m_vector_2->at(ip.m_id_2.first);
+								addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
+
+								tmpPar = ip.m_vector_2->at(ip.m_id_2.second);
+								addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
+							}
 						//if(k == 9 )
 						if (k == 5) {
 							if (intersectionID == 1) { // czemuœ wykrywa mi siê za du¿o punktów
 								intersectionsPoints.pop_back();
 								intersectionsPoints.erase(intersectionsPoints.begin());
 							}
-							else if (intersectionID == 6)
+							else if (intersectionID == 7)
 							{
-								intersectionsPoints.pop_back();
+								intersectionsPoints.erase(intersectionsPoints.begin());
 							}
 						}
 						if (k == 9) {
@@ -1041,30 +1105,12 @@ public:
 								intersectionsPoints.pop_back();
 								intersectionsPoints.erase(intersectionsPoints.begin());
 							}
-							else if (intersectionID == 6)
+							else if (intersectionID == 7)
 							{
 								intersectionsPoints.pop_back();
 							}
 						}
-						if(k == 5 || k == 9)
-						for (auto ip : intersectionsPoints) {
-							auto addPoint = [=](glm::vec3 pos) {std::shared_ptr <Point> point2 =	std::make_shared<Point>();
-							point2->transpose->SetObjectPosition(pos);
-							scene->AddFigure(point2);
-							};
-							auto insertAble = &figures[pair.first].second.second;
-							auto tmpPar = result[ip.m_id_1.first];
-							addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
-
-							tmpPar = result[ip.m_id_1.second];
-							addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
-
-							tmpPar = ip.m_vector_2->at(ip.m_id_2.first);
-							addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
-
-							tmpPar = ip.m_vector_2->at(ip.m_id_2.second);
-							addPoint(insertAble->Parametrization(tmpPar.x, tmpPar.y));
-						}
+						
 
 						if (intersectionsPoints.size() < 2)
 							continue;
@@ -1126,7 +1172,8 @@ public:
 	#pragma endregion
 #pragma CreateIntersactionCurves
 		{
-			if (!(CreateDirectory(outPathConstrains.c_str(), NULL) ||
+			std::string pathToDirectory = outPathConstrains + "/testOfBetterSolution/";
+			if (!(CreateDirectory(pathToDirectory.c_str(), NULL) ||
 				ERROR_ALREADY_EXISTS == GetLastError()))
 			{
 				throw "Failed to create directory.";
@@ -1142,7 +1189,7 @@ public:
 				IntersectionAble* inter = figures[i].second.first;
 				glm::vec2 field_u = inter->Field_u();
 				glm::vec2 field_v = inter->Field_v();
-				std::string path = outPathConstrains + std::to_string(i);
+				std::string path = pathToDirectory + std::to_string(i);
 				std::string constrains = std::format(".{}_{}_{}_{}", field_u.x, field_u.y, field_v.x, field_v.y);
 
 				interCurves.push_back(std::make_shared< IntersectionCurve>(objectParams[i][0], figures[i].first, &figures[i].second.second, scene));
@@ -1170,12 +1217,30 @@ public:
 	#pragma endregion
 	}
 
-	
-	void TheHole(Scene* scene, float holeTolerance) {
+	std::pair<int, int> TheLargerDistanceBetweenIds(std::vector<glm::vec2>& params, IntersectionAble* inter) {
+		float dis = -1;
+		std::pair<int, int> ids{ -1, -1 };
+		for (int i = 0; i < params.size() - 1; i++) {
+			auto param_1 = params[i];
+			auto param_2 = params[i + 1];
+			auto pos_1 = inter->Parametrization(param_1.x, param_1.y);
+			auto pos_2 = inter->Parametrization(param_2.x, param_2.y);
+			glm::vec3 diff = pos_1 - pos_2;
+			float tmpDis = glm::dot(diff, diff);
+			if (tmpDis > dis) {
+				dis = tmpDis;
+				ids.first = i;
+				ids.second = i + 1;
+			}
+		}
+		return ids;
+	}
+
+	std::vector<glm::vec3> TheHole(Scene* scene, float holeTolerance) {
 		//inicjalizacja
 		std::vector<std::pair<std::shared_ptr<Figure>, std::pair<IntersectionAble*, IntersectionAblePuffed>>> figures = TakeAllFiguresAndIntersectionAble(scene, r_08_frez_k);
 		if (figures.size() < 10)
-			return;
+			return {};
 		std::vector<std::vector<glm::vec2>> vectorOfParamsVectors;
 		Intersection intersection{};
 		figures.erase(figures.begin(), figures.begin() + 2);
@@ -1313,8 +1378,9 @@ public:
 		scene->AddFigure(bezierInterpolaited);
 		scene->AddFigure(bezierS);
 
-		std::string outFile = path + std::string("sciezki_6_hole.k08");
-		SavePath(outFile.c_str(), results);
+		return results;
+		/*std::string outFile = path + std::string("path_5_hole.k08");
+		SavePath(outFile.c_str(), results);*/
 	}
 
 	int TheClosedId(std::vector<glm::vec2>& params, glm::vec2 point) {
