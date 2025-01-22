@@ -27,6 +27,7 @@
 #include "Figures/GregoryPatch.h"
 #include "Windows/TransformSurfaceWindow.h"
 #include "Windows/IntersectionWindow.h"
+#include <PathGenerator/HeightMapGenerator.h>
 
 class Manager {
 	ImGui::FileBrowser fileDialog;
@@ -50,6 +51,7 @@ class Manager {
 	glm::vec2 mouseFirstClickPosition{};
 
 	StereoscopicView stereoscopicView;
+	HeightMapGenerator heightGenerator{ 1500 , 1500 , glm::vec3{0, 0, 0},  glm::vec3{3, 0, 3} };
 
 	float minLengthFromMouse = 0.001f;
 	int TheClosetFigureToMouse(FigureType figureType);

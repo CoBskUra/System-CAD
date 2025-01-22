@@ -117,6 +117,15 @@ public:
 			FigureContainer::Update();
 		}
 	}
+
+
+	void ScaleAlong(glm::vec3 scaleCenter, glm::vec3 scaleVec) override {
+		std::set<Figure* >::iterator iter;
+		for (iter = selectedFigures.begin(); iter != selectedFigures.end(); iter++)
+		{
+			(*iter)->ScaleAlong(scaleCenter, scaleVec / LastScaleVec);
+		}
+	}
 protected:
 	void SetObjectPosition(float x, float y, float z)  override {
 		Transpose::SetObjectPosition(x, y, z);
@@ -172,6 +181,7 @@ protected:
 				globalQuaternion_last = globalQuaternion;
 		}
 	}
+
 
 
 private:

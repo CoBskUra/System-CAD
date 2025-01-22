@@ -7,6 +7,8 @@
 #include "Figures/Point.h"
 #include "Figures/Bezier/BezierInterpolated.h"
 #include "Figures/Bezier/IntersectionCurve.h"
+#include "Figures/Intersection/IntersectionAblePuffed.h"
+#include <glm/gtx/string_cast.hpp>
 
 class IntersectionWindow: public WindowParent {
 public:
@@ -23,7 +25,9 @@ public:
 	bool useCursor = false;;
 	float step = 0.005;
 	float epsilon = 0.000001;
-
+	bool puffed = false;
+	float r1 = 0;;
+	float r2 = 0;;
 
 	std::weak_ptr<Figure>& Iterator(int i) {
 		switch (i)
@@ -84,6 +88,11 @@ public:
 
 		ImGui::DragFloat("Step##IntersectionWindow", &step, 0.005, 0.00001, 2, "%.7f");
 		ImGui::DragFloat("Epsilon##IntersectionWindow", &epsilon, 0.00001, 0.000001, 1, "%.8f");
+		if(ImGui::RadioButton("Puffed##IntersectionWindow", puffed)) {
+			puffed = !puffed;
+		}
+		ImGui::DragFloat("Offset_1##IntersectionWindow", &r1, 0.01f);
+		ImGui::DragFloat("Offset_2##IntersectionWindow", &r2, 0.01f);
 
 		if (ImGui::Button("Intersections##IntersectionWindow") &&
 			!sceneObject_2.expired() && !sceneObject_1.expired()) {
@@ -92,6 +101,12 @@ public:
 			std::shared_ptr<Figure> figure_2 = sceneObject_2.lock();
 			auto object_a = dynamic_cast<IntersectionAble*>(figure_1.get());
 			auto object_b = dynamic_cast<IntersectionAble*>(figure_2.get());
+
+			IntersectionAblePuffed a{ object_a, r1}, b{ object_b, r2 };
+			if (puffed) {
+				object_a = &a;
+				object_b = &b;
+			}
 
 
 			glm::vec4 closeParams{ 0, 0, 0, 0 };
@@ -107,9 +122,16 @@ public:
 			else
 				closeParams = intersections.RandomTheClosetToEachOther(object_a, object_b);
 
-			
+			glm::vec4 params;
+			try{
+				params = intersections.FirstIntersectionPoint(object_a, object_b, closeParams, epsilon);
+			}
+			catch (...) {
+				std::cout << "jskiœ b³¹d";
 
-			auto params = intersections.FirstIntersectionPoint(object_a, object_b, closeParams);
+				return;
+			}
+			std::cout << glm::to_string(params)<< std::endl;
 			if (figure_2->GetId() == figure_1->GetId() &&
 				abs(params.x - params.z) < 0.001 &&
 				abs(params.y - params.w) < 0.001) {
@@ -122,8 +144,8 @@ public:
 				return;
 			auto positions = intersections.IntersectionFrame(params, object_a, object_b, step, epsilon);
 
-			auto curve_a = std::make_shared< IntersectionCurve>(positions.first, figure_1, scene);
-			auto curve_b = std::make_shared< IntersectionCurve>(positions.second, figure_2, scene);
+			auto curve_a = std::make_shared< IntersectionCurve>(positions.first, figure_1, object_a,  scene);
+			auto curve_b = std::make_shared< IntersectionCurve>(positions.second, figure_2, object_b, scene);
 			scene->AddFigure(curve_a); 
 			scene->AddFigure(curve_b);
 		}

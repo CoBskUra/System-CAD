@@ -1,14 +1,92 @@
 #pragma once
 #include <glm/fwd.hpp>
 #include <glm/geometric.hpp>
+#include <Constants.h>
+#include <vector>
+#include <functional>
+//#include "Figures/Bezier/BezierCurve.h"
+#include "Figures/Intersection/IntersectionAble.h"
 static class MathOperations {
 public:
+
+	template <typename VecType>
+	static float PowDistance(const VecType& vec_1, const VecType& vec_2) {
+		VecType diff = vec_1 - vec_2;
+		return glm::dot(diff, diff);
+	}
+
+	static glm::vec2 Rotation90Degree(const glm::vec2& vec) {
+		return { -vec.y, vec.x };
+	}
+
+	template<typename T_out, typename T_in>
+	static void AppendVector(std::vector<T_out>& vector_out, std::vector<T_in>& vector_in, int start, int end, std::function < T_out(T_in)> transformFun) {
+		vector_out.reserve(vector_out.size() - start + end);
+		for (int i = start; i < end; i++) {
+			vector_out.push_back(transformFun(vector_in[i]));
+		}
+	}
+
+	static float MinDisFromCenter_Di(int i, const std::vector<glm::vec2>& params, glm::vec2 field, float center, const bool fromRight = true) {
+		float dis = M_FLOAT_MAX ;
+		for (auto& par : params) {
+			float tmpDis = fromRight ? par[i] - center : center - par[i];
+			if ( tmpDis < 0)
+				continue;
+			if (tmpDis < dis)
+				dis = tmpDis;
+		}
+		return dis;
+	}
+
+	//static inline glm::vec3  MovedAcrossNormalCloseTo(float t, BezierCurve* curve, float r, glm::vec3 closeToDirection) {
+	//	glm::vec3 dereative = glm::normalize(curve->Derivative(t));
+	//	glm::vec3 normal = glm::normalize(glm::cross(dereative, glm::cross(dereative, closeToDirection)));
+	//	glm::vec3 pos = curve->PositionOnCurve(t);
+	//	return pos + normal * r;
+	//};
+
+	static inline glm::vec3  MovedAcrossNormalOfParametr_v_CloseTo(float v, float u, IntersectionAble* surf, float r, glm::vec3 closeToDirection) {
+		glm::vec3 dereative = glm::normalize(surf->Derivative_v(v, u));
+		glm::vec3 normal = glm::normalize(glm::cross(glm::cross(dereative, closeToDirection), dereative));
+		glm::vec3 pos = surf->Parametrization(v, u);
+		return pos + normal * r;
+	};
+
+	static inline glm::vec3  MovedAcrossNormalOfParametr_u_CloseTo(float v, float u, IntersectionAble* surf, float r, glm::vec3 closeToDirection) {
+		glm::vec3 dereative = glm::normalize(surf->Derivative_u(v, u));
+		glm::vec3 normal = glm::normalize(glm::cross(glm::cross(dereative, closeToDirection), dereative));
+		glm::vec3 pos = surf->Parametrization(v, u);
+		return pos + normal * r;
+	};
+
+	static float MaxDisFromCenter_Di(int i, const std::vector<glm::vec2>& params, glm::vec2 field, float center, const bool fromRight = true) {
+		float dis = -1;
+		for (auto& par : params) {
+			float tmpDis = fromRight ? par[i] - center : center - par[i];
+			if (tmpDis < 0)
+				continue;
+			if (tmpDis > dis)
+				dis = tmpDis;
+		}
+		return dis;
+	}
+
 	static int Wrap(int value, int min, int max) {
 		value -= min;
 		int length = max - min;
 		value = value % length;
 		value = (length + value) % length;
 		return value;
+	}
+
+	static float SimpleWrap(const float t, const glm::vec2& field) {
+		float length = field.y - field.x;
+		if (t > field.y)
+			return SimpleWrap(t - length, field);
+		else if (t < field.x)
+			return SimpleWrap(t + length, field);
+		return t;
 	}
 
 	static glm::vec3 RotationAlongAxis(glm::vec3 v, float rad, glm::vec3 axis)
@@ -136,11 +214,26 @@ public:
 	}
 
 	inline static glm::vec3 BezierNDerivative(float t, std::vector<glm::vec3> ps) {
+		float degree = ps.size() - 1;
 		for (int i = 0; i < ps.size() - 1; i++) {
-			ps[i] = 3.0f * (ps[i] - ps[i + 1]);
+			ps[i] = degree * (ps[i + 1] - ps[i]);
 		}
 		ps.erase(std::next(ps.end(), -1));
 
 		return BezierND(t, ps);
+	}
+
+	inline static std::vector<glm::vec3> BezierNDerivative_points(std::vector<glm::vec3> ps) {
+		float degree = ps.size() - 1;
+		for (int i = 0; i < ps.size() - 1; i++) {
+			ps[i] = degree * (ps[i + 1] - ps[i]);
+		}
+		ps.erase(std::next(ps.end(), -1));
+
+		return ps;
+	}
+
+	inline static glm::vec2 ParallelVector(glm::vec2 v, bool cloclkWise = true) {
+		return cloclkWise ? glm::vec2{v.y, -v.x} : glm::vec2{-v.y, v.x};
 	}
 };

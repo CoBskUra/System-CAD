@@ -1,5 +1,15 @@
 #include "BezierSurface.h"
 
+void BezierSurface::AddControlPointsToScene(Scene* scene)
+{
+	if (nullptr != scene) {
+		for (int i = 0; i < controlPoints.size(); i++) {
+			if (controlPoints.at(i).get() && Contain(controlPoints.at(i).get()))
+				scene->AddFigure(controlPoints.at(i));
+		}
+	}
+}
+
 int BezierSurface::MaxSize()
 {
 	return horizontalNum * verticalNum * 16;
@@ -92,12 +102,8 @@ bool BezierSurface::CreationWindowInterfers(glm::ivec2 appWindowSize)
 				accepted = true;
 				openWindow = false;
 				receivedInput = true;
-				if (nullptr != refrenceScene) {
-					for (int i = 0; i < controlPoints.size(); i++) {
-						if (controlPoints.at(i).get() && Contain(controlPoints.at(i).get()))
-							refrenceScene->AddFigure(controlPoints.at(i));
-					}
-				}
+				AddControlPointsToScene(refrenceScene);
+				
 			}
 		}
 		ImGui::EndGroup();
@@ -136,6 +142,7 @@ void BezierSurface::Draw(GLFWwindow* window, const Camera& camera)
 			glUniform4f(glGetUniformLocation(shader.ID, "COLOR"),
 				showColor.x, showColor.y, showColor.z, showColor.w);
 			glUniform1i(glGetUniformLocation(shader.ID, "PATCH_DIV"), patch_div);
+			glUniform1f(glGetUniformLocation(shader.ID, "OFFSET"), offset);
 			glUniform2i(glGetUniformLocation(shader.ID, "SIZE"), verticalNum, horizontalNum);
 
 
@@ -293,11 +300,16 @@ void BezierSurface::ActiveImGui()
 		RotationInterfers();
 		ScaleInterfers();
 		ImGui::DragInt("Patch div. :", &patch_div);
+		ImGui::DragFloat("Offset", &offset);
 		if (ImGui::RadioButton("Show Bezier's polynomial", showBezierPol))
 			ChangeShowBezierPol();
 		ImGui::SameLine();
 		if (ImGui::RadioButton("Show Bezier's Curve", showBezierCurve))
 			ChangeShowBezierCurve();
+
+
+		ImGui::Text("size = %d x %d", N, N);
+		ImGui::Image((void*)(intptr_t)GetTextureId(), ImVec2(N, N));
 
 	}
 	ImGui::EndGroup();
@@ -412,6 +424,14 @@ glm::vec4 BezierSurface::Cast_VU_To_PatchVPatchHVU(float v, float u)
 	u = u - patchH;
 
 	return { patchV, patchH, v, u };
+}
+
+void BezierSurface::ThrowErrorIfOutOfBoundry(int verticalID, int horizontalID, int k1, int k2) const
+{
+	if (verticalID >= verticalNum || horizontalID >= horizontalNum ||
+		k1 >= 4 || k2 >= 4 ||
+		verticalID < 0 || horizontalID < 0 || k1 < 0 || k2 < 0)
+		throw "out of boundry";
 }
 
 glm::vec3 BezierSurface::Parametrization(float v, float u)

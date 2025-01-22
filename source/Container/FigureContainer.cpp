@@ -145,6 +145,12 @@ Figure* FigureContainer::At(int i) const
 	return orderdFigures.at(i);
 }
 
+void FigureContainer::Reverse()
+{
+	std::reverse(orderdFigures.begin(), orderdFigures.end());
+	SomethingHasChange();
+}
+
 FigureContainer::~FigureContainer()
 {
 	Clear();

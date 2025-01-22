@@ -2,6 +2,7 @@
 #include "glm/glm.hpp"
 #include "ShaderManadement/Texture.h"
 #include "IntersectionResultInfo.h"
+#include "Constants.h"
 #include <map>
 
 struct textureInfo {
@@ -11,11 +12,8 @@ struct textureInfo {
 };
 
 class IntersectionAble {
-	Texture resultIntersection{ GL_TEXTURE_2D };
-	std::vector<float> resultTextureData = std::vector<float>(256*256);
-	std::map<GLuint, textureInfo> activeTextures;
 public:
-	const int N = 256;
+	static const int N = 512;
 
 	virtual glm::vec3 Parametrization	(float v, float u) = 0;
 	virtual glm::vec3 Derivative_u(float v, float u) = 0;
@@ -66,6 +64,10 @@ public:
 
 
 private:
+	Texture resultIntersection{ GL_TEXTURE_2D };
+	std::vector<float> resultTextureData = std::vector<float>(N * N);
+	std::map<GLuint, textureInfo> activeTextures;
+
 	void IncludeDataInResult(const std::vector<float>& dataToInclude, float min, float max) {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {

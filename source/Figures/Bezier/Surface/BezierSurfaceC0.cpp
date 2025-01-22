@@ -1,7 +1,20 @@
 #include "BezierSurfaceC0.h"
 #include <imgui_impl_opengl3.h>
 
-BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name, 
+std::shared_ptr<BezierSurfaceC0> BezierSurfaceC0::CreateSurfaceShard_ptr(const char* name, int horizontal, int vertical, glm::vec3 pos)
+{
+	auto bezierS = std::make_shared<BezierSurfaceC0>(name);
+	bezierS->horizontalNum = horizontal;
+	bezierS->verticalNum = vertical;
+	bezierS->creationType = CreationType::surface;
+	bezierS->CreateBezierVAO();
+	bezierS->TurnOffStartupInterfers();
+	bezierS->SetObjectPosition(pos.x, pos.y, pos.z);
+	bezierS->CreateBezierVAO();
+	return bezierS;
+}
+
+BezierSurfaceC0::BezierSurfaceC0(const char* name) : BezierSurfaceC0(name,
 	FigureType::BezierSurfaceC0)
 {
 }
@@ -106,11 +119,14 @@ Figure* BezierSurfaceC0::TakePoint(int verticalID, int horizontalID, int k1, int
 
 int BezierSurfaceC0::TakeId(int verticalID, int horizontalID, int k1, int k2) const
 {
+	ThrowErrorIfOutOfBoundry(verticalID, horizontalID, k1, k2);
+
 	if (creationType == CreationType::cylinder &&
 		horizontalID == horizontalNum - 1 && k2 == 3) {
 		k2 = 0;
 		horizontalID = 0;
 	}
+
 
 	int width = (4 + (horizontalNum - 1) * 3);
 	int id = (verticalID * 3 + k1) * width + k2 + horizontalID * 3;
@@ -233,25 +249,65 @@ glm::vec3 BezierSurfaceC0::DerivativeVU(int patchV, int patchH, float v, float u
 	return p;
 }
 
-glm::vec3 BezierSurfaceC0::DerivativeUU(int patchV, int pathH, float v, float u)
+glm::vec3 BezierSurfaceC0::DerivativeUU(int patchV, int patchH, float v, float u)
 {
-	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
-	throw "cos";
-	return glm::vec3();
+	auto controlPoints = ControlPointsPosVector(patchV, patchH);
+
+
+	std::vector<glm::vec3> ps;
+	ps.resize(4);
+	for (int i = 0; i < 4; i++) {
+		ps[i] = MathOperations::Bezier3D(v,
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4]
+		);
+	}
+	ps = MathOperations::BezierNDerivative_points( ps);
+	glm::vec3 p = MathOperations::BezierNDerivative(u, ps);
+	return p;
 }
 
-glm::vec3 BezierSurfaceC0::DerivativeVV(int patchV, int pathH, float v, float u)
+glm::vec3 BezierSurfaceC0::DerivativeVV(int patchV, int patchH, float v, float u)
 {
-	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
-	throw "cos";
-	return glm::vec3();
+	auto controlPoints = ControlPointsPosVector(patchV, patchH);
+
+
+	std::vector<glm::vec3> ps;
+	ps.resize(4);
+	for (int i = 0; i < 4; i++) {
+		std::vector<glm::vec3> tmp{
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4] };
+
+		ps[i] = MathOperations::BezierNDerivative(v,
+			MathOperations::BezierNDerivative_points(tmp));
+	}
+
+	glm::vec3 p = MathOperations::BezierND(u, ps);
+	return p;
 }
 
-glm::vec3 BezierSurfaceC0::DerivativeUV(int patchV, int pathH, float v, float u)
+glm::vec3 BezierSurfaceC0::DerivativeUV(int patchV, int patchH, float v, float u)
 {
-	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
-	throw "cos";
-	return glm::vec3();
+	auto controlPoints = ControlPointsPosVector(patchV, patchH);
+
+
+	glm::vec3 ps[4];
+	for (int i = 0; i < 4; i++) {
+		ps[i] = MathOperations::Bezier3D_derivative(v,
+			controlPoints[0 + i * 4],
+			controlPoints[1 + i * 4],
+			controlPoints[2 + i * 4],
+			controlPoints[3 + i * 4]
+		);
+	}
+
+	glm::vec3 p = MathOperations::Bezier3D_derivative(u, ps[0], ps[1], ps[2], ps[3]);
+	return p;
 }
 
 glm::bvec2 BezierSurfaceC0::CanWrap()

@@ -30,8 +30,22 @@ public:
 	BezierC0(MG1::BezierC0 b0, const Scene* scene, int idOffset = 0);
 	MG1::BezierC0 Serialize(int idOffset = 0) const;
 
+	int NumberOfPoints() override;
+	float MaxValue() override;
+	glm::vec3 Derivative_2(float t) override;
 	glm::vec3 Derivative(float t) override;
 	glm::vec3 PositionOnCurve(float t) override;
+
+	inline int SegmentID(float t) {
+		if (t == NumberOfSegments())
+			return NumberOfSegments() - 1;
+		return t;
+	}
+
+	inline float ValueTForSegment(float t, int segmentId) {
+		return t - segmentId;
+	}
+
 	void Draw(GLFWwindow* window, const Camera& camera) override;
 protected:
 	BezierC0(const char* name, FigureType type);

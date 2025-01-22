@@ -20,6 +20,9 @@ public:
 	void CreateBezierVAO() override;
 	void ChangeShowBezierCurve() override;
 
+	float MaxValue() override;
+	int NumberOfPoints() override;
+	glm::vec3 Derivative_2(float t) override;
 	glm::vec3 Derivative(float t) override;
 	glm::vec3 PositionOnCurve(float t) override;
 	
@@ -28,6 +31,8 @@ public:
 	glm::vec4 SetUnmarkColor(glm::vec4 color) override;
 	void SetMarkColor(glm::vec4 color) override;
 	void SetShowColor(glm::vec4 color) override;
+
+	void Reverse() override;
 protected:
 	BezierInterpolated(const char* name, FigureType type);
 	float TakePointDelta(int i);

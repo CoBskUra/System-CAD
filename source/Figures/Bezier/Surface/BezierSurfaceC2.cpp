@@ -108,6 +108,8 @@ Figure* BezierSurfaceC2::TakePoint(int verticalID, int horizontalID, int k1, int
 
 int BezierSurfaceC2::TakeId(int verticalID, int horizontalID, int k1, int k2) const
 {
+	ThrowErrorIfOutOfBoundry(verticalID, horizontalID, k1, k2);
+
 	if (creationType == CreationType::cylinder &&
 		horizontalID >= horizontalNum - 3 && k2 >= horizontalNum - horizontalID)
 	{
@@ -328,7 +330,68 @@ glm::vec3 BezierSurfaceC2::DerivativeUU(int patchV, int patchH, float v, float u
 	std::vector<glm::vec3> bezierPoints;
 	bezierPoints.reserve(4);
 	for (int y = 0; y < 4; y++) {
-		bezierPoints.push_back( MathOperations::Bezier3D_derivative(v,
+		bezierPoints.push_back( MathOperations::Bezier3D(v,
+			points[0 + y * 4],
+			points[1 + y * 4],
+			points[2 + y * 4],
+			points[3 + y * 4]));
+	}
+
+	bezierPoints = DeBoreBaiseToBezier(bezierPoints);
+	bezierPoints = MathOperations::BezierNDerivative_points(bezierPoints);
+	auto p = MathOperations::BezierNDerivative(u, bezierPoints);
+
+	/*glm::vec3 p = MathOperations::Bezier3D_derivative(u,
+		bezierPoints[0],
+		bezierPoints[1],
+		bezierPoints[2],
+		bezierPoints[3]
+	);*/
+
+	return p;
+}
+
+glm::vec3 BezierSurfaceC2::DerivativeVV(int patchV, int patchH, float v, float u)
+{
+	auto points = ControlPointsPosVector(patchV, patchH);
+	points = DeBoreBaiseToBezier(points);
+
+	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
+	std::vector<glm::vec3> bezierPoints;
+	bezierPoints.reserve(4);
+	std::vector<glm::vec3> tmpPoints;
+	tmpPoints.resize(4);
+	for (int y = 0; y < 4; y++) {
+		tmpPoints[0] = points[0 + y * 4];
+		tmpPoints[1] = points[1 + y * 4];
+		tmpPoints[2] = points[2 + y * 4];
+		tmpPoints[3] = points[3 + y * 4];
+
+		tmpPoints = MathOperations::BezierNDerivative_points(tmpPoints);
+		bezierPoints.push_back(MathOperations::BezierNDerivative(v, tmpPoints));
+	}
+
+	bezierPoints = DeBoreBaiseToBezier(bezierPoints);
+	auto p = MathOperations::Bezier3D(u, 
+		bezierPoints[0],
+		bezierPoints[1],
+		bezierPoints[2],
+		bezierPoints[3]);
+
+	return p;
+}
+
+glm::vec3 BezierSurfaceC2::DerivativeUV(int patchV, int patchH, float v, float u)
+{
+	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
+	auto points = ControlPointsPosVector(patchV, patchH);
+	points = DeBoreBaiseToBezier(points);
+
+	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
+	std::vector<glm::vec3> bezierPoints;
+	bezierPoints.reserve(4);
+	for (int y = 0; y < 4; y++) {
+		bezierPoints.push_back(MathOperations::Bezier3D_derivative(v,
 			points[0 + y * 4],
 			points[1 + y * 4],
 			points[2 + y * 4],
@@ -344,20 +407,6 @@ glm::vec3 BezierSurfaceC2::DerivativeUU(int patchV, int patchH, float v, float u
 	);
 
 	return p;
-}
-
-glm::vec3 BezierSurfaceC2::DerivativeVV(int patchV, int pathH, float v, float u)
-{
-	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
-	throw "cos";
-	return glm::vec3();
-}
-
-glm::vec3 BezierSurfaceC2::DerivativeUV(int patchV, int pathH, float v, float u)
-{
-	// do napisania jeszcze na razie testuje torusy ale kompilator mi krzyczy
-	throw "cos";
-	return glm::vec3();
 }
 
 glm::bvec2 BezierSurfaceC2::CanWrap()

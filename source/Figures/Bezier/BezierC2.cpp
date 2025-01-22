@@ -98,6 +98,21 @@ void BezierC2::ChangeShowBezierPol()
 	innerBezierC0.ChangeShowBezierPol();
 }
 
+int BezierC2::NumberOfPoints()
+{
+	return innerBezierC0.NumberOfPoints();
+}
+
+float BezierC2::MaxValue()
+{
+	return innerBezierC0.MaxValue();
+}
+
+glm::vec3 BezierC2::Derivative_2(float t)
+{
+	return innerBezierC0.Derivative_2(t);
+}
+
 glm::vec3 BezierC2::Derivative(float t)
 {
 	return innerBezierC0.Derivative(t);

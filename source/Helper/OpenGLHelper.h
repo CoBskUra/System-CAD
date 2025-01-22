@@ -38,8 +38,12 @@ public:
 		return pos;
 	}
 
+
+
 	template<typename E>
 	static constexpr auto enum_count() {
 		return static_cast<std::underlying_type_t<E>>(E::COUNT);
 	}
+
+	
 };

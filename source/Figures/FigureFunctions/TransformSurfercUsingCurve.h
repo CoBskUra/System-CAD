@@ -28,12 +28,14 @@ public:
 		float maxVerticalPoints = size.x * 4 - 1;
 		float maxHorizontalPoints = size.y * 4 - 1;
 
-		glm::vec3 lastNorm = CalculateTangent(glm::normalize(curve->Derivative(1)));
-		glm::vec3 lastPos = curve->PositionOnCurve(1);
+		float lastParam = curve->MaxValue(); // zmieni³em przedzia³ krzywej z zawsze 0-1 do jakiegoœ maxa
+											// nie chce mi siê testowaæ czy dobrze dzia³a nadal wiêc zostawiam
+		glm::vec3 lastNorm = CalculateTangent(glm::normalize(curve->Derivative(lastParam)));
+		glm::vec3 lastPos = curve->PositionOnCurve(lastParam);
 
 		for (int verticalId = size.x - 1; verticalId >= 0; verticalId--) {
 			for (int k1 = 3; k1 >= 0; k1--) {
-				float t = static_cast<float>(verticalId * 4 + k1) / maxVerticalPoints;
+				float t = lastParam * static_cast<float>(verticalId * 4 + k1) / maxVerticalPoints; 
 				glm::vec3 pos = curve->PositionOnCurve(t);
 				glm::vec3 der = curve->Derivative(t);
 				der = glm::normalize(der);

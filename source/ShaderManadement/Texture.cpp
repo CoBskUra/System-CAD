@@ -8,7 +8,7 @@ Texture::Texture(GLenum texType) {
 	//glActiveTexture(slot);
 	//glBindTexture(texType, ID);
 	// Unbinds the OpenGL Texture object so that it can't accidentally be modified
-	glBindTexture(texType, ID);
+	glBindTexture(texType, 0);
 }
 
 
